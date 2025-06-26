@@ -90,7 +90,7 @@ const CreateJob = () => {
               placeholder="$ 50000"
               value={form.minSalary}
               onChange={handleChange}
-              className="border rounded px-3 py-2 text-sm w-full"
+              className="border rounded px-3 py-2 text-sm w-full text-gray-500"
             />
           </div>
           <div>
@@ -101,7 +101,7 @@ const CreateJob = () => {
               placeholder="$ 80000"
               value={form.maxSalary}
               onChange={handleChange}
-              className="border rounded px-3 py-2 text-sm w-full"
+              className="border rounded px-3 py-2 text-sm w-full text-gray-500"
             />
           </div>
         </div>
@@ -110,6 +110,8 @@ const CreateJob = () => {
           <label className="block text-sm font-medium mb-1">Period</label>
           <select className="border rounded px-3 py-2 text-sm w-full">
             <option>Yearly</option>
+            <option>Monthly</option>
+            <option>Hourly</option>
           </select>
         </div>
       </div>
@@ -125,7 +127,7 @@ const CreateJob = () => {
             value={form.summary}
             onChange={handleChange}
             placeholder="Brief overview of the role and what the candidate will be doing..."
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full border rounded px-3 py-2 text-sm text-gray-500"
             rows={3}
           />
         </div>
@@ -137,7 +139,7 @@ const CreateJob = () => {
             value={form.responsibilities}
             onChange={handleChange}
             placeholder={`• Develop and maintain web applications using modern frameworks\n• Collaborate with design and product teams\n• Write clean, maintainable code\n• Participate in code reviews`}
-            className="w-full border rounded px-3 py-2 text-sm whitespace-pre-line"
+            className="w-full border rounded px-3 py-2 text-sm whitespace-pre-line text-gray-500"
             rows={5}
           />
           <p className="text-xs text-gray-500">Use bullet points for better readability</p>
@@ -150,8 +152,9 @@ const CreateJob = () => {
             value={form.qualifications}
             onChange={handleChange}
             placeholder={`• Bachelor's degree in Computer Science or related field\n• 3+ years of experience with React/Vue.js\n• Strong knowledge of JavaScript, HTML, CSS\n• Experience with version control (Git)`}
-            className="w-full border rounded px-3 py-2 text-sm whitespace-pre-line"
+            className="w-full border rounded px-3 py-2 text-sm whitespace-pre-line text-gray-500"
             rows={5}
+            
           />
         </div>
       </div>
@@ -167,7 +170,7 @@ const CreateJob = () => {
             value={form.qualifications}
             onChange={handleChange}
             placeholder={`• Competitive salary and equity package\n• Health, Dental, and Vision Insurance\n• Flexible work arrangements\n• Unlimited PTO Policy`}
-            className="w-full border rounded px-3 py-2 text-sm whitespace-pre-line"
+            className="w-full border rounded px-3 py-2 text-sm whitespace-pre-line text-gray-500"
             rows={5}
           />
         </div>

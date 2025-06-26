@@ -10,7 +10,6 @@ function App() {
   return (
         <BrowserRouter>
       <div className="flex flex-col min-h-screen font-poppins">
-        
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Applications />} />
@@ -18,7 +17,6 @@ function App() {
             
           </Routes>
         </main>
-
       </div>
     </BrowserRouter>
   );
