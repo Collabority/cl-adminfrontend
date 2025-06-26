@@ -128,7 +128,7 @@ const Applications = () => {
             <div className="relative">
               {/* Lucide Search icon */}
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input type="text" placeholder="Search applicant name or email..." className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-80" />
+              <input type="text" placeholder="Search applicant name or email..." className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-80 text-gray-500" />
             </div>
             <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option>All Jobs</option>
