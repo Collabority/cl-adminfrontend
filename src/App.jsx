@@ -5,6 +5,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Applications from "./pages/Applications";
 import CreateJob from "./pages/CreateJob";
+import NewsletterManagement from "./pages/Newsletter";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Applications />} />
             <Route path="/create-job" element={<CreateJob />} />
+            <Route path="/newsletter" element={<NewsletterManagement />} />
             
           </Routes>
         </main>
