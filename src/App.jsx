@@ -1,6 +1,6 @@
 import "./App.css";
-import React, { Suspense, lazy } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { Suspense, lazy,  useEffect } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Loader from "./components/Loader";
 
 // Lazy loaded components
@@ -10,21 +10,28 @@ const Reviews = lazy(() => import("./pages/Reviews"));
 const AddReview = lazy(() => import("./pages/AddReview"));
 
 const App = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      navigate("/", { replace: true });
+    }
+  }, []);
+
   return (
     <div className="h-screen flex flex-col">
-      <Suspense fallback={<Loader />}>
-        <Navbar />
-      </Suspense>
+      <Navbar />
       <div className="flex flex-1 overflow-hidden">
-        <Suspense fallback={<Loader />}>
-          <Sidebar />
-        </Suspense>
-        <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
+        {/* Sidebar with fixed height and no scroll */}
+        <Sidebar />
+
+        {/* Content area that scrolls if it overflows */}
+        <div className="flex-1 overflow-y-auto p-4  bg-gray-100">
           <Suspense fallback={<Loader />}>
             <Routes>
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/reviews/add" element={<AddReview />} />
-              {/* Add more routes as needed */}
             </Routes>
           </Suspense>
         </div>

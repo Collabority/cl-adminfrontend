@@ -1,26 +1,12 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useContext } from "react";
 import { MdNightlightRound } from "react-icons/md";
 import { IoIosNotifications } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { AppContext } from "../context/AppContext";
 import { RxCross2 } from "react-icons/rx";
 
-const pathToTab = {
-  "/": "Dashboard",
-  "/blog": "Blog Management",
-  "/careers": "Careers",
-  "/services": "Services",
-  "/reviews": "Reviews",
-  "/reviews/add": "Add Review",
-  "/contact": "Contact Queries",
-  "/newsletter": "Newsletter",
-  "/users": "User Management",
-};
-
 const Navbar = () => {
-  const location = useLocation();
-  const activeTab = pathToTab[location.pathname] || "Dashboard";
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const { activeTab, isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

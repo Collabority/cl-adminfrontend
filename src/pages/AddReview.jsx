@@ -110,8 +110,7 @@ const AddReview = () => {
               <option>Published</option>
               <option>Pending</option>
             </select>
-            <button className="ml-auto border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-semibold bg-white shadow-sm hover:bg-gray-50 transition text-base">Preview</button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2 font-bold transition text-base shadow-sm">Save Review</button>
+            <button className="ml-auto bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2 font-bold transition text-base shadow-sm">Save Review</button>
           </div>
         </div>
       </div>
