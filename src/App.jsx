@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Applications from "./pages/Applications";
 import CreateJob from "./pages/CreateJob";
 import NewsletterManagement from "./pages/Newsletter";
+import AddNewUser from "./pages/Addnewuser";
+import UserManagement from "./pages/UserManagement";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
             <Route path="/" element={<Applications />} />
             <Route path="/create-job" element={<CreateJob />} />
             <Route path="/newsletter" element={<NewsletterManagement />} />
+            <Route path="/add-new-user" element={<AddNewUser />} />
+            <Route path="/user-management" element={<UserManagement />} />
             
           </Routes>
         </main>
