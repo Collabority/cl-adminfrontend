@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import { MdNightlightRound } from "react-icons/md";
 import { IoIosNotifications } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { AppContext } from "../context/AppContext";
 import { RxCross2 } from "react-icons/rx";
+import { AppContext } from "../context/AppContext";
 
 const Navbar = () => {
   const { activeTab, isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);

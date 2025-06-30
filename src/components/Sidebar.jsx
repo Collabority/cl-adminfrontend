@@ -59,76 +59,44 @@ const Sidebar = () => {
     >
       {/* Navigation Links */}
       <div className="flex flex-col gap-5">
-        <Link
-          to="/"
-          onClick={() => setActiveTab("Dashboard")}
-          className={getItemClasses("Dashboard")}
-        >
+        <Link to="/" className={getItemClasses("Dashboard")}>
           <BsGraphUp className={getIconClasses("Dashboard")} />
           <h5 className={getTextClasses("Dashboard")}>Dashboard</h5>
         </Link>
 
-        <Link
-          to="/blog"
-          onClick={() => setActiveTab("Blog Management")}
-          className={getItemClasses("Blog Management")}
-        >
+        <Link to="/blog" className={getItemClasses("Blog Management")}>
           <FaBlog className={getIconClasses("Blog Management")} />
           <h5 className={getTextClasses("Blog Management")}>Blog Management</h5>
         </Link>
 
-        <Link
-          to="/careers"
-          onClick={() => setActiveTab("Careers")}
-          className={getItemClasses("Careers")}
-        >
+        <Link to="/careers" className={getItemClasses("Careers")}>
           <PiSuitcaseSimpleBold className={getIconClasses("Careers")} />
           <h5 className={getTextClasses("Careers")}>Careers</h5>
         </Link>
 
-        <Link
-          to="/services"
-          onClick={() => setActiveTab("Services")}
-          className={getItemClasses("Services")}
-        >
+        <Link to="/services" className={getItemClasses("Services")}>
           <MdOutlineMiscellaneousServices
             className={getIconClasses("Services")}
           />
           <h5 className={getTextClasses("Services")}>Services</h5>
         </Link>
 
-        <Link
-          to="/reviews"
-          onClick={() => setActiveTab("Reviews")}
-          className={getItemClasses("Reviews")}
-        >
+        <Link to="/reviews" className={getItemClasses("Reviews")}>
           <FaStar className={getIconClasses("Reviews")} />
           <h5 className={getTextClasses("Reviews")}>Reviews</h5>
         </Link>
 
-        <Link
-          to="/contact"
-          onClick={() => setActiveTab("Contact Queries")}
-          className={getItemClasses("Contact Queries")}
-        >
+        <Link to="/contact" className={getItemClasses("Contact Queries")}>
           <IoMdMail className={getIconClasses("Contact Queries")} />
           <h5 className={getTextClasses("Contact Queries")}>Contact Queries</h5>
         </Link>
 
-        <Link
-          to="/newsletter"
-          onClick={() => setActiveTab("Newsletter")}
-          className={getItemClasses("Newsletter")}
-        >
+        <Link to="/newsletter" className={getItemClasses("Newsletter")}>
           <FaNewspaper className={getIconClasses("Newsletter")} />
           <h5 className={getTextClasses("Newsletter")}>Newsletter</h5>
         </Link>
 
-        <Link
-          to="/users"
-          onClick={() => setActiveTab("User Management")}
-          className={getItemClasses("User Management")}
-        >
+        <Link to="/users" className={getItemClasses("User Management")}>
           <FaUsers className={getIconClasses("User Management")} />
           <h5 className={getTextClasses("User Management")}>User Management</h5>
         </Link>
