@@ -1,51 +1,51 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
 const BasicInfoSection = ({ formData, setFormData }) => {
-    const [tagInput, setTagInput] = useState("");
-    
-      const handleTitleChange = (e) => {
-        const title = e.target.value;
-        const slug = title
-          .toLowerCase()
-          .trim()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-");
-    
+  const [tagInput, setTagInput] = useState("");
+
+  const handleTitleChange = (e) => {
+    const title = e.target.value;
+    const slug = title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-");
+
+    setFormData((prev) => ({
+      ...prev,
+      title,
+      slug,
+    }));
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleTagInput = (e) => {
+    if (e.key === "Enter" || e.key === "," || e.keyCode === 188) {
+      e.preventDefault();
+      const newTag = tagInput.replace(",", "").trim();
+      if (newTag && !formData.tags.includes(newTag)) {
         setFormData((prev) => ({
           ...prev,
-          title,
-          slug,
+          tags: [...prev.tags, newTag],
         }));
-      };
-    
-      const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-          ...prev,
-          [name]: value,
-        }));
-      };
-    
-      const handleTagInput = (e) => {
-        if (e.key === "Enter" || e.key === "," || e.keyCode === 188) {
-          e.preventDefault();
-          const newTag = tagInput.replace(",", "").trim();
-          if (newTag && !formData.tags.includes(newTag)) {
-            setFormData((prev) => ({
-              ...prev,
-              tags: [...prev.tags, newTag],
-            }));
-          }
-          setTagInput("");
-        }
-      };
-    
-      const removeTag = (tagToRemove) => {
-        setFormData((prev) => ({
-          ...prev,
-          tags: prev.tags.filter((tag) => tag !== tagToRemove),
-        }));
-      };
+      }
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
+    }));
+  };
   return (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
       <h2 className="text-xl font-semibold text-black">Basic Information</h2>
@@ -56,6 +56,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
           Post Title *
         </label>
         <input
+          required
           type="text"
           name="title"
           value={formData.title}
@@ -90,12 +91,13 @@ const BasicInfoSection = ({ formData, setFormData }) => {
           </label>
           <select
             name="author"
+            required
             value={formData.author}
             onChange={handleInputChange}
             className="w-full border px-3 py-2 rounded border-gray-400 font-semibold outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Author</option>
-            <option value="Lokeswara">Lokeswara Rao</option>
+            <option value="Lokeswara Rao">Lokeswara Rao</option>
             <option value="JohnDoe">John Doe</option>
             <option value="JaneSmith">Jane Smith</option>
           </select>
@@ -106,6 +108,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
             Category *
           </label>
           <select
+            required
             name="category"
             value={formData.category}
             onChange={handleInputChange}
@@ -154,7 +157,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BasicInfoSection
+export default BasicInfoSection;
