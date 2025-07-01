@@ -14,122 +14,127 @@ import {
 
 export default function UserManagement() {
   return (
-    <div className="min-h-screen bg-white p-6 text-gray-800">
-      <h1 className="text-2xl font-semibold mb-1">User Management</h1>
+    <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
+      <h1 className="text-xl sm:text-2xl font-semibold mb-1">User Management</h1>
       <p className="text-sm text-gray-500 mb-6">
         Manage admin users, roles, and permissions for your portal.
       </p>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <SummaryCard icon={<Users className="text-gray-600" />} title="Total Users" value="12" />
-        <SummaryCard icon={<CheckCircle className="text-green-500" />} title="Active Users" value="10" />
-        <SummaryCard icon={<Clock className="text-yellow-500" />} title="Pending" value="2" />
-        <SummaryCard icon={<Crown className="text-purple-500" />} title="Super Admins" value="3" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <SummaryCard icon={<Users className="text-gray-600 w-6 h-6" />} title="Total Users" value="12" />
+        <SummaryCard icon={<CheckCircle className="text-green-500 w-6 h-6" />} title="Active Users" value="10" />
+        <SummaryCard icon={<Clock className="text-yellow-500 w-6 h-6" />} title="Pending" value="2" />
+        <SummaryCard icon={<Crown className="text-purple-500 w-6 h-6" />} title="Super Admins" value="3" />
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4 items-center mt-15">
-        <div className="relative">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4 items-stretch sm:items-center mt-4">
+        <div className="relative w-full sm:flex-1 sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search applicant name or email..."
-            className="pl-10 pr-4 py-2 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-80 text-gray-500"
+            placeholder="Search user name or email..."
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-500"
           />
         </div>
-        <select className="border px-3 py-2 rounded">
+        <select className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option>All Roles</option>
+          <option>Super Admin</option>
+          <option>Admin</option>
+          <option>Editor</option>
         </select>
-        <select className="border px-3 py-2 rounded">
+        <select className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option>All Status</option>
+          <option>Active</option>
+          <option>Pending</option>
+          <option>Inactive</option>
         </select>
-        <div className='flex flex-wrap gap-2 items-center ml-170'>
-        <button className="border px-4 py-2 rounded flex items-center gap-1">
-          <ArrowDownToLine className="w-4 h-4" />
-          Export
-        </button>
-        <button className="border px-4 py-2 rounded flex items-center gap-1">
-          <Settings className="w-4 h-4" />
-          Filter
-        </button>
+        <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto ml-0 sm:ml-auto'>
+            <button className="border border-gray-300 px-4 py-2 rounded-lg flex items-center justify-center gap-1 text-gray-700 hover:bg-gray-50 w-full sm:w-auto">
+              <ArrowDownToLine className="w-4 h-4" />
+              Export
+            </button>
+            <button className="border border-gray-300 px-4 py-2 rounded-lg flex items-center justify-center gap-1 text-gray-700 hover:bg-gray-50 w-full sm:w-auto">
+              <Settings className="w-4 h-4" />
+              Filter
+            </button>
         </div>
       </div>
 
-      {/* Table */}
-      <table className="w-full text-sm border-t">
-        <thead>
-          <tr className="text-left text-gray-500">
-            <th className="p-2">
-              <input type="checkbox" />
-            </th>
-            <th className="p-2">User</th>
-            <th className="p-2">Role</th>
-            <th className="p-2">Status</th>
-            <th className="p-2">Last Login</th>
-            <th className="p-2">Permissions</th>
-            <th className="p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <UserRow
-            avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg"
-            name="Sarah Johnson"
-            email="sarah@company.com"
-            role="Super Admin"
-            roleColor="purple"
-            status="Active"
-            statusColor="green"
-            lastLogin="2 hours ago"
-            permissions="All Access"
-          />
-          <UserRow
-            avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
-            name="Mike Chen"
-            email="mike@company.com"
-            role="Admin"
-            roleColor="blue"
-            status="Active"
-            statusColor="green"
-            lastLogin="1 day ago"
-            permissions="Blog, Services"
-          />
-          <UserRow
-            avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"
-            name="David Wilson"
-            email="david@company.com"
-            role="Editor"
-            roleColor="yellow"
-            status="Pending"
-            statusColor="yellow"
-            lastLogin="Never"
-            permissions="Blog Only"
-          />
-          <UserRow
-            avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg"
-            name="Emily Davis"
-            email="emily@company.com"
-            role=""
-            roleColor="gray"
-            status=""
-            statusColor="gray"
-            lastLogin=""
-            permissions=""
-          />
-        </tbody>
-      </table>
+      <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-gray-500 bg-gray-50 border-b border-gray-200">
+              <th className="p-3">
+                <input type="checkbox" className="rounded border-gray-300" />
+              </th>
+              <th className="p-3 whitespace-nowrap">User</th>
+              <th className="p-3 whitespace-nowrap hidden sm:table-cell">Role</th>
+              <th className="p-3 whitespace-nowrap">Status</th>
+              <th className="p-3 whitespace-nowrap hidden md:table-cell">Last Login</th>
+              <th className="p-3 whitespace-nowrap hidden lg:table-cell">Permissions</th>
+              <th className="p-3 whitespace-nowrap">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <UserRow
+              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg"
+              name="Sarah Johnson"
+              email="sarah@company.com"
+              role="Super Admin"
+              roleColor="purple"
+              status="Active"
+              statusColor="green"
+              lastLogin="2 hours ago"
+              permissions="All Access"
+            />
+            <UserRow
+              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
+              name="Mike Chen"
+              email="mike@company.com"
+              role="Admin"
+              roleColor="blue"
+              status="Active"
+              statusColor="green"
+              lastLogin="1 day ago"
+              permissions="Blog, Services"
+            />
+            <UserRow
+              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"
+              name="David Wilson"
+              email="david@company.com"
+              role="Editor"
+              roleColor="yellow"
+              status="Pending"
+              statusColor="yellow"
+              lastLogin="Never"
+              permissions="Blog Only"
+            />
+            <UserRow
+              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg"
+              name="Emily Davis"
+              email="emily@company.com"
+              role="Viewer"
+              roleColor="gray"
+              status="Inactive"
+              statusColor="gray"
+              lastLogin="3 weeks ago"
+              permissions="None"
+            />
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
 function SummaryCard({ icon, title, value }) {
   return (
-    <div className="bg-white border p-4 rounded shadow-sm">
+    <div className="bg-white border p-4 rounded-lg shadow-sm">
       <div className="flex items-center justify-between mb-1">
         <h4 className="text-sm font-medium text-gray-500">{title}</h4>
         {icon}
       </div>
-      <div className="text-xl font-semibold">{value}</div>
+      <div className="text-2xl font-semibold">{value}</div>
     </div>
   );
 }
@@ -146,45 +151,45 @@ function UserRow({
   permissions,
 }) {
   return (
-    <tr className="border-t">
-      <td className="p-2">
-        <input type="checkbox" />
+    <tr className="border-t hover:bg-gray-50">
+      <td className="p-3">
+        <input type="checkbox" className="rounded border-gray-300" />
       </td>
-      <td className="p-2 flex items-center space-x-2">
-        <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full" />
+      <td className="p-3 flex items-center space-x-2 whitespace-nowrap">
+        <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full flex-shrink-0" />
         <div>
-          <div>{name}</div>
+          <div className="font-medium text-gray-900">{name}</div>
           <div className="text-xs text-gray-500">{email}</div>
         </div>
       </td>
-      <td className="p-2">
+      <td className="p-3 whitespace-nowrap hidden sm:table-cell">
         {role && (
           <span
-            className={`bg-${roleColor}-100 text-${roleColor}-600 px-2 py-1 rounded-full text-xs`}
+            className={`bg-${roleColor}-100 text-${roleColor}-600 px-2 py-1 rounded-full text-xs font-medium`}
           >
             {role}
           </span>
         )}
       </td>
-      <td className="p-2">
+      <td className="p-3 whitespace-nowrap">
         {status && (
           <span
-            className={`bg-${statusColor}-100 text-${statusColor}-600 px-2 py-1 rounded-full text-xs`}
+            className={`bg-${statusColor}-100 text-${statusColor}-600 px-2 py-1 rounded-full text-xs font-medium`}
           >
             {status}
           </span>
         )}
       </td>
-      <td className="p-2">{lastLogin}</td>
-      <td className="p-2">{permissions}</td>
-      <td className="p-2 space-x-2">
-        <button className="text-green-600">
+      <td className="p-3 whitespace-nowrap text-gray-500 hidden md:table-cell">{lastLogin}</td>
+      <td className="p-3 whitespace-nowrap text-gray-500 hidden lg:table-cell">{permissions}</td>
+      <td className="p-3 whitespace-nowrap space-x-2">
+        <button className="text-green-600 p-1 rounded hover:bg-green-50" title="View">
           <Eye className="w-4 h-4" />
         </button>
-        <button className="text-blue-500">
+        <button className="text-blue-500 p-1 rounded hover:bg-blue-50" title="Edit">
           <Pencil className="w-4 h-4" />
         </button>
-        <button className="text-red-500">
+        <button className="text-red-500 p-1 rounded hover:bg-red-50" title="Delete">
           <Trash className="w-4 h-4" />
         </button>
       </td>

@@ -21,17 +21,17 @@ const CreateJob = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Create New Job Opening</h1>
-        <div className="flex gap-2">
-          <button className="border px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100">Save Draft</button>
-          <button className="bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium">Preview</button>
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8"> {/* Responsive padding */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"> {/* Stack on small, row on sm+ */}
+        <h1 className="text-xl sm:text-2xl font-semibold">Create New Job Opening</h1> {/* Responsive font size */}
+        <div className="flex gap-2 w-full sm:w-auto justify-end"> {/* Full width on small, auto on sm+, justify-end */}
+          <button className="border px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 w-1/2 sm:w-auto">Save Draft</button> {/* Responsive width */}
+          <button className="bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium w-1/2 sm:w-auto">Preview</button> {/* Responsive width */}
         </div>
       </div>
 
       {/* Job Information Card */}
-      <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-6"> {/* Responsive padding */}
         <h2 className="text-lg font-semibold mb-4">Job Information</h2>
 
         <div className="mb-4">
@@ -46,7 +46,7 @@ const CreateJob = () => {
           />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4"> {/* Changed to 1 col on xs, 2 on sm, 3 on lg */}
           <div>
             <label className="block text-sm font-medium mb-1">Department *</label>
             <select name="department" value={form.department} onChange={handleChange} className="border rounded px-3 py-2 text-sm w-full">
@@ -117,7 +117,7 @@ const CreateJob = () => {
       </div>
 
       {/* Job description */}
-      <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-6"> {/* Responsive padding */}
         <h2 className="text-lg font-semibold mb-4">Job Description</h2>
 
         <div className="mb-6">
@@ -142,7 +142,7 @@ const CreateJob = () => {
             className="w-full border rounded px-3 py-2 text-sm whitespace-pre-line text-gray-500"
             rows={5}
           />
-          <p className="text-xs text-gray-500">Use bullet points for better readability</p>
+          <p className="text-xs text-gray-500 mt-1">Use bullet points for better readability</p>
         </div>
 
         <div>
@@ -154,19 +154,19 @@ const CreateJob = () => {
             placeholder={`• Bachelor's degree in Computer Science or related field\n• 3+ years of experience with React/Vue.js\n• Strong knowledge of JavaScript, HTML, CSS\n• Experience with version control (Git)`}
             className="w-full border rounded px-3 py-2 text-sm whitespace-pre-line text-gray-500"
             rows={5}
-            
+
           />
         </div>
       </div>
 
     {/* Benefits & Perks */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-6"> {/* Responsive padding */}
         <h2 className="text-lg font-semibold mb-4">Benefits & Perks</h2>
 
         <div>
           <label className="block text-sm font-medium mb-1">What We offer</label>
           <textarea
-            name="qualifications"
+            name="qualifications" // Note: This textarea is currently bound to 'qualifications' state. You might want a separate state for 'benefits'.
             value={form.qualifications}
             onChange={handleChange}
             placeholder={`• Competitive salary and equity package\n• Health, Dental, and Vision Insurance\n• Flexible work arrangements\n• Unlimited PTO Policy`}
@@ -176,10 +176,10 @@ const CreateJob = () => {
         </div>
       </div>
 
-      <div className="bg-white border rounded-lg p-6 mt-6">
+      <div className="bg-white border rounded-lg p-4 sm:p-6 mt-6"> {/* Responsive padding */}
         <h2 className="text-lg font-semibold mb-6">Application Settings</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"> {/* Already responsive grid */}
             {/* Application Deadline */}
             <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Application Deadline *</label>
@@ -212,10 +212,10 @@ const CreateJob = () => {
         </div>
         </div>
 
-        <div className="bg-white border rounded-lg p-6 mt-6">
+        <div className="bg-white border rounded-lg p-4 sm:p-6 mt-6"> {/* Responsive padding */}
             <h2 className="text-lg font-semibold mb-6">Publishing Options</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"> {/* Already responsive grid */}
                 {/* Status */}
                 <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
@@ -249,6 +249,12 @@ const CreateJob = () => {
                 <label className="block text-sm font-medium text-gray-900">External Applications</label>
                 <p className="text-sm text-gray-500 mb-2">Allow applications through external job boards</p>
             </div>
+        </div>
+        {/* Submit Button */}
+        <div className="flex justify-end mt-6">
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg text-base font-medium hover:bg-blue-700 w-full sm:w-auto">
+                Create Job Opening
+            </button>
         </div>
     </div>
   );
