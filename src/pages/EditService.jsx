@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaSave, FaTelegramPlane } from "react-icons/fa";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import QuillEditor from "../components/CreateBlogContent";
 
 const EditService = () => {
   // Prefilled mock data for demonstration
@@ -132,13 +133,8 @@ const EditService = () => {
       {coverImage()}
       {/* Content/Description */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <label className="font-semibold text-gray-700">Description</label>
-        <textarea
-          className="border border-gray-300 rounded-lg px-3 py-2 min-h-[120px]"
-          value={formData.content}
-          onChange={e => setFormData({ ...formData, content: e.target.value })}
-          required
-        />
+        <h2 className="text-xl font-semibold text-black mb-2">Description</h2>
+        <QuillEditor formData={formData} setFormData={setFormData} />
       </div>
       {/* SEO Settings */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
