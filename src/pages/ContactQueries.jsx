@@ -49,10 +49,29 @@ const priorityColors = {
 };
 
 const ContactQueries = () => {
-  const [queries] = useState(mockQueries);
+  const [queries, setQueries] = useState(mockQueries);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Status");
   const [priority, setPriority] = useState("All Priority");
+
+  const handleStatusChange = (id, newStatus) => {
+    setQueries(prev => prev.map(q => q.id === id ? { ...q, status: newStatus } : q));
+  };
+  const handlePriorityChange = (id, newPriority) => {
+    setQueries(prev => prev.map(q => q.id === id ? { ...q, priority: newPriority } : q));
+  };
+  const handleView = (q) => {
+    alert(`Contact Query Details:\n\nName: ${q.name}\nEmail: ${q.email}\nSubject: ${q.subject}\nMessage: ${q.message}\nStatus: ${q.status}\nPriority: ${q.priority}`);
+  };
+  const handleReply = (q) => {
+    alert(`Reply to: ${q.name} <${q.email}>`);
+    window.location.href = `mailto:${q.email}`;
+  };
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this query?')) {
+      setQueries(prev => prev.filter(q => q.id !== id));
+    }
+  };
 
   const filteredQueries = queries.filter(q =>
     (status === "All Status" || q.status === status) &&
@@ -65,20 +84,14 @@ const ContactQueries = () => {
   );
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-lg font-semibold">Contact Queries</h1>
-        <div className="flex gap-2">
-          <button className="flex items-center border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-semibold bg-white shadow-sm hover:bg-gray-50 transition text-base">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-            Export CSV
-          </button>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 font-bold transition text-base shadow-sm">
-            Mark All Read
-          </button>
+    <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen">
+      <div className="flex items-center justify-between mb-6 flex-col sm:flex-row gap-4">
+        <h1 className="text-lg sm:text-xl font-semibold">Contact Queries</h1>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 font-bold transition text-base shadow-sm">Mark All Read</button>
         </div>
       </div>
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex items-center gap-4 mb-4 flex-col sm:flex-row">
         <span className="flex items-center gap-1 text-sm">
           <span className="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
           12 Unread
@@ -89,13 +102,13 @@ const ContactQueries = () => {
         </span>
       </div>
       {/* Filters/Search Bar Card Start */}
-      <div className="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:items-center gap-3 mb-6">
-        <div className="flex-1 flex gap-2">
-          <div className="relative w-full md:w-72">
+      <div className="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:flex-wrap md:gap-4 md:items-center gap-3 mb-6">
+        <div className="flex-1 flex flex-col sm:flex-row md:flex-wrap gap-2 md:gap-4 w-full">
+          <div className="relative w-full sm:w-72 md:w-64 min-w-0 flex-1">
             <input
               type="text"
               placeholder="Search by name, email, or subject."
-              className="w-full border border-gray-200 text-sm rounded-lg py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full border border-gray-200 text-xs sm:text-sm rounded-lg py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-100"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -103,14 +116,14 @@ const ContactQueries = () => {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
             </span>
           </div>
-          <select className="border border-gray-200 text-sm rounded-lg py-2 px-3" value={status} onChange={e => setStatus(e.target.value)}>
+          <select className="border border-gray-200 text-xs sm:text-sm rounded-lg py-2 px-3 w-full sm:w-auto md:w-40 min-w-0 flex-1" value={status} onChange={e => setStatus(e.target.value)}>
             <option>All Status</option>
             <option>Unread</option>
             <option>Read</option>
             <option>Replied</option>
             <option>Archived</option>
           </select>
-          <select className="border border-gray-200 text-sm rounded-lg py-2 px-3" value={priority} onChange={e => setPriority(e.target.value)}>
+          <select className="border border-gray-200 text-xs sm:text-sm rounded-lg py-2 px-3 w-full sm:w-auto md:w-40 min-w-0 flex-1" value={priority} onChange={e => setPriority(e.target.value)}>
             <option>All Priority</option>
             <option>High</option>
             <option>Medium</option>
@@ -118,14 +131,14 @@ const ContactQueries = () => {
           </select>
           <input
             type="date"
-            className="border border-gray-200 text-sm rounded-lg py-2 px-3"
+            className="border border-gray-200 text-xs sm:text-sm rounded-lg py-2 px-3 w-full sm:w-auto md:w-40 min-w-0 flex-1"
           />
         </div>
       </div>
-      
-      <div className="bg-white rounded-xl shadow p-4 mb-6">
+      {/* Table Section Start */}
+      <div className="bg-white rounded-xl shadow p-2 sm:p-4 mb-6 overflow-x-auto">
         <div className="overflow-x-auto">
-          <table className="min-w-full">
+          <table className="min-w-full text-xs sm:text-sm">
             <thead>
               <tr className="text-xs text-gray-400 uppercase border-b">
                 <th className="py-2 px-8 text-left">Status</th>
@@ -140,7 +153,17 @@ const ContactQueries = () => {
               {filteredQueries.map((q) => (
                 <tr key={q.id} className="border-b last:border-b-0">
                   <td className="py-3 px-8">
-                    <span className={`px-4 py-1 rounded-full text-xs font-semibold ${statusColors[q.status]}`}>●{q.status}</span>
+                    <select
+                      className={`px-4 py-1 rounded-full text-xs font-semibold focus:outline-none ${statusColors[q.status]}`}
+                      value={q.status}
+                      onChange={e => handleStatusChange(q.id, e.target.value)}
+                      style={{ minWidth: 90 }}
+                    >
+                      <option value="Unread">● Unread</option>
+                      <option value="Read">● Read</option>
+                      <option value="Replied">● Replied</option>
+                      <option value="Archived">● Archived</option>
+                    </select>
                   </td>
                   <td className="py-3 px-8 flex items-center gap-3">
                     <img src={q.avatar} alt={q.name} className="w-10 h-10 rounded-full object-cover" />
@@ -152,16 +175,25 @@ const ContactQueries = () => {
                   <td className="py-3 px-8 text-black text-sm max-w-xs truncate">{q.subject}</td>
                   <td className="py-3 px-8 text-gray-600 text-sm max-w-xs truncate">{q.message}</td>
                   <td className="py-3 px-8">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${priorityColors[q.priority]}`}>{q.priority}</span>
+                    <select
+                      className={`px-3 py-1 rounded-full text-xs font-semibold focus:outline-none ${priorityColors[q.priority]}`}
+                      value={q.priority}
+                      onChange={e => handlePriorityChange(q.id, e.target.value)}
+                      style={{ minWidth: 70 }}
+                    >
+                      <option value="High">High</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Low">Low</option>
+                    </select>
                   </td>
                   <td className="py-3 px-8 flex items-center gap-1">
-                    <button title="View" className="text-blue-600 hover:text-blue-800">
+                    <button title="View" className="text-blue-600 hover:text-blue-800" onClick={() => handleView(q)}>
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                     </button>
-                    <button title="Reply" className="text-green-600 hover:text-green-800">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l-5 5m0 0l-5-5m5 5V4" /></svg>
+                    <button title="Reply" className="text-green-600 hover:text-green-800" onClick={() => handleReply(q)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M10 19l-7-7 7-7v4h8a4 4 0 014 4v6h-2v-6a2 2 0 00-2-2h-8v4z"/></svg>
                     </button>
-                    <button title="Delete" className="text-red-600 hover:text-red-800">
+                    <button title="Delete" className="text-red-600 hover:text-red-800" onClick={() => handleDelete(q.id)}>
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                   </td>
