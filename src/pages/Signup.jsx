@@ -70,7 +70,7 @@ const Signup = () => {
             placeholder="Enter your username"
           />
           {errors.username && (
-            <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+            <p className="text-red-500 text-sm mt-1 font-semibold">{errors.username}</p>
           )}
         </div>
 
@@ -90,7 +90,7 @@ const Signup = () => {
             placeholder="Enter your email"
           />
           {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            <p className="text-red-500 text-sm mt-1 font-semibold">{errors.email}</p>
           )}
         </div>
 
@@ -110,7 +110,7 @@ const Signup = () => {
             placeholder="Enter your 10-digit phone number"
           />
           {errors.phone && (
-            <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+            <p className="text-red-500 text-sm mt-1 font-semibold">{errors.phone}</p>
           )}
         </div>
 
@@ -139,7 +139,7 @@ const Signup = () => {
             </button>
           </div>
           {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            <p className="text-red-500 text-sm mt-1 font-semibold">{errors.password}</p>
           )}
         </div>
 
