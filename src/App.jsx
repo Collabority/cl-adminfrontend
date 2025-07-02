@@ -2,7 +2,9 @@ import "./App.css";
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Loader from "./components/Loader";
-import AdminServices from "./pages/AdminServices";
+import ServicesManagement from "./pages/ServicesManagement";
+import CreateService from "./pages/CreateService";
+import EditService from "./pages/EditService";
 
 // Lazy loaded components
 const Navbar = lazy(() => import("./components/Navbar"));
@@ -31,7 +33,9 @@ const App = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/blog" element={<BlogManagement />} />
               <Route path="/create-blog-post" element={<CreateBlogPost />} />
-              <Route path="/admin/services" element={<AdminServices />} />
+              <Route path="/admin/services" element={<ServicesManagement />} />
+              <Route path="/admin/services/create" element={<CreateService />} />
+              <Route path="/admin/services/edit/:id" element={<EditService />} />
               <Route path="/login" element={<Login />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

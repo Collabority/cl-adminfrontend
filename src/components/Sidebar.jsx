@@ -74,7 +74,7 @@ const Sidebar = () => {
           <h5 className={getTextClasses("Careers")}>Careers</h5>
         </Link>
 
-        <Link to="/services" className={getItemClasses("Services")}>
+        <Link to="/admin/services" className={getItemClasses("Services")}>
           <MdOutlineMiscellaneousServices
             className={getIconClasses("Services")}
           />
