@@ -12,6 +12,9 @@ const BlogManagement = lazy(() => import("./pages/BlogManagement"));
 const CreateBlogPost = lazy(() => import("./pages/CreateBlogPost"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/Login"))
+const Reviews = lazy(() => import("./pages/Reviews"));
+const AddReview = lazy(() => import("./pages/AddReview"));
+const ContactQueries = lazy(() => import("./pages/ContactQueries"));
 
 const App = () => {
   const location = useLocation();
@@ -36,6 +39,9 @@ const App = () => {
               <Route path="/blog" element={<BlogManagement />} />
               <Route path="/create-blog-post" element={<CreateBlogPost />} />
               <Route path="/login" element={<Login/>} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/reviews/add" element={<AddReview />} />
+              <Route path="/contact" element={<ContactQueries />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
