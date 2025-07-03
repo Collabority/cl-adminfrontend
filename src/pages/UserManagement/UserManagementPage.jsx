@@ -25,7 +25,7 @@ export default function UserManagementPage() {
         Manage admin users, roles, and permissions for your portal.
       </p>
       </div>
-      <Link to="roles"> 
+      <Link to="/users/roles"> 
       <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3"> {/* Responsive margin-bottom */}
           <span className="text-sm sm:text-base flex"><span className='mr-2'><Plus/></span>Add New User</span> {/* Responsive font size */}
         </button>

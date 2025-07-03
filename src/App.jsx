@@ -44,7 +44,7 @@ const App = () => {
             <Route path="/newsletter" element={<NewsletterManagement />} /> */}
             <Route path="/users">
               <Route index element={<UserManagementPage />} />
-              <Route path="roles" element={<AddNewUser />} />
+              <Route path="/users/roles" element={<AddNewUser />} />
             </Route>
             </Routes>
           </Suspense>
