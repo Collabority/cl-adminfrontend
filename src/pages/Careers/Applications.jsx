@@ -82,7 +82,7 @@ const Applications = () => {
     <main id="applications-main" className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8"> {/* Responsive padding */}
       <div className='flex items-center justify-between mb-6'> {/* Responsive margin-bottom */}
         <h1 className="text-xl sm:text-2xl font-semibold mb-4">Applications</h1> {/* Responsive font size */}
-        <Link to="create">
+        <Link to="/careers/create">
         <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3"> {/* Responsive margin-bottom */}
           <span className="text-sm sm:text-base flex"><span className='mr-2'><Plus/></span> Create Job</span> {/* Responsive font size */}
         </button>
