@@ -10,9 +10,9 @@ const Navbar = lazy(() => import("./components/Navbar"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
 const Applications = lazy(() => import("./pages/Careers/Applications"));
 const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
-const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
-const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
-const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
+// const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
+// const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
+// const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
 
 
 
@@ -41,11 +41,11 @@ const App = () => {
               <Route index element={<Applications />} />
               <Route path="create" element={<CreateJob />} />
             </Route>
-            <Route path="/newsletter" element={<NewsletterManagement />} />
-            <Route path="/users">
+            {/* <Route path="/newsletter" element={<NewsletterManagement />} /> */}
+            {/* <Route path="/users">
               <Route index element={<UserManagementPage />} />
               <Route path="roles" element={<AddNewUser />} />
-            </Route>
+            </Route> */}
             </Routes>
           </Suspense>
         </div>
