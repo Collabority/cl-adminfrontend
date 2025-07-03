@@ -8,9 +8,9 @@ import Loader from "./components/Loader";
 // Lazy loaded components
 const Navbar = lazy(() => import("./components/Navbar"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
-const Applications = lazy(() => import("./pages/Careers/Applications"));
-const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
-const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
+// const Applications = lazy(() => import("./pages/Careers/Applications"));
+// const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
+// const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
 const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
 const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
 
@@ -37,11 +37,11 @@ const App = () => {
         <div className="flex-1 overflow-y-auto p-4  bg-gray-100">
           <Suspense fallback={<Loader />}>
             <Routes>
-            <Route path="/careers">
+            {/* <Route path="/careers">
               <Route index element={<Applications />} />
               <Route path="create" element={<CreateJob />} />
             </Route>
-            <Route path="/newsletter" element={<NewsletterManagement />} />
+            <Route path="/newsletter" element={<NewsletterManagement />} /> */}
             <Route path="/users">
               <Route index element={<UserManagementPage />} />
               <Route path="roles" element={<AddNewUser />} />
