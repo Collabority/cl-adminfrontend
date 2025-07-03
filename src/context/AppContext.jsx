@@ -8,7 +8,7 @@ const getTabNameFromPath = (pathname) => {
     case "/":
       return "Dashboard";
     case "/blog":
-    case "/create-blog-post":
+    case "/blog/create-blog-post":
       return "Blog Management";
     case "/careers":
       return "Careers";
@@ -21,6 +21,7 @@ const getTabNameFromPath = (pathname) => {
     case "/newsletter":
       return "Newsletter";
     case "/users":
+    case "/users/roles":
       return "User Management";
     default:
       return "Dashboard";
