@@ -10,15 +10,27 @@ import {
   Trash,
   ArrowDownToLine,
   Settings,
+  Plus
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-export default function UserManagement() {
+
+export default function UserManagementPage() {
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
+      <div className='flex items-center justify-between mb-6'>
+      <div>
       <h1 className="text-xl sm:text-2xl font-semibold mb-1">User Management</h1>
       <p className="text-sm text-gray-500 mb-6">
         Manage admin users, roles, and permissions for your portal.
       </p>
+      </div>
+      <Link to="roles"> 
+      <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3"> {/* Responsive margin-bottom */}
+          <span className="text-sm sm:text-base flex"><span className='mr-2'><Plus/></span>Add New User</span> {/* Responsive font size */}
+        </button>
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <SummaryCard icon={<Users className="text-gray-600 w-6 h-6" />} title="Total Users" value="12" />
