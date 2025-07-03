@@ -1,5 +1,5 @@
-import React, { useContext, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useRef, useEffect, useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { BsGraphUp } from "react-icons/bs";
 import { FaBlog, FaUsers } from "react-icons/fa";
 import { PiSuitcaseSimpleBold } from "react-icons/pi";
@@ -10,8 +10,10 @@ import { RxExit } from "react-icons/rx";
 import { AppContext } from "../context/AppContext";
 
 const Sidebar = () => {
-  const { activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen } =
-    useContext(AppContext);
+  const location = useLocation();
+  const path = location.pathname;
+
+  const { isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
 
   const sidebarRef = useRef(null);
 
@@ -31,20 +33,26 @@ const Sidebar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isSidebarOpen, setIsSidebarOpen]);
 
-  const getItemClasses = (tab) =>
+  const isActive = (tabPath) => {
+    if (tabPath === "/") {
+      return path === "/";
+    }
+    return path.startsWith(tabPath);
+  };
+  const getItemClasses = (tabPath) =>
     `flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-blue-100 group ${
-      activeTab === tab ? "bg-blue-100" : ""
+      isActive(tabPath) ? "bg-blue-100" : ""
     }`;
 
-  const getIconClasses = (tab) =>
-    `text-2xl group-hover:text-blue-500 ${
-      activeTab === tab ? "text-blue-500" : "text-black"
-    }`;
+    const getIconClasses = (tabPath) =>
+      `text-2xl group-hover:text-blue-500 ${
+        isActive(tabPath) ? "text-blue-500" : "text-black"
+      }`;
 
-  const getTextClasses = (tab) =>
-    `font-bold group-hover:text-blue-500 ${
-      activeTab === tab ? "text-blue-500" : "text-gray-500"
-    }`;
+      const getTextClasses = (tabPath) =>
+        `font-bold group-hover:text-blue-500 ${
+          isActive(tabPath) ? "text-blue-500" : "text-gray-500"
+        }`;
 
   return (
     <div
@@ -59,51 +67,49 @@ const Sidebar = () => {
     >
       {/* Navigation Links */}
       <div className="flex flex-col gap-5">
-        <Link to="/" className={getItemClasses("Dashboard")}>
-          <BsGraphUp className={getIconClasses("Dashboard")} />
-          <h5 className={getTextClasses("Dashboard")}>Dashboard</h5>
+        <Link to="/" className={getItemClasses("/")}>
+          <BsGraphUp className={getIconClasses("/")} />
+          <h5 className={getTextClasses("/")}>Dashboard</h5>
+          </Link>
+
+          <Link to="/blog" className={getItemClasses("/blog")}>
+          <FaBlog className={getIconClasses("/blog")} />
+          <h5 className={getTextClasses("/blog")}>Blog Management</h5>
+        </Link> 
+        
+        <Link to="/careers" className={getItemClasses("/careers")}>
+          <PiSuitcaseSimpleBold className={getIconClasses("/careers")} />
+          <h5 className={getTextClasses("/careers")}>Careers</h5>
         </Link>
 
-        <Link to="/blog" className={getItemClasses("Blog Management")}>
-          <FaBlog className={getIconClasses("Blog Management")} />
-          <h5 className={getTextClasses("Blog Management")}>Blog Management</h5>
+        <Link to="/services" className={getItemClasses("/services")}>
+          <MdOutlineMiscellaneousServices className={getIconClasses("/services")} />
+          <h5 className={getTextClasses("/services")}>Services</h5>
         </Link>
 
-        <Link to="/careers" className={getItemClasses("Careers")}>
-          <PiSuitcaseSimpleBold className={getIconClasses("Careers")} />
-          <h5 className={getTextClasses("Careers")}>Careers</h5>
+        <Link to="/reviews" className={getItemClasses("/reviews")}>
+          <FaStar className={getIconClasses("/reviews")} />
+          <h5 className={getTextClasses("/reviews")}>Reviews</h5>
         </Link>
 
-        <Link to="/services" className={getItemClasses("Services")}>
-          <MdOutlineMiscellaneousServices
-            className={getIconClasses("Services")}
-          />
-          <h5 className={getTextClasses("Services")}>Services</h5>
+        <Link to="/contact" className={getItemClasses("/contact")}>
+          <IoMdMail className={getIconClasses("/contact")} />
+          <h5 className={getTextClasses("/contact")}>Contact Queries</h5>
         </Link>
 
-        <Link to="/reviews" className={getItemClasses("Reviews")}>
-          <FaStar className={getIconClasses("Reviews")} />
-          <h5 className={getTextClasses("Reviews")}>Reviews</h5>
+        <Link to="/newsletter" className={getItemClasses("/newsletter")}>
+          <FaNewspaper className={getIconClasses("/newsletter")} />
+          <h5 className={getTextClasses("/newsletter")}>Newsletter</h5>
         </Link>
 
-        <Link to="/contact" className={getItemClasses("Contact Queries")}>
-          <IoMdMail className={getIconClasses("Contact Queries")} />
-          <h5 className={getTextClasses("Contact Queries")}>Contact Queries</h5>
-        </Link>
-
-        <Link to="/newsletter" className={getItemClasses("Newsletter")}>
-          <FaNewspaper className={getIconClasses("Newsletter")} />
-          <h5 className={getTextClasses("Newsletter")}>Newsletter</h5>
-        </Link>
-
-        <Link to="/users" className={getItemClasses("User Management")}>
-          <FaUsers className={getIconClasses("User Management")} />
-          <h5 className={getTextClasses("User Management")}>User Management</h5>
+        <Link to="/users" className={getItemClasses("/users")}>
+          <FaUsers className={getIconClasses("/users")} />
+          <h5 className={getTextClasses("/users")}>User Management</h5>
         </Link>
       </div>
 
       {/* Admin Section at Bottom */}
-      <div className=" pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
+      <div className="pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
         {/* Left: Profile Pic */}
         <img
           src="https://randomuser.me/api/portraits/men/32.jpg"
@@ -111,13 +117,11 @@ const Sidebar = () => {
           className="w-10 h-10 rounded-full object-cover"
         />
 
-        {/* Center: Admin Info */}
         <div className="flex flex-col text-center">
           <p className="text-sm font-semibold text-gray-700">Admin</p>
           <p className="text-xs text-gray-500">admin@company.com</p>
         </div>
 
-        {/* Right: Logout Icon */}
         <RxExit
           className="text-xl text-gray-600 hover:text-red-500 cursor-pointer"
           title="Logout"
@@ -128,3 +132,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

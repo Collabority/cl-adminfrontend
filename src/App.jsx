@@ -36,8 +36,10 @@ const App = () => {
           <Suspense fallback={<Loader />}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/blog" element={<BlogManagement />} />
-              <Route path="/create-blog-post" element={<CreateBlogPost />} />
+              <Route path="/blog">
+                  <Route index element={<BlogManagement />} />
+                   <Route path="create-blog-post" element={<CreateBlogPost />} />
+              </Route>
               <Route path="/login" element={<Login/>} />
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/reviews/add" element={<AddReview />} />
