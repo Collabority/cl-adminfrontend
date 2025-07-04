@@ -39,6 +39,7 @@ export const AppProvider = ({ children }) => {
     getTabNameFromPath(location.pathname)
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   // 🔁 Automatically update activeTab when route changes
   useEffect(() => {
@@ -49,7 +50,14 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider
-      value={{ activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen }}
+      value={{
+        activeTab,
+        setActiveTab,
+        isSidebarOpen,
+        setIsSidebarOpen,
+        darkMode,
+        setDarkMode,
+      }}
     >
       {children}
     </AppContext.Provider>

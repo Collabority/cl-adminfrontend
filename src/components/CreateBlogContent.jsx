@@ -13,7 +13,6 @@ const QuillEditor = ({ formData, setFormData }) => {
         placeholder: "Start writing your blog post content here...",
         modules: {
           toolbar: [
-            [{ header: [1, 2, false] }],
             ["bold", "italic", "underline", "code"],
             [{ list: "ordered" }, { list: "bullet" }],
             ["link", "image"],

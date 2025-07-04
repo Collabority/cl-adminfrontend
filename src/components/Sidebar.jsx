@@ -14,7 +14,6 @@ const Sidebar = () => {
   const path = location.pathname;
 
   const { isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
-
   const sidebarRef = useRef(null);
 
   useEffect(() => {
@@ -39,20 +38,22 @@ const Sidebar = () => {
     }
     return path.startsWith(tabPath);
   };
+
   const getItemClasses = (tabPath) =>
     `flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-blue-100 group ${
       isActive(tabPath) ? "bg-blue-100" : ""
     }`;
 
-    const getIconClasses = (tabPath) =>
-      `text-2xl group-hover:text-blue-500 ${
-        isActive(tabPath) ? "text-blue-500" : "text-black"
-      }`;
 
-      const getTextClasses = (tabPath) =>
-        `font-bold group-hover:text-blue-500 ${
-          isActive(tabPath) ? "text-blue-500" : "text-gray-500"
-        }`;
+  const getIconClasses = (tabPath) =>
+    `text-2xl group-hover:text-blue-500 ${
+      isActive(tabPath) ? "text-blue-500" : "text-black"
+    }`;
+
+  const getTextClasses = (tabPath) =>
+    `font-bold group-hover:text-blue-500 ${
+      isActive(tabPath) ? "text-blue-500" : "text-gray-500"
+    }`;
 
   return (
     <div
@@ -70,13 +71,14 @@ const Sidebar = () => {
         <Link to="/" className={getItemClasses("/")}>
           <BsGraphUp className={getIconClasses("/")} />
           <h5 className={getTextClasses("/")}>Dashboard</h5>
-          </Link>
 
-          <Link to="/blog" className={getItemClasses("/blog")}>
+        </Link>
+
+        <Link to="/blog" className={getItemClasses("/blog")}>
           <FaBlog className={getIconClasses("/blog")} />
           <h5 className={getTextClasses("/blog")}>Blog Management</h5>
-        </Link> 
-        
+        </Link>
+
         <Link to="/careers" className={getItemClasses("/careers")}>
           <PiSuitcaseSimpleBold className={getIconClasses("/careers")} />
           <h5 className={getTextClasses("/careers")}>Careers</h5>
@@ -110,7 +112,7 @@ const Sidebar = () => {
 
       {/* Admin Section at Bottom */}
       <div className="pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
-        {/* Left: Profile Pic */}
+
         <img
           src="https://randomuser.me/api/portraits/men/32.jpg"
           alt="Admin"
@@ -132,4 +134,5 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
 

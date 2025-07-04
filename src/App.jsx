@@ -1,8 +1,9 @@
 import "./App.css";
 
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy, useContext, useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Loader from "./components/Loader";
+import { AppContext } from "./context/AppContext";
 
 
 // Lazy loaded components
@@ -24,21 +25,26 @@ const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
 const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
 const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
 const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
-
+const Signup = lazy(()=> import("./pages/Signup"))
 
 
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate()
-  // Check if current route is "/login"
+  const {darkMode} = useContext(AppContext)
+
+   // Check if current route is "/login"
   const isLoginPage = location.pathname === "/login";
+  const isSignupPage = location.pathname === "/sign-up"
 
   return (
-    <div className="h-screen flex flex-col">
-      {!isLoginPage && <Navbar />}
+    <div className={`h-screen flex flex-col ${darkMode && "dark"}`}>
+      {!isLoginPage && !isSignupPage && <Navbar />}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar with fixed height and no scroll */}
-        {!isLoginPage && <Sidebar />}
+
+         {!isLoginPage && !isSignupPage && <Sidebar />}
+
         {/* Content area that scrolls if it overflows */}
         <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
           <Suspense fallback={<Loader />}>
@@ -64,6 +70,9 @@ const App = () => {
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/reviews/add" element={<AddReview />} />
               <Route path="/contact" element={<ContactQueries />} />
+              
+             
+              <Route path="/sign-up" element={<Signup/>} />
               <Route path="*" element={<NotFound />} />
             
             </Routes>
