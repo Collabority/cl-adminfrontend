@@ -19,9 +19,12 @@ const ContactQueries = lazy(() => import("./pages/ContactQueries"));
 const ServicesManagement = lazy(() => import("./pages/ServicesManagement"));
 const CreateService = lazy(() => import("./pages/CreateService"));
 const EditService = lazy(() => import("./pages/EditService"));
+const Applications = lazy(() => import("./pages/Careers/Applications"));
+const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
 
 const App = () => {
   const location = useLocation();
+  const navigate = useNavigate()
   // Check if current route is "/login"
   const isLoginPage = location.pathname === "/login";
 
@@ -40,6 +43,10 @@ const App = () => {
                   <Route index element={<BlogManagement />} />
                    <Route path="create-blog-post" element={<CreateBlogPost />} />
               </Route>
+              <Route path="/careers">
+              <Route index element={<Applications />} />
+              <Route path="/careers/create" element={<CreateJob />} />
+            </Route>
               <Route path="/services" element={<ServicesManagement />} />
               <Route path="/services/create" element={<CreateService />} />              <Route path="/services/edit/:id" element={<EditService />} />
               <Route path="/login" element={<Login/>} />
@@ -55,4 +62,7 @@ const App = () => {
   );
 };
 
+
 export default App;
+
+
