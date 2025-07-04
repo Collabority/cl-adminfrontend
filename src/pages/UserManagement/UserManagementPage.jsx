@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Search,
   Users,
@@ -14,21 +14,85 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const usersData = [
+  {
+    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg",
+    name: "Sarah Johnson",
+    email: "sarah@company.com",
+    role: "Super Admin",
+    roleColor: "purple",
+    status: "Active",
+    statusColor: "green",
+    lastLogin: "2 hours ago",
+    permissions: "All Access",
+  },
+  {
+    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
+    name: "Mike Chen",
+    email: "mike@company.com",
+    role: "Admin",
+    roleColor: "blue",
+    status: "Active",
+    statusColor: "green",
+    lastLogin: "1 day ago",
+    permissions: "Blog, Services",
+  },
+  {
+    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg",
+    name: "David Wilson",
+    email: "david@company.com",
+    role: "Editor",
+    roleColor: "yellow",
+    status: "Pending",
+    statusColor: "yellow",
+    lastLogin: "Never",
+    permissions: "Blog Only",
+  },
+  {
+    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg",
+    name: "Emily Davis",
+    email: "emily@company.com",
+    role: "Viewer",
+    roleColor: "gray",
+    status: "Inactive",
+    statusColor: "gray",
+    lastLogin: "3 weeks ago",
+    permissions: "None",
+  },
+];
 
 export default function UserManagementPage() {
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('All Roles');
+  const [statusFilter, setStatusFilter] = useState('All Status');
+
+  const filteredUsers = usersData.filter(user => {
+    const matchesSearch =
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase());
+
+    const matchesRole =
+      roleFilter === 'All Roles' || user.role === roleFilter;
+
+    const matchesStatus =
+      statusFilter === 'All Status' || user.status === statusFilter;
+
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className='flex items-center justify-between mb-6'>
-      <div>
-      <h1 className="text-xl sm:text-2xl font-semibold mb-1">User Management</h1>
-      <p className="text-sm text-gray-500 mb-6">
-        Manage admin users, roles, and permissions for your portal.
-      </p>
-      </div>
-      <Link to="/users/roles"> 
-      <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3"> {/* Responsive margin-bottom */}
-          <span className="text-sm sm:text-base flex"><span className='mr-2'><Plus/></span>Add New User</span> {/* Responsive font size */}
-        </button>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-semibold mb-1">User Management</h1>
+          <p className="text-sm text-gray-500 mb-6">
+            Manage admin users, roles, and permissions for your portal.
+          </p>
+        </div>
+        <Link to="/users/roles">
+          <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3">
+            <span className="text-sm sm:text-base flex items-center"><Plus className='mr-2' />Add New User</span>
+          </button>
         </Link>
       </div>
 
@@ -44,31 +108,42 @@ export default function UserManagementPage() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search user name or email..."
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-500"
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
           />
         </div>
-        <select className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
           <option>All Roles</option>
           <option>Super Admin</option>
           <option>Admin</option>
           <option>Editor</option>
+          <option>Viewer</option>
         </select>
-        <select className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
           <option>All Status</option>
           <option>Active</option>
           <option>Pending</option>
           <option>Inactive</option>
         </select>
         <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto ml-0 sm:ml-auto'>
-            <button className="border border-gray-300 px-4 py-2 rounded-lg flex items-center justify-center gap-1 text-gray-700 hover:bg-gray-50 w-full sm:w-auto">
-              <ArrowDownToLine className="w-4 h-4" />
-              Export
-            </button>
-            <button className="border border-gray-300 px-4 py-2 rounded-lg flex items-center justify-center gap-1 text-gray-700 hover:bg-gray-50 w-full sm:w-auto">
-              <Settings className="w-4 h-4" />
-              Filter
-            </button>
+          <button className="border border-gray-300 px-4 py-2 rounded-lg flex items-center justify-center gap-1 text-gray-700 hover:bg-gray-50 w-full sm:w-auto">
+            <ArrowDownToLine className="w-4 h-4" />
+            Export
+          </button>
+          <button className="border border-gray-300 px-4 py-2 rounded-lg flex items-center justify-center gap-1 text-gray-700 hover:bg-gray-50 w-full sm:w-auto">
+            <Settings className="w-4 h-4" />
+            Filter
+          </button>
         </div>
       </div>
 
@@ -76,9 +151,7 @@ export default function UserManagementPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-gray-500 bg-gray-50 border-b border-gray-200">
-              <th className="p-3">
-                <input type="checkbox" className="rounded border-gray-300" />
-              </th>
+              <th className="p-3"><input type="checkbox" className="rounded border-gray-300" /></th>
               <th className="p-3 whitespace-nowrap">User</th>
               <th className="p-3 whitespace-nowrap hidden sm:table-cell">Role</th>
               <th className="p-3 whitespace-nowrap">Status</th>
@@ -88,50 +161,9 @@ export default function UserManagementPage() {
             </tr>
           </thead>
           <tbody>
-            <UserRow
-              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg"
-              name="Sarah Johnson"
-              email="sarah@company.com"
-              role="Super Admin"
-              roleColor="purple"
-              status="Active"
-              statusColor="green"
-              lastLogin="2 hours ago"
-              permissions="All Access"
-            />
-            <UserRow
-              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
-              name="Mike Chen"
-              email="mike@company.com"
-              role="Admin"
-              roleColor="blue"
-              status="Active"
-              statusColor="green"
-              lastLogin="1 day ago"
-              permissions="Blog, Services"
-            />
-            <UserRow
-              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"
-              name="David Wilson"
-              email="david@company.com"
-              role="Editor"
-              roleColor="yellow"
-              status="Pending"
-              statusColor="yellow"
-              lastLogin="Never"
-              permissions="Blog Only"
-            />
-            <UserRow
-              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg"
-              name="Emily Davis"
-              email="emily@company.com"
-              role="Viewer"
-              roleColor="gray"
-              status="Inactive"
-              statusColor="gray"
-              lastLogin="3 weeks ago"
-              permissions="None"
-            />
+            {filteredUsers.map((user, index) => (
+              <UserRow key={index} {...user} />
+            ))}
           </tbody>
         </table>
       </div>
@@ -162,6 +194,14 @@ function UserRow({
   lastLogin,
   permissions,
 }) {
+  const colorMap = {
+    green: 'bg-green-100 text-green-600',
+    purple: 'bg-purple-100 text-purple-600',
+    blue: 'bg-blue-100 text-blue-600',
+    yellow: 'bg-yellow-100 text-yellow-600',
+    gray: 'bg-gray-100 text-gray-600',
+  };
+
   return (
     <tr className="border-t hover:bg-gray-50">
       <td className="p-3">
@@ -175,22 +215,14 @@ function UserRow({
         </div>
       </td>
       <td className="p-3 whitespace-nowrap hidden sm:table-cell">
-        {role && (
-          <span
-            className={`bg-${roleColor}-100 text-${roleColor}-600 px-2 py-1 rounded-full text-xs font-medium`}
-          >
-            {role}
-          </span>
-        )}
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorMap[roleColor] || 'bg-gray-100 text-gray-600'}`}>
+          {role}
+        </span>
       </td>
       <td className="p-3 whitespace-nowrap">
-        {status && (
-          <span
-            className={`bg-${statusColor}-100 text-${statusColor}-600 px-2 py-1 rounded-full text-xs font-medium`}
-          >
-            {status}
-          </span>
-        )}
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorMap[statusColor] || 'bg-gray-100 text-gray-600'}`}>
+          {status}
+        </span>
       </td>
       <td className="p-3 whitespace-nowrap text-gray-500 hidden md:table-cell">{lastLogin}</td>
       <td className="p-3 whitespace-nowrap text-gray-500 hidden lg:table-cell">{permissions}</td>
