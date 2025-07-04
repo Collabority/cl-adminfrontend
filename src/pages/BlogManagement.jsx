@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaBlog } from "react-icons/fa";
 import { PiNotePencilBold } from "react-icons/pi";
 import { FaStar } from "react-icons/fa6";
@@ -12,6 +12,7 @@ import { FaPlus } from "react-icons/fa6";
 
 const blogPosts = [
   {
+    id: 1,
     title: "The Future of Web Development: Trends to Watch in 2025",
     desc: "Explore the latest trends and technologies shaping the future of web development, from AI integration to progressive web apps.",
     category: "Technology",
@@ -22,6 +23,7 @@ const blogPosts = [
     authorImg: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
+    id: 2,
     title: "Creating Intuitive User Experiences: A Designer's Guide",
     desc: "Learn the essential principles of UX design and how to create interfaces that users love to interact with.",
     category: "Design",
@@ -32,6 +34,7 @@ const blogPosts = [
     authorImg: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
+    id: 3,
     title: "Building Successful Digital Products: From Idea to Launch",
     desc: "A comprehensive guide to product development, covering everything from market research to successful product launches.",
     category: "Business",
@@ -42,6 +45,7 @@ const blogPosts = [
     authorImg: "https://randomuser.me/api/portraits/men/65.jpg",
   },
   {
+    id: 4,
     title: "Digital Marketing Strategies That Actually Work in 2025",
     desc: "Discover proven marketing strategies and tactics that will help your business grow in the digital landscape.",
     category: "Marketing",
@@ -52,6 +56,7 @@ const blogPosts = [
     authorImg: "https://randomuser.me/api/portraits/women/52.jpg",
   },
   {
+    id: 5,
     title: "AI Revolution: How Machine Learning is Transforming Industries",
     desc: "Explore how artificial intelligence and machine learning are revolutionizing various industries and what it means for the future.",
     category: "Technology",
@@ -64,6 +69,24 @@ const blogPosts = [
 ];
 
 const BlogManagement = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedStatus, setSelectedStatus] = useState("All Status");
+
+  // filter blog posts
+  const filteredPosts = blogPosts.filter((post) => {
+    const matchesSearch = post.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All Categories" ||
+      post.category === selectedCategory;
+    const matchesStatus =
+      selectedStatus === "All Status" || post.status === selectedStatus;
+
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
   const cardStyle =
     "flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white";
 
@@ -121,12 +144,18 @@ const BlogManagement = () => {
           <input
             type="text"
             placeholder="Search blog posts..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="outline-none bg-transparent w-full sm:w-60 font-semibold"
           />
         </div>
 
         {/* Category select */}
-        <select className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold">
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold"
+        >
           <option>All Categories</option>
           <option>Technology</option>
           <option>Design</option>
@@ -135,7 +164,11 @@ const BlogManagement = () => {
         </select>
 
         {/* Status select */}
-        <select className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold">
+        <select
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold"
+        >
           <option>All Status</option>
           <option>Published</option>
           <option>Draft</option>
@@ -146,14 +179,22 @@ const BlogManagement = () => {
       {/* Right section: icons */}
       <div className="flex items-center gap-4 text-gray-600 text-xl self-end md:self-auto">
         <FaFilter className="cursor-pointer hover:text-black transition" />
-        <LuRefreshCw className="cursor-pointer hover:text-black transition" />
+        {/* refresh filter reset to defaults */}
+        <LuRefreshCw
+          className="cursor-pointer hover:text-black transition"
+          onClick={() => {
+            setSearchTerm("");
+            setSelectedCategory("All Categories");
+            setSelectedStatus("All Status");
+          }}
+        />
       </div>
     </div>
   );
 
   const BlogCardS = () => (
     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-      {blogPosts.map((post, index) => (
+      {filteredPosts.map((post, index) => (
         <div
           key={index}
           className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
@@ -210,7 +251,9 @@ const BlogManagement = () => {
               </div>
 
               <div className="flex items-center gap-3 text-xl text-gray-500">
-                <PiNotePencilBold className="cursor-pointer text-blue-500 hover:text-blue-800 transition" />
+                <Link to={`edit-blog-post/${post.id}`}>
+                  <PiNotePencilBold className="cursor-pointer text-blue-500 hover:text-blue-800 transition" />
+                </Link>
                 <MdDelete className="cursor-pointer text-red-600 hover:text-red-800 transition" />
               </div>
             </div>
