@@ -33,9 +33,9 @@ const App = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/blog" element={<BlogManagement />} />
               <Route path="/create-blog-post" element={<CreateBlogPost />} />
-              <Route path="/admin/services" element={<ServicesManagement />} />
-              <Route path="/admin/services/create" element={<CreateService />} />
-              <Route path="/admin/services/edit/:id" element={<EditService />} />
+              <Route path="/services" element={<ServicesManagement />} />
+              <Route path="/services/create" element={<CreateService />} />
+              <Route path="/services/edit/:id" element={<EditService />} />
               <Route path="/login" element={<Login />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
