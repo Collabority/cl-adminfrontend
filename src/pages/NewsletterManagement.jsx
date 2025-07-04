@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Pencil, Trash } from 'lucide-react';
+import { Pencil, Trash, Eye } from 'lucide-react';
 
 const allSubscribers = [
   {
@@ -38,25 +38,21 @@ export default function NewsletterManagement() {
       sub.email.toLowerCase().includes(search.toLowerCase()) ||
       sub.name.toLowerCase().includes(search.toLowerCase());
 
-    const matchesStatus =
-      status === 'All Status' || sub.status === status;
-
-    const matchesSegment =
-      segment === 'All Segments' || sub.segment === segment;
+    const matchesStatus = status === 'All Status' || sub.status === status;
+    const matchesSegment = segment === 'All Segments' || sub.segment === segment;
 
     return matchesSearch && matchesStatus && matchesSegment;
   });
 
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
+      {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold">Newsletter Management</h1>
-          <p className="text-sm text-gray-500">
-            Manage subscribers, create campaigns, and track newsletter performance.
-          </p>
+          <p className="text-sm text-gray-500">Manage subscribers, create campaigns, and track newsletter performance.</p>
         </div>
-        <div className="flex flex-wrap justify-start sm:justify-end items-center gap-2 mt-2 sm:mt-0">
+        <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
           <span className="text-xs sm:text-sm bg-green-100 text-green-600 px-3 py-1 rounded-full">1,248 Subscribers</span>
           <span className="text-xs sm:text-sm bg-blue-100 text-blue-600 px-3 py-1 rounded-full">12 Campaigns</span>
         </div>
@@ -77,7 +73,7 @@ export default function NewsletterManagement() {
         <button className="text-gray-500 pb-2 whitespace-nowrap">Segments</button>
       </div>
 
-      {/* Filter and Actions */}
+      {/* Filters */}
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4 items-stretch sm:items-center">
         <input
           type="text"
@@ -157,6 +153,12 @@ function Card({ title, value, icon, delta, deltaColor }) {
 }
 
 function Row({ email, name, status, segment, date, color }) {
+  const colorMap = {
+    blue: 'bg-blue-100 text-blue-600',
+    purple: 'bg-purple-100 text-purple-600',
+    green: 'bg-green-100 text-green-600',
+  };
+
   return (
     <tr className="border-t hover:bg-gray-50">
       <td className="p-3"><input type="checkbox" className="rounded border-gray-300" /></td>
@@ -170,7 +172,7 @@ function Row({ email, name, status, segment, date, color }) {
         <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium">{status}</span>
       </td>
       <td className="p-3 whitespace-nowrap hidden md:table-cell">
-        <span className={`bg-${color}-100 text-${color}-600 px-2 py-1 rounded-full text-xs font-medium`}>
+        <span className={`${colorMap[color] || 'bg-gray-100 text-gray-600'} px-2 py-1 rounded-full text-xs font-medium`}>
           {segment}
         </span>
       </td>
