@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Eye, Pencil, Trash } from 'lucide-react';
 
 const allSubscribers = [
   {
@@ -175,8 +176,15 @@ function Row({ email, name, status, segment, date, color }) {
       </td>
       <td className="p-3 whitespace-nowrap text-gray-500 hidden lg:table-cell">{date}</td>
       <td className="p-3 whitespace-nowrap space-x-2">
-        <button className="text-blue-500 p-1 rounded hover:bg-blue-50">✏️</button>
-        <button className="text-red-500 p-1 rounded hover:bg-red-50">🗑️</button>
+        <button className="text-green-600 p-1 rounded hover:bg-green-50" title="View">
+          <Eye className="w-4 h-4" />
+        </button>
+        <button className="text-blue-500 p-1 rounded hover:bg-blue-50" title="Edit">
+          <Pencil className="w-4 h-4" />
+        </button>
+        <button className="text-red-500 p-1 rounded hover:bg-red-50" title="Delete">
+          <Trash className="w-4 h-4" />
+        </button>
       </td>
     </tr>
   );
