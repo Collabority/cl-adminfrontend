@@ -22,6 +22,9 @@ const EditService = lazy(() => import("./pages/EditService"));
 const Applications = lazy(() => import("./pages/Careers/Applications"));
 const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
 const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
+const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
+const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
+
 
 
 const App = () => {
@@ -48,6 +51,10 @@ const App = () => {
               <Route path="/careers">
               <Route index element={<Applications />} />
               <Route path="/careers/create" element={<CreateJob />} />
+              </Route>
+              <Route path="/users">
+              <Route index element={<UserManagementPage />} />
+              <Route path="/users/roles" element={<AddNewUser />} />       
             </Route>
               <Route path="/services" element={<ServicesManagement />} />
               <Route path="/services/create" element={<CreateService />} />              <Route path="/services/edit/:id" element={<EditService />} />
