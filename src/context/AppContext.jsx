@@ -4,6 +4,10 @@ import { useLocation } from "react-router-dom";
 export const AppContext = createContext();
 
 const getTabNameFromPath = (pathname) => {
+  // Handle /admin/services and its subroutes
+  if (pathname.startsWith("/admin/services")) {
+    return "Services";
+  }
   switch (pathname) {
     case "/":
       return "Dashboard";
@@ -21,6 +25,7 @@ const getTabNameFromPath = (pathname) => {
     case "/newsletter":
       return "Newsletter";
     case "/users":
+    case "/users/roles":
     case "/users/roles":
       return "User Management";
     default:
