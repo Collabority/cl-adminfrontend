@@ -1,4 +1,3 @@
-// src/pages/CreateJob.jsx
 import React, { useState } from 'react';
 
 const CreateJob = () => {

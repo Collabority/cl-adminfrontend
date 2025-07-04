@@ -27,7 +27,6 @@ const getTabNameFromPath = (pathname) => {
       return "Newsletter";
     case "/users":
     case "/users/roles":
-    case "/users/roles":
       return "User Management";
     default:
       return "Dashboard";

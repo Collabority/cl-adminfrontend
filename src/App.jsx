@@ -21,6 +21,8 @@ const CreateService = lazy(() => import("./pages/CreateService"));
 const EditService = lazy(() => import("./pages/EditService"));
 const Applications = lazy(() => import("./pages/Careers/Applications"));
 const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
+const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
+
 
 const App = () => {
   const location = useLocation();
@@ -49,11 +51,14 @@ const App = () => {
             </Route>
               <Route path="/services" element={<ServicesManagement />} />
               <Route path="/services/create" element={<CreateService />} />              <Route path="/services/edit/:id" element={<EditService />} />
+              <Route path="/newsletter" element={<NewsletterManagement />} />
+
               <Route path="/login" element={<Login/>} />
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/reviews/add" element={<AddReview />} />
               <Route path="/contact" element={<ContactQueries />} />
               <Route path="*" element={<NotFound />} />
+            
             </Routes>
           </Suspense>
         </div>
