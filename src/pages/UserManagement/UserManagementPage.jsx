@@ -260,7 +260,7 @@ export default function UserManagementPage() {
 
 function SummaryCard({ icon, title, value }) {
   return (
-    <div className="bg-white border p-4 rounded-lg shadow-sm">
+    <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
       <div className="flex items-center justify-between mb-1">
         <h4 className="text-sm font-medium text-gray-500">{title}</h4>
         {icon}
