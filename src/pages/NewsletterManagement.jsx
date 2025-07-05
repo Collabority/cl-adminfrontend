@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pencil, Trash, Eye } from 'lucide-react';
 
-const allSubscribers = [
+const initialSubscribers = [
   {
     email: "john.doe@email.com",
     name: "John Doe",
@@ -32,8 +32,11 @@ export default function NewsletterManagement() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('All Status');
   const [segment, setSegment] = useState('All Segments');
+  const [subscribers, setSubscribers] = useState(initialSubscribers);
+  const [editingSubscriber, setEditingSubscriber] = useState(null);
+  const [editForm, setEditForm] = useState({ name: '', email: '', status: 'Active', segment: 'General' });
 
-  const filteredSubscribers = allSubscribers.filter(sub => {
+  const filteredSubscribers = subscribers.filter(sub => {
     const matchesSearch =
       sub.email.toLowerCase().includes(search.toLowerCase()) ||
       sub.name.toLowerCase().includes(search.toLowerCase());
@@ -43,6 +46,30 @@ export default function NewsletterManagement() {
 
     return matchesSearch && matchesStatus && matchesSegment;
   });
+
+  const handleView = (sub) => {
+    alert(`Name: ${sub.name}\nEmail: ${sub.email}\nStatus: ${sub.status}\nSegment: ${sub.segment}`);
+  };
+
+  const handleEdit = (sub) => {
+    setEditingSubscriber(sub.email);
+    setEditForm({ name: sub.name, email: sub.email, status: sub.status, segment: sub.segment });
+  };
+
+  const handleEditSave = () => {
+    setSubscribers(prev =>
+      prev.map(sub =>
+        sub.email === editingSubscriber ? { ...sub, ...editForm } : sub
+      )
+    );
+    setEditingSubscriber(null);
+  };
+
+  const handleDelete = (email) => {
+    if (window.confirm("Are you sure you want to delete this subscriber?")) {
+      setSubscribers(prev => prev.filter(sub => sub.email !== email));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
@@ -124,17 +151,48 @@ export default function NewsletterManagement() {
             {filteredSubscribers.map((sub, index) => (
               <Row
                 key={index}
-                email={sub.email}
-                name={sub.name}
-                status={sub.status}
-                segment={sub.segment}
-                date={sub.date}
-                color={sub.color}
+                {...sub}
+                onView={() => handleView(sub)}
+                onEdit={() => handleEdit(sub)}
+                onDelete={() => handleDelete(sub.email)}
               />
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Modal */}
+      {editingSubscriber && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
+            <h2 className="text-lg font-bold mb-4">Edit Subscriber</h2>
+            <div className="mb-2">
+              <label className="block text-sm font-medium">Name</label>
+              <input className="w-full border rounded px-2 py-1" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-medium">Email</label>
+              <input className="w-full border rounded px-2 py-1" value={editForm.email} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} />
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-medium">Segment</label>
+              <input className="w-full border rounded px-2 py-1" value={editForm.segment} onChange={e => setEditForm(f => ({ ...f, segment: e.target.value }))} />
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-medium">Status</label>
+              <select className="w-full border rounded px-2 py-1" value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))}>
+                <option>Active</option>
+                <option>Unsubscribed</option>
+                <option>Bounced</option>
+              </select>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleEditSave}>Save</button>
+              <button className="bg-gray-200 px-4 py-2 rounded" onClick={() => setEditingSubscriber(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -152,7 +210,7 @@ function Card({ title, value, icon, delta, deltaColor }) {
   );
 }
 
-function Row({ email, name, status, segment, date, color }) {
+function Row({ email, name, status, segment, date, color, onView, onEdit, onDelete }) {
   const colorMap = {
     blue: 'bg-blue-100 text-blue-600',
     purple: 'bg-purple-100 text-purple-600',
@@ -178,13 +236,13 @@ function Row({ email, name, status, segment, date, color }) {
       </td>
       <td className="p-3 whitespace-nowrap text-gray-500 hidden lg:table-cell">{date}</td>
       <td className="p-3 whitespace-nowrap space-x-2">
-        <button className="text-green-600 p-1 rounded hover:bg-green-50" title="View">
+        <button className="text-green-600 p-1 rounded hover:bg-green-50" title="View" onClick={onView}>
           <Eye className="w-4 h-4" />
         </button>
-        <button className="text-blue-500 p-1 rounded hover:bg-blue-50" title="Edit">
+        <button className="text-blue-500 p-1 rounded hover:bg-blue-50" title="Edit" onClick={onEdit}>
           <Pencil className="w-4 h-4" />
         </button>
-        <button className="text-red-500 p-1 rounded hover:bg-red-50" title="Delete">
+        <button className="text-red-500 p-1 rounded hover:bg-red-50" title="Delete" onClick={onDelete}>
           <Trash className="w-4 h-4" />
         </button>
       </td>
