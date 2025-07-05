@@ -110,7 +110,7 @@ export default function AddNewUser() {
         <textarea className="border border-gray-350 px-3 py-2 rounded w-full h-24 text-gray-400" placeholder="Add any internal notes about this user..."></textarea>
 
         <div className="border-t pt-4 mt-6 flex flex-col sm:flex-row justify-end gap-3 border-gray-200"> {/* Stack buttons on small screens, row on medium+ */}
-          <button type="button" className="border px-4 py-2 rounded text-gray-700 w-full sm:w-auto">Save as Draft</button> {/* Full width on small, auto on medium+ */}
+          
           <button type="button" className="border border-blue-600 text-blue-600 px-4 py-2 rounded w-full sm:w-auto">Cancel</button> {/* Full width on small, auto on medium+ */}
           <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center sm:justify-start space-x-2 hover:bg-blue-700 w-full sm:w-auto"> {/* Center content on small, left on medium+ */}
             <span>👤</span>

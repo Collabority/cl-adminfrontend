@@ -12,6 +12,7 @@ const Sidebar = lazy(() => import("./components/Sidebar"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const BlogManagement = lazy(() => import("./pages/BlogManagement"));
 const CreateBlogPost = lazy(() => import("./pages/CreateBlogPost"));
+const EditBlogPost = lazy(()=> import("./pages/EditBlogPost"))
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/Login"))
 const Reviews = lazy(() => import("./pages/Reviews"));
@@ -53,6 +54,7 @@ const App = () => {
               <Route path="/blog">
                   <Route index element={<BlogManagement />} />
                    <Route path="create-blog-post" element={<CreateBlogPost />} />
+                   <Route path="edit-blog-post/:id" element={<EditBlogPost/>}/>
               </Route>
               <Route path="/careers">
               <Route index element={<Applications />} />
@@ -63,7 +65,8 @@ const App = () => {
               <Route path="/users/roles" element={<AddNewUser />} />       
             </Route>
               <Route path="/services" element={<ServicesManagement />} />
-              <Route path="/services/create" element={<CreateService />} />              <Route path="/services/edit/:id" element={<EditService />} />
+              <Route path="/services/create" element={<CreateService />} />  
+              <Route path="/services/edit/:id" element={<EditService />} />
               <Route path="/newsletter" element={<NewsletterManagement />} />
 
               <Route path="/login" element={<Login/>} />

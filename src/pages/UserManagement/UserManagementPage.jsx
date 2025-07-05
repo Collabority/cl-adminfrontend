@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Search,
   Users,
@@ -14,21 +14,126 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const initialUsers = [
+  {
+    id: 1,
+    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg",
+    name: "Sarah Johnson",
+    email: "sarah@company.com",
+    role: "Super Admin",
+    roleColor: "purple",
+    status: "Active",
+    statusColor: "green",
+    lastLogin: "2 hours ago",
+    permissions: "All Access",
+  },
+  {
+    id: 2,
+    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
+    name: "Mike Chen",
+    email: "mike@company.com",
+    role: "Admin",
+    roleColor: "blue",
+    status: "Active",
+    statusColor: "green",
+    lastLogin: "1 day ago",
+    permissions: "Blog, Services",
+  },
+  {
+    id: 3,
+    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg",
+    name: "David Wilson",
+    email: "david@company.com",
+    role: "Editor",
+    roleColor: "yellow",
+    status: "Pending",
+    statusColor: "yellow",
+    lastLogin: "Never",
+    permissions: "Blog Only",
+  },
+  {
+    id: 4,
+    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg",
+    name: "Emily Davis",
+    email: "emily@company.com",
+    role: "Viewer",
+    roleColor: "gray",
+    status: "Inactive",
+    statusColor: "gray",
+    lastLogin: "3 weeks ago",
+    permissions: "None",
+  },
+];
 
 export default function UserManagementPage() {
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('All Roles');
+  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [users, setUsers] = useState(initialUsers);
+  const [editUser, setEditUser] = useState(null);
+  const [editForm, setEditForm] = useState({ name: '', role: '', status: '', permissions: '' });
+
+  const filteredUsers = users.filter(user => {
+    const matchesSearch =
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase());
+
+    const matchesRole =
+      roleFilter === 'All Roles' || user.role === roleFilter;
+
+    const matchesStatus =
+      statusFilter === 'All Status' || user.status === statusFilter;
+
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
+  const handleView = (user) => {
+    alert(`User Details:\n\nName: ${user.name}\nEmail: ${user.email}\nRole: ${user.role}\nStatus: ${user.status}\nLast Login: ${user.lastLogin}\nPermissions: ${user.permissions}`)
+  };
+
+  const handleEdit = (user) => {
+    setEditUser(user.id);
+    setEditForm({
+      name: user.name,
+      role: user.role,
+      status: user.status,
+      permissions: user.permissions,
+    });
+  };
+
+  const handleEditSave = () => {
+    setUsers(prev =>
+      prev.map(user =>
+        user.id === editUser ? { ...user, ...editForm } : user
+      )
+    );
+    setEditUser(null);
+    alert('User updated successfully!');
+  };
+
+  const handleDelete = (userId) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      setUsers(prev => prev.filter(u => u.id !== userId));
+    }
+  };
+
+  const handleStatusChange = (id, newStatus) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: newStatus } : u));
+  };
+
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className='flex items-center justify-between mb-6'>
-      <div>
-      <h1 className="text-xl sm:text-2xl font-semibold mb-1">User Management</h1>
-      <p className="text-sm text-gray-500 mb-6">
-        Manage admin users, roles, and permissions for your portal.
-      </p>
-      </div>
-      <Link to="/users/roles"> 
-      <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3"> {/* Responsive margin-bottom */}
-          <span className="text-sm sm:text-base flex"><span className='mr-2'><Plus/></span>Add New User</span> {/* Responsive font size */}
-        </button>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-semibold mb-1">User Management</h1>
+          <p className="text-sm text-gray-500 mb-6">
+            Manage admin users, roles, and permissions for your portal.
+          </p>
+        </div>
+        <Link to="/users/roles">
+          <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3">
+            <span className="text-sm sm:text-base flex items-center"><Plus className='mr-2' />Add New User</span>
+          </button>
         </Link>
       </div>
 
@@ -44,167 +149,138 @@ export default function UserManagementPage() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search user name or email..."
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-500"
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
           />
         </div>
-        <select className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
           <option>All Roles</option>
           <option>Super Admin</option>
           <option>Admin</option>
           <option>Editor</option>
+          <option>Viewer</option>
         </select>
-        <select className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border px-3 py-2 rounded-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
           <option>All Status</option>
           <option>Active</option>
           <option>Pending</option>
           <option>Inactive</option>
         </select>
-        <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto ml-0 sm:ml-auto'>
-            <button className="border border-gray-300 px-4 py-2 rounded-lg flex items-center justify-center gap-1 text-gray-700 hover:bg-gray-50 w-full sm:w-auto">
-              <ArrowDownToLine className="w-4 h-4" />
-              Export
-            </button>
-            <button className="border border-gray-300 px-4 py-2 rounded-lg flex items-center justify-center gap-1 text-gray-700 hover:bg-gray-50 w-full sm:w-auto">
-              <Settings className="w-4 h-4" />
-              Filter
-            </button>
-        </div>
       </div>
 
       <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-gray-500 bg-gray-50 border-b border-gray-200">
-              <th className="p-3">
-                <input type="checkbox" className="rounded border-gray-300" />
-              </th>
-              <th className="p-3 whitespace-nowrap">User</th>
-              <th className="p-3 whitespace-nowrap hidden sm:table-cell">Role</th>
-              <th className="p-3 whitespace-nowrap">Status</th>
-              <th className="p-3 whitespace-nowrap hidden md:table-cell">Last Login</th>
-              <th className="p-3 whitespace-nowrap hidden lg:table-cell">Permissions</th>
-              <th className="p-3 whitespace-nowrap">Actions</th>
+              <th className="p-3"></th>
+              <th className="p-3">User</th>
+              <th className="p-3 hidden sm:table-cell">Role</th>
+              <th className="p-3">Status</th>
+              <th className="p-3 hidden md:table-cell">Last Login</th>
+              <th className="p-3 hidden lg:table-cell">Permissions</th>
+              <th className="p-3">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <UserRow
-              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg"
-              name="Sarah Johnson"
-              email="sarah@company.com"
-              role="Super Admin"
-              roleColor="purple"
-              status="Active"
-              statusColor="green"
-              lastLogin="2 hours ago"
-              permissions="All Access"
-            />
-            <UserRow
-              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
-              name="Mike Chen"
-              email="mike@company.com"
-              role="Admin"
-              roleColor="blue"
-              status="Active"
-              statusColor="green"
-              lastLogin="1 day ago"
-              permissions="Blog, Services"
-            />
-            <UserRow
-              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"
-              name="David Wilson"
-              email="david@company.com"
-              role="Editor"
-              roleColor="yellow"
-              status="Pending"
-              statusColor="yellow"
-              lastLogin="Never"
-              permissions="Blog Only"
-            />
-            <UserRow
-              avatar="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg"
-              name="Emily Davis"
-              email="emily@company.com"
-              role="Viewer"
-              roleColor="gray"
-              status="Inactive"
-              statusColor="gray"
-              lastLogin="3 weeks ago"
-              permissions="None"
-            />
+            {filteredUsers.map((user, idx) => (
+              <tr key={idx} className="border-t hover:bg-gray-50">
+                <td className="p-3"><input type="checkbox" /></td>
+                <td className="p-3 flex items-center space-x-2">
+                  <img src={user.avatar} alt="avatar" className="w-8 h-8 rounded-full" />
+                  <div>
+                    <div className="font-medium text-gray-900">{user.name}</div>
+                    <div className="text-xs text-gray-500">{user.email}</div>
+                  </div>
+                </td>
+                <td className="p-3 hidden sm:table-cell">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${user.roleColor}-100 text-${user.roleColor}-600`}>
+                    {user.role}
+                  </span>
+                </td>
+                <td className="p-3">
+                  <select
+                    className={`px-3 py-1 rounded-full text-xs font-semibold focus:outline-none ${
+                      user.status === 'Active' ? 'bg-green-100 text-green-600' :
+                      user.status === 'Pending' ? 'bg-yellow-100 text-yellow-600' :
+                      'bg-gray-100 text-gray-600'
+                    }`}
+                    value={user.status}
+                    onChange={e => handleStatusChange(user.id, e.target.value)}
+                    style={{ minWidth: 80 }}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </td>
+                <td className="p-3 hidden md:table-cell">{user.lastLogin}</td>
+                <td className="p-3 hidden lg:table-cell">{user.permissions}</td>
+                <td className="p-3 space-x-2">
+                  <button onClick={() => handleView(user)} className="text-green-600 p-1 rounded hover:bg-green-50" title="View">
+                    <Eye className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => handleEdit(user)} className="text-blue-500 p-1 rounded hover:bg-blue-50" title="Edit">
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => handleDelete(user.id)} className="text-red-500 p-1 rounded hover:bg-red-50" title="Delete">
+                    <Trash className="w-4 h-4" />
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+
+      {editUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+            <h2 className="text-lg font-bold mb-4">Edit User</h2>
+            <div className="mb-2">
+              <label className="block text-sm font-semibold">Name</label>
+              <input className="w-full border rounded px-3 py-1" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-semibold">Role</label>
+              <input className="w-full border rounded px-3 py-1" value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))} />
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-semibold">Status</label>
+              <input className="w-full border rounded px-3 py-1" value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))} />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-semibold">Permissions</label>
+              <input className="w-full border rounded px-3 py-1" value={editForm.permissions} onChange={e => setEditForm(f => ({ ...f, permissions: e.target.value }))} />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleEditSave}>Save</button>
+              <button className="bg-gray-300 px-4 py-2 rounded" onClick={() => setEditUser(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 function SummaryCard({ icon, title, value }) {
   return (
-    <div className="bg-white border p-4 rounded-lg shadow-sm">
+    <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
       <div className="flex items-center justify-between mb-1">
         <h4 className="text-sm font-medium text-gray-500">{title}</h4>
         {icon}
       </div>
       <div className="text-2xl font-semibold">{value}</div>
     </div>
-  );
-}
-
-function UserRow({
-  avatar,
-  name,
-  email,
-  role,
-  roleColor,
-  status,
-  statusColor,
-  lastLogin,
-  permissions,
-}) {
-  return (
-    <tr className="border-t hover:bg-gray-50">
-      <td className="p-3">
-        <input type="checkbox" className="rounded border-gray-300" />
-      </td>
-      <td className="p-3 flex items-center space-x-2 whitespace-nowrap">
-        <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full flex-shrink-0" />
-        <div>
-          <div className="font-medium text-gray-900">{name}</div>
-          <div className="text-xs text-gray-500">{email}</div>
-        </div>
-      </td>
-      <td className="p-3 whitespace-nowrap hidden sm:table-cell">
-        {role && (
-          <span
-            className={`bg-${roleColor}-100 text-${roleColor}-600 px-2 py-1 rounded-full text-xs font-medium`}
-          >
-            {role}
-          </span>
-        )}
-      </td>
-      <td className="p-3 whitespace-nowrap">
-        {status && (
-          <span
-            className={`bg-${statusColor}-100 text-${statusColor}-600 px-2 py-1 rounded-full text-xs font-medium`}
-          >
-            {status}
-          </span>
-        )}
-      </td>
-      <td className="p-3 whitespace-nowrap text-gray-500 hidden md:table-cell">{lastLogin}</td>
-      <td className="p-3 whitespace-nowrap text-gray-500 hidden lg:table-cell">{permissions}</td>
-      <td className="p-3 whitespace-nowrap space-x-2">
-        <button className="text-green-600 p-1 rounded hover:bg-green-50" title="View">
-          <Eye className="w-4 h-4" />
-        </button>
-        <button className="text-blue-500 p-1 rounded hover:bg-blue-50" title="Edit">
-          <Pencil className="w-4 h-4" />
-        </button>
-        <button className="text-red-500 p-1 rounded hover:bg-red-50" title="Delete">
-          <Trash className="w-4 h-4" />
-        </button>
-      </td>
-    </tr>
   );
 }

@@ -88,7 +88,6 @@ const ContactQueries = () => {
       <div className="flex items-center justify-between mb-6 flex-col sm:flex-row gap-4">
         <h1 className="text-lg sm:text-xl font-semibold">Contact Queries</h1>
         <div className="flex gap-2 w-full sm:w-auto">
-          <button className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 font-bold transition text-base shadow-sm">Mark All Read</button>
         </div>
       </div>
       <div className="flex items-center gap-4 mb-4 flex-col sm:flex-row">

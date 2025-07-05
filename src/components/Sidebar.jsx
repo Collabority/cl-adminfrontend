@@ -124,10 +124,12 @@ const Sidebar = () => {
           <p className="text-xs text-gray-500">admin@company.com</p>
         </div>
 
-        <RxExit
-          className="text-xl text-gray-600 hover:text-red-500 cursor-pointer"
-          title="Logout"
-        />
+        <Link to="/login">
+          <RxExit
+            className="text-xl text-gray-600 hover:text-red-500 cursor-pointer"
+            title="Logout"
+          />
+        </Link>
       </div>
     </div>
   );

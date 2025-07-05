@@ -3,6 +3,8 @@ import { FaBlog, FaUsers } from "react-icons/fa";
 import { MdWork } from "react-icons/md";
 import { FaStar } from "react-icons/fa6";
 import { LuPlus } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
+
 const recentBlogPosts = [
   {
     title: "Getting Started with React Hooks",
@@ -55,6 +57,8 @@ const Dashboard = () => {
   const quickActionsCardStyle =
     "border border-gray-200 shadow-sm rounded-xl p-4 bg-white hover:bg-blue-100 cursor-pointer";
 
+  const navigate = useNavigate();
+
   const iconWrapper = (icon, bgColor) => (
     <div className={`p-3 rounded-xl ${bgColor}`}>{icon}</div>
   );
@@ -80,7 +84,7 @@ const Dashboard = () => {
           {/* Create Blog Post */}
           <div
             className={quickActionsCardStyle}
-            onClick={() => console.log("Create Blog Post Clicked")}
+            onClick={() => navigate("/blog/create-blog-post")}
           >
             {quickActionsCard(
               "text-blue-600",
@@ -93,7 +97,7 @@ const Dashboard = () => {
           {/* Add Job Opening */}
           <div
             className={quickActionsCardStyle}
-            onClick={() => console.log("Add Job Opening Clicked")}
+            onClick={() => navigate("/careers/create")}
           >
             {quickActionsCard(
               "text-green-600",
@@ -106,7 +110,7 @@ const Dashboard = () => {
           {/* Add Service */}
           <div
             className={quickActionsCardStyle}
-            onClick={() => console.log("Add Service Clicked")}
+            onClick={() => navigate("/services/create")}
           >
             {quickActionsCard(
               "text-purple-600",
@@ -119,7 +123,7 @@ const Dashboard = () => {
           {/* Add Review */}
           <div
             className={quickActionsCardStyle}
-            onClick={() => console.log("Add Review Clicked")}
+            onClick={() => navigate("/reviews/add")}
           >
             {quickActionsCard(
               "text-yellow-600",
