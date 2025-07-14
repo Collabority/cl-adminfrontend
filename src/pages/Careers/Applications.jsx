@@ -137,7 +137,7 @@ const Applications = () => {
   return (
     <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-xl sm:text-2xl font-semibold">Applications</h1>
+        <h1 className="text-2xl font-semibold">Applications</h1>
         <Link to="/careers/create">
           <button className="text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 px-4 py-2">
             <Plus className="w-4 h-4" />
@@ -255,7 +255,7 @@ const Applications = () => {
               <InputField label="Department" value={editForm.department} onChange={v => setEditForm(f => ({ ...f, department: v }))} />
               <InputField label="Experience (years)" type="number" value={editForm.experience} onChange={v => setEditForm(f => ({ ...f, experience: v }))} />
               <div>
-                <label className="block text-sm font-semibold">Status</label>
+                <label className="block text-base font-semibold">Status</label>
                 <select className="w-full border rounded px-2 py-1" value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))}>
                   <option value="New">New</option>
                   <option value="Under Review">Under Review</option>
@@ -277,7 +277,7 @@ const Applications = () => {
 
 const InputField = ({ label, value, onChange, type = 'text' }) => (
   <div>
-    <label className="block text-sm font-semibold">{label}</label>
+    <label className="block text-base font-semibold">{label}</label>
     <input type={type} className="w-full border rounded px-2 py-1" value={value} onChange={e => onChange(e.target.value)} />
   </div>
 );
@@ -285,8 +285,8 @@ const InputField = ({ label, value, onChange, type = 'text' }) => (
 const StatCard = ({ icon, title, value }) => (
   <div className="bg-white rounded-lg p-5 border border-gray-200 flex justify-between items-center">
     <div>
-      <p className="text-sm text-gray-600">{title}</p>
-      <p className="text-xl sm:text-2xl font-bold text-gray-900">{value}</p>
+      <p className="text-base text-gray-600">{title}</p>
+      <p className="text-2xl font-bold text-gray-900">{value}</p>
     </div>
     {icon}
   </div>

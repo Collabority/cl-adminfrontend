@@ -80,12 +80,12 @@ export default function NewsletterManagement() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Newsletter Management</h1>
-          <p className="text-sm text-gray-500">Manage subscribers and track newsletter performance.</p>
+          <h1 className="text-2xl font-semibold">Newsletter Management</h1>
+          <p className="text-base text-gray-500">Manage subscribers and track newsletter performance.</p>
         </div>
         <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
-          <span className="text-xs sm:text-sm bg-green-100 text-green-600 px-3 py-1 rounded-full">1,248 Subscribers</span>
-          <span className="text-xs sm:text-sm bg-blue-100 text-blue-600 px-3 py-1 rounded-full">12 Campaigns</span>
+          <span className="text-base bg-green-100 text-green-600 px-3 py-1 rounded-full">1,248 Subscribers</span>
+          <span className="text-base bg-blue-100 text-blue-600 px-3 py-1 rounded-full">12 Campaigns</span>
         </div>
       </div>
 
@@ -99,7 +99,7 @@ export default function NewsletterManagement() {
 
       {/* Tabs */}
       <div className="mb-4 border-b flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        <button className="border-b-2 border-blue-500 pb-2 font-medium whitespace-nowrap">Subscribers</button>
+        <button className="border-b-2 border-blue-500 pb-2 font-medium text-base whitespace-nowrap">Subscribers</button>
     
       </div>
 
@@ -170,20 +170,20 @@ export default function NewsletterManagement() {
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
             <h2 className="text-lg font-bold mb-4">Edit Subscriber</h2>
             <div className="mb-2">
-              <label className="block text-sm font-medium">Name</label>
+              <label className="block text-base font-medium">Name</label>
               <input className="w-full border rounded px-2 py-1" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
             </div>
             <div className="mb-2">
-              <label className="block text-sm font-medium">Email</label>
+              <label className="block text-base font-medium">Email</label>
               <input className="w-full border rounded px-2 py-1" value={editForm.email} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} />
             </div>
             <div className="mb-2">
-              <label className="block text-sm font-medium">Segment</label>
+              <label className="block text-base font-medium">Segment</label>
               <input className="w-full border rounded px-2 py-1" value={editForm.segment} onChange={e => setEditForm(f => ({ ...f, segment: e.target.value }))} />
             </div>
             <div className="mb-2">
-              <label className="block text-sm font-medium">Status</label>
-              <select className="w-full border rounded px-2 py-1" value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))}>
+              <label className="block text-base font-medium">Status</label>
+              <select className="w-full border rounded px-2 py-1 text-base" value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))}>
                 <option>Active</option>
                 <option>Unsubscribed</option>
                 <option>Bounced</option>
@@ -204,11 +204,11 @@ function Card({ title, value, icon, delta, deltaColor }) {
   return (
     <div className="bg-white border p-4 rounded-lg shadow-sm">
       <div className="flex items-center justify-between mb-1">
-        <h4 className="text-sm font-medium text-gray-500">{title}</h4>
+        <h4 className="text-base font-medium text-gray-500">{title}</h4>
         <span className="text-xl">{icon}</span>
       </div>
       <div className="text-2xl font-semibold">{value}</div>
-      <div className={`text-xs mt-1 ${deltaColor}`}>{delta} from last campaign</div>
+      <div className={`text-base mt-1 ${deltaColor}`}>{delta} from last campaign</div>
     </div>
   );
 }

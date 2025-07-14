@@ -86,16 +86,16 @@ const ContactQueries = () => {
   return (
     <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen">
       <div className="flex items-center justify-between mb-6 flex-col sm:flex-row gap-4">
-        <h1 className="text-lg sm:text-xl font-semibold">Contact Queries</h1>
+        <h1 className="text-2xl font-semibold">Contact Queries</h1>
         <div className="flex gap-2 w-full sm:w-auto">
         </div>
       </div>
       <div className="flex items-center gap-4 mb-4 flex-col sm:flex-row">
-        <span className="flex items-center gap-1 text-sm">
+        <span className="flex items-center gap-1 text-base">
           <span className="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
           12 Unread
         </span>
-        <span className="flex items-center gap-1 text-sm">
+        <span className="flex items-center gap-1 text-base">
           <span className="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
           45 Total
         </span>

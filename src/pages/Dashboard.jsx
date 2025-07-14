@@ -69,8 +69,8 @@ const Dashboard = () => {
         <LuPlus className={`${iconColor} text-3xl`} />
       </div>
       <div>
-        <h3 className="text-sm font-bold text-gray-700">{heading}</h3>
-        <p className="text-xs text-gray-500 font-semibold">{text}</p>
+        <h3 className="text-lg font-bold text-gray-700">{heading}</h3>
+        <p className="text-base text-gray-500 font-semibold">{text}</p>
       </div>
     </div>
   );
@@ -165,7 +165,7 @@ const Dashboard = () => {
       <div className="w-full lg:w-1/2 border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-700">Recent Blog Posts</h2>
-          <button className="text-blue-600 text-sm font-semibold hover:underline">
+          <button className="text-blue-600 text-base font-semibold hover:underline">
             View All
           </button>
         </div>
@@ -218,7 +218,7 @@ const Dashboard = () => {
           <h2 className="text-xl font-bold text-gray-700">
             Recent Applications
           </h2>
-          <button className="text-blue-600 text-sm font-semibold hover:underline">
+          <button className="text-blue-600 text-base font-semibold hover:underline">
             View All
           </button>
         </div>
@@ -237,15 +237,15 @@ const Dashboard = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-gray-800">
+                  <p className="text-base font-bold text-gray-800">
                     {applicant.name}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-base text-gray-500">
                     {applicant.role} • {applicant.time}
                   </p>
                 </div>
               </div>
-              <button className="text-blue-600 text-sm font-semibold hover:underline">
+              <button className="text-blue-600 text-base font-semibold hover:underline">
                 View
               </button>
             </div>
@@ -262,7 +262,7 @@ const Dashboard = () => {
         {/* Total Blogs */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">Total Blogs</h2>
+            <h2 className="text-base text-gray-600 font-semibold">Total Blogs</h2>
             <h1 className="text-2xl font-bold">24</h1>
             <p className="text-green-600 text-sm font-medium">+3 this week</p>
           </div>
@@ -275,7 +275,7 @@ const Dashboard = () => {
         {/* Job Openings */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">
+            <h2 className="text-base text-gray-600 font-semibold">
               Job Openings
             </h2>
             <h1 className="text-2xl font-bold">8</h1>
@@ -290,7 +290,7 @@ const Dashboard = () => {
         {/* Applications */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">
+            <h2 className="text-base text-gray-600 font-semibold">
               Applications
             </h2>
             <h1 className="text-2xl font-bold">8</h1>
@@ -305,7 +305,7 @@ const Dashboard = () => {
         {/* Reviews */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">Reviews</h2>
+            <h2 className="text-base text-gray-600 font-semibold">Reviews</h2>
             <h1 className="text-2xl font-bold">56</h1>
             <p className="text-purple-600 text-sm font-medium">
               4.8 avg rating

@@ -22,7 +22,7 @@ const CreateJob = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8"> {/* Responsive padding */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"> {/* Stack on small, row on sm+ */}
-        <h1 className="text-xl sm:text-2xl font-semibold">Create New Job Opening</h1> {/* Responsive font size */}
+        <h1 className="text-2xl font-semibold">Create New Job Opening</h1> {/* Responsive font size */}
         <div className="flex gap-2 w-full sm:w-auto justify-end"> {/* Full width on small, auto on sm+, justify-end */}
           <button className="border px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 w-1/2 sm:w-auto">Save Draft</button> {/* Responsive width */}
           <button className="bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium w-1/2 sm:w-auto">Preview</button> {/* Responsive width */}
@@ -34,7 +34,7 @@ const CreateJob = () => {
         <h2 className="text-lg font-semibold mb-4">Job Information</h2>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Job Title *</label>
+          <label className="block text-base font-medium mb-1">Job Title *</label>
           <input
             type="text"
             name="title"
@@ -47,7 +47,7 @@ const CreateJob = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4"> {/* Changed to 1 col on xs, 2 on sm, 3 on lg */}
           <div>
-            <label className="block text-sm font-medium mb-1">Department *</label>
+            <label className="block text-base font-medium mb-1">Department *</label>
             <select name="department" value={form.department} onChange={handleChange} className="border rounded px-3 py-2 text-sm w-full">
               <option>Select Department</option>
               <option>Engineering</option>
@@ -56,7 +56,7 @@ const CreateJob = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Job Type *</label>
+            <label className="block text-base font-medium mb-1">Job Type *</label>
             <select name="type" value={form.type} onChange={handleChange} className="border rounded px-3 py-2 text-sm w-full">
               <option>Select Type</option>
               <option>Full-time</option>
@@ -64,7 +64,7 @@ const CreateJob = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Location *</label>
+            <label className="block text-base font-medium mb-1">Location *</label>
             <select name="location" value={form.location} onChange={handleChange} className="border rounded px-3 py-2 text-sm w-full">
               <option>Select Location</option>
               <option>Remote</option>
@@ -72,7 +72,7 @@ const CreateJob = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Experience Level</label>
+            <label className="block text-base font-medium mb-1">Experience Level</label>
             <select name="level" value={form.level} onChange={handleChange} className="border rounded px-3 py-2 text-sm w-full">
               <option>Select Level</option>
               <option>Intern</option>
@@ -82,7 +82,7 @@ const CreateJob = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Min Salary</label>
+            <label className="block text-base font-medium mb-1">Min Salary</label>
             <input
               type="text"
               name="minSalary"
@@ -93,7 +93,7 @@ const CreateJob = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Max Salary</label>
+            <label className="block text-base font-medium mb-1">Max Salary</label>
             <input
               type="text"
               name="maxSalary"
@@ -106,7 +106,7 @@ const CreateJob = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Period</label>
+          <label className="block text-base font-medium mb-1">Period</label>
           <select className="border rounded px-3 py-2 text-sm w-full">
             <option>Yearly</option>
             <option>Monthly</option>
@@ -120,7 +120,7 @@ const CreateJob = () => {
         <h2 className="text-lg font-semibold mb-4">Job Description</h2>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Job Summary *</label>
+          <label className="block text-base font-medium mb-1">Job Summary *</label>
           <textarea
             name="summary"
             value={form.summary}
@@ -132,7 +132,7 @@ const CreateJob = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Key Responsibilities *</label>
+          <label className="block text-base font-medium mb-1">Key Responsibilities *</label>
           <textarea
             name="responsibilities"
             value={form.responsibilities}
@@ -145,7 +145,7 @@ const CreateJob = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Requirements & Qualifications *</label>
+          <label className="block text-base font-medium mb-1">Requirements & Qualifications *</label>
           <textarea
             name="qualifications"
             value={form.qualifications}
@@ -163,7 +163,7 @@ const CreateJob = () => {
         <h2 className="text-lg font-semibold mb-4">Benefits & Perks</h2>
 
         <div>
-          <label className="block text-sm font-medium mb-1">What We offer</label>
+          <label className="block text-base font-medium mb-1">What We offer</label>
           <textarea
             name="qualifications" // Note: This textarea is currently bound to 'qualifications' state. You might want a separate state for 'benefits'.
             value={form.qualifications}
@@ -181,7 +181,7 @@ const CreateJob = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"> {/* Already responsive grid */}
             {/* Application Deadline */}
             <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Application Deadline *</label>
+            <label className="block text-base font-medium text-gray-700 mb-1">Application Deadline *</label>
             <input
                 type="date"
                 className="w-full border rounded-lg px-4 py-2 text-sm text-gray-900"
@@ -191,7 +191,7 @@ const CreateJob = () => {
 
             {/* Hiring Manager */}
             <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Hiring Manager</label>
+            <label className="block text-base font-medium text-gray-700 mb-1">Hiring Manager</label>
             <select className="w-full border rounded-lg px-4 py-2 text-sm text-gray-900">
                 <option>Select Manager</option>
                 <option>Jane Doe</option>
@@ -202,7 +202,7 @@ const CreateJob = () => {
 
         {/* Application Instructions */}
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Application Instructions</label>
+            <label className="block text-base font-medium text-gray-700 mb-1">Application Instructions</label>
             <textarea
             rows={3}
             className="w-full border rounded-lg px-4 py-2 text-sm text-gray-500"
@@ -217,7 +217,7 @@ const CreateJob = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"> {/* Already responsive grid */}
                 {/* Status */}
                 <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-base font-medium text-gray-700 mb-1">Status</label>
                 <select className="w-full border rounded-lg px-4 py-2 text-sm text-gray-900">
                     <option>Draft</option>
                     <option>Active</option>
@@ -228,7 +228,7 @@ const CreateJob = () => {
 
                 {/* Publish Date */}
                 <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Publish Date</label>
+                <label className="block text-base font-medium text-gray-700 mb-1">Publish Date</label>
                 <input
                     type="datetime-local"
                     className="w-full border rounded-lg px-4 py-2 text-sm text-gray-900"
@@ -239,14 +239,14 @@ const CreateJob = () => {
 
             {/* Featured Job Toggle */}
             <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                <label className="block text-sm font-medium text-gray-900">Featured Job</label>
-                <p className="text-sm text-gray-500 mb-2">Display this job prominently on the careers page</p>
+                <label className="block text-base font-medium text-gray-900">Featured Job</label>
+                <p className="text-base text-gray-500 mb-2">Display this job prominently on the careers page</p>
             </div>
 
             {/* External Applications Toggle */}
             <div className="bg-gray-50 rounded-lg p-4">
-                <label className="block text-sm font-medium text-gray-900">External Applications</label>
-                <p className="text-sm text-gray-500 mb-2">Allow applications through external job boards</p>
+                <label className="block text-base font-medium text-gray-900">External Applications</label>
+                <p className="text-base text-gray-500 mb-2">Allow applications through external job boards</p>
             </div>
         </div>
         {/* Submit Button */}

@@ -61,38 +61,38 @@ const AddReview = () => {
         </div>
       </div>
       <div className="bg-white rounded-xl shadow p-4 sm:p-6 max-w-4xl mx-auto">
-        <h2 className="text-lg sm:text-2xl font-bold mb-1">Add New Review &amp; Testimonial</h2>
-        <p className="text-gray-500 mb-6 text-xs sm:text-base">Create a new customer review or testimonial to showcase on your website.</p>
+        <h1 className="text-2xl font-bold mb-1">Add New Review &amp; Testimonial</h1>
+        <p className="text-base text-gray-500 mb-6">Create a new customer review or testimonial to showcase on your website.</p>
         {/* Basic Information */}
         <div className="mb-8">
-          <h3 className="font-semibold text-base sm:text-lg mb-4">Basic Information</h3>
+          <h2 className="font-semibold text-lg mb-4">Basic Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700 mb-1">Reviewer Name *</label>
-              <input className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm" placeholder="Enter reviewer's full name" value={name} onChange={e => setName(e.target.value)} required />
+              <label className="block text-base text-gray-700 mb-1">Reviewer Name *</label>
+              <input className="w-full border border-gray-200 rounded-lg px-4 py-2" placeholder="Enter reviewer's full name" value={name} onChange={e => setName(e.target.value)} required />
             </div>
             <div>
-              <label className="block text-gray-700 mb-1">Designation/Title *</label>
-              <input className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm" placeholder="e.g., CEO, Marketing Director" value={title} onChange={e => setTitle(e.target.value)} required />
+              <label className="block text-base text-gray-700 mb-1">Designation/Title *</label>
+              <input className="w-full border border-gray-200 rounded-lg px-4 py-2" placeholder="e.g., CEO, Marketing Director" value={title} onChange={e => setTitle(e.target.value)} required />
             </div>
             <div>
-              <label className="block text-gray-700 mb-1">Company/Organization *</label>
-              <input className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm" placeholder="Company name" value={company} onChange={e => setCompany(e.target.value)} required />
+              <label className="block text-base text-gray-700 mb-1">Company/Organization *</label>
+              <input className="w-full border border-gray-200 rounded-lg px-4 py-2" placeholder="Company name" value={company} onChange={e => setCompany(e.target.value)} required />
             </div>
             <div>
-              <label className="block text-gray-700 mb-1">Email *</label>
-              <input className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm" placeholder="reviewer@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
+              <label className="block text-base text-gray-700 mb-1">Email *</label>
+              <input className="w-full border border-gray-200 rounded-lg px-4 py-2" placeholder="reviewer@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
             </div>
           </div>
         </div>
         {/* Profile Picture */}
         <div className="mb-8">
           <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-2 ">
-            <h1 className="text-xl font-semibold text-black">Profile Picture</h1>
+            <h1 className="text-2xl font-semibold text-black">Profile Picture</h1>
             <div className="flex flex-col items-center gap-4 border-2 border-dashed border-gray-300 hover:border-blue-600 transition-all duration-300 p-8 sm:p-10 md:p-12 rounded-md text-center w-full">
               <FaCloudUploadAlt className="text-5xl text-gray-400" />
-              <h2 className="text-black text-xl sm:text-xl font-semibold">Upload Profile Picture</h2>
-              <h3 className="font-semibold text-gray-700 text-sm sm:text-base">Click to browse Choose File</h3>
+              <h2 className="text-black text-2xl font-semibold">Upload Profile Picture</h2>
+              <h3 className="font-semibold text-gray-700 text-base">Click to browse Choose File</h3>
               <input
                 name="profilePic"
                 type="file"
@@ -104,11 +104,11 @@ const AddReview = () => {
               <button
                 type="button"
                 onClick={handleProfilePicClick}
-                className="w-full sm:w-auto max-w-xs sm:max-w-none bg-blue-600 px-4 py-2 sm:px-6 sm:py-2 text-white text-sm sm:text-base font-semibold rounded-xl cursor-pointer hover:bg-blue-700 transition duration-200"
+                className="w-full sm:w-auto max-w-xs sm:max-w-none bg-blue-600 px-4 py-2 sm:px-6 sm:py-2 text-white text-base font-semibold rounded-xl cursor-pointer hover:bg-blue-700 transition duration-200"
               >
                 Choose file
               </button>
-              <p className="font-semibold text-[13px] text-gray-500 mt-2">
+              <p className="font-semibold text-base text-gray-500 mt-2">
                 Recommended size: 400x400px, Max file size: 1MB
               </p>
               {profilePic && (
@@ -123,9 +123,9 @@ const AddReview = () => {
         </div>
         {/* Rating & Review Content */}
         <div className="mb-8">
-          <h3 className="font-semibold text-base sm:text-lg mb-4">Rating &amp; Review Content</h3>
+          <h2 className="font-semibold text-lg mb-4">Rating &amp; Review Content</h2>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Rating *</label>
+            <label className="block text-base text-gray-700 mb-1">Rating *</label>
             <div className="flex items-center gap-1 mb-2">
               {[1,2,3,4,5].map(star => (
                 <button
@@ -140,24 +140,24 @@ const AddReview = () => {
                   ★
                 </button>
               ))}
-              <span className="ml-2 text-gray-400 text-sm">Click to rate</span>
+              <span className="ml-2 text-gray-400 text-base">Click to rate</span>
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Review Title</label>
+            <label className="block text-base text-gray-700 mb-1">Review Title</label>
             <input className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm" placeholder="Brief title for the review" value={reviewTitle} onChange={e => setReviewTitle(e.target.value)} />
           </div>
           <div>
-            <label className="block text-gray-700 mb-1">Review Content</label>
+            <label className="block text-base text-gray-700 mb-1">Review Content</label>
             <textarea className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm min-h-[100px]" placeholder="Write the detailed review or testimonial content..." value={reviewContent} onChange={e => setReviewContent(e.target.value)}/>
             <div className="text-xs text-gray-400 mt-1">Minimum 50 characters recommended</div>
           </div>
         </div>
         {/* Additional Settings */}
         <div className="mb-4">
-          <h3 className="font-semibold text-base sm:text-lg mb-4">Additional Settings</h3>
+          <h3 className="font-semibold text-lg mb-4">Additional Settings</h3>
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <label className="text-sm font-medium">Status:</label>
+            <label className="text-base font-medium">Status:</label>
             <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto" value={status} onChange={e => setStatus(e.target.value)}>
               <option>Draft</option>
               <option>Published</option>

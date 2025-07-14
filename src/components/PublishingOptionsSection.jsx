@@ -10,7 +10,7 @@ const PublishingOptionsSection = ({ formData, setFormData }) => {
 
   return (
     <div className="bg-white rounded-lg shadow px-4 py-6 sm:px-6 md:px-8 lg:px-10 flex flex-col gap-6">
-      <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-black">
+      <h1 className="text-2xl font-semibold text-black">
         Publishing Options
       </h1>
 
@@ -18,7 +18,7 @@ const PublishingOptionsSection = ({ formData, setFormData }) => {
       <div className="flex flex-col md:flex-row gap-5">
         {/* Status */}
         <div className="flex flex-col gap-1 w-full md:w-1/2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-base font-medium text-gray-700">
             Status
           </label>
           <select
@@ -34,7 +34,7 @@ const PublishingOptionsSection = ({ formData, setFormData }) => {
 
         {/* Publish Date */}
         <div className="flex flex-col gap-1 w-full md:w-1/2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-base font-medium text-gray-700">
             Publish Date
           </label>
           <input
@@ -49,10 +49,10 @@ const PublishingOptionsSection = ({ formData, setFormData }) => {
       {/* Featured Post */}
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
-          <label className="text-sm text-gray-900 font-medium">
+          <label className="text-base text-gray-900 font-medium">
             Featured Post
           </label>
-          <label className="text-sm text-gray-700 font-medium">
+          <label className="text-base text-gray-700 font-medium">
             Display this post prominently on the homepage
           </label>
         </div>
@@ -81,10 +81,10 @@ const PublishingOptionsSection = ({ formData, setFormData }) => {
       {/* Allow Comments */}
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
-          <label className="text-sm text-gray-900 font-medium">
+          <label className="text-base text-gray-900 font-medium">
             Allow Comments
           </label>
-          <label className="text-sm text-gray-700 font-medium">
+          <label className="text-base text-gray-700 font-medium">
             Enable readers to comment on this post
           </label>
         </div>

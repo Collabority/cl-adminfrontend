@@ -60,25 +60,25 @@ const ServicesManagement = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">Total Services</h2>
+            <h2 className="text-base text-gray-600 font-semibold">Total Services</h2>
             <h1 className="text-2xl font-bold">{services.length}</h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">Published</h2>
+            <h2 className="text-base text-gray-600 font-semibold">Published</h2>
             <h1 className="text-2xl font-bold text-green-600">{services.filter(s => s.status === 'Published').length}</h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">Drafts</h2>
+            <h2 className="text-base text-gray-600 font-semibold">Drafts</h2>
             <h1 className="text-2xl font-bold text-red-600">{services.filter(s => s.status === 'Draft').length}</h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">Categories</h2>
+            <h2 className="text-base text-gray-600 font-semibold">Categories</h2>
             <h1 className="text-2xl font-bold text-purple-500">{[...new Set(services.map(s => s.category))].length}</h1>
           </div>
         </div>
@@ -137,7 +137,7 @@ const ServicesManagement = () => {
               <h2 className="text-lg font-semibold text-gray-800">
                 {service.title}
               </h2>
-              <p className="text-sm font-semibold text-gray-600 line-clamp-3">
+              <p className="text-base font-semibold text-gray-600 line-clamp-3">
                 {service.description}
               </p>
               <div className="flex justify-end items-center gap-3 text-xl text-gray-500 mt-2">

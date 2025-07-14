@@ -233,7 +233,7 @@ const BlogManagement = () => {
             </h2>
 
             {/* Description */}
-            <p className="text-sm font-semibold text-gray-600 line-clamp-3">
+            <p className="text-base font-semibold text-gray-600 line-clamp-3">
               {post.desc}
             </p>
 
@@ -245,7 +245,7 @@ const BlogManagement = () => {
                   alt={post.author}
                   className="w-8 h-8 rounded-full object-cover"
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-base font-medium text-gray-700">
                   {post.author}
                 </span>
               </div>
