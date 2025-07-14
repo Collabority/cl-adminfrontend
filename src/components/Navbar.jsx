@@ -19,7 +19,7 @@ const Navbar = () => {
         <h1 className="text-lg  sm:text-xl md:text-2xl font-bold text-black">
           Admin Portal
         </h1>
-        <p className="text-sm  sm:text-base sm:w-5/12 text-gray-500 font-bold">
+        <p className="text-lg  sm:text-base sm:w-5/12 text-gray-500 font-bold">
           {activeTab}
         </p>
       </div>

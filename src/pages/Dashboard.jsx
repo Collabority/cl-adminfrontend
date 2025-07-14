@@ -75,7 +75,7 @@ const Dashboard = () => {
     <div className="w-full flex flex-col lg:flex-row gap-4">
       {/* ------- Quick Actions (70%) -------- */}
       <div className="w-full lg:w-[70%] border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
-        <h2 className="text-xl font-bold text-gray-700 mb-4">Quick Actions</h2>
+        <h2 className="text-lg  sm:text-xl md:text-2xl font-bold text-gray-700 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Create Blog Post */}
           <div
@@ -133,7 +133,7 @@ const Dashboard = () => {
 
       {/* ------- Recent Activity (30%) -------- */}
       <div className="w-full lg:w-[30%] border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
-        <h2 className="text-xl font-bold text-gray-700 mb-4">
+        <h2 className="text-lg  sm:text-xl md:text-2xl font-bold text-gray-700 mb-4">
           Recent Activity
         </h2>
 
@@ -160,7 +160,7 @@ const Dashboard = () => {
       {/* Recent Blog Posts */}
       <div className="w-full lg:w-1/2 border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-700">Recent Blog Posts</h2>
+          <h2 className="text-lg  sm:text-xl md:text-2xl font-bold text-gray-700">Recent Blog Posts</h2>
           <button className="text-blue-600 text-sm font-semibold hover:underline">
             View All
           </button>
@@ -211,7 +211,7 @@ const Dashboard = () => {
       {/* Recent Applications */}
       <div className="w-full lg:w-1/2 border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-700">
+          <h2 className="text-lg  sm:text-xl md:text-2xl font-bold text-gray-700">
             Recent Applications
           </h2>
           <button className="text-blue-600 text-sm font-semibold hover:underline">

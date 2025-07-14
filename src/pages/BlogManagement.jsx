@@ -233,7 +233,7 @@ const BlogManagement = () => {
             </h2>
 
             {/* Description */}
-            <p className="text-sm font-semibold text-gray-600 line-clamp-3">
+            <p className="text-sm md:text-base font-semibold text-gray-600 line-clamp-3">
               {post.desc}
             </p>
 
