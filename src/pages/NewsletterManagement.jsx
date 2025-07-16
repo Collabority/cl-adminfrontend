@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Pencil, Trash, Eye } from 'lucide-react';
+import AddSubscriber from './AddSubscriber';
+import {Link} from 'react-router-dom';
 
 const initialSubscribers = [
   {
@@ -129,7 +131,11 @@ export default function NewsletterManagement() {
           <option>Customers</option>
           <option>Prospects</option>
         </select>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto">+ Add Subscriber</button>
+        <Link to="/newsletter/add-subscriber" className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto text-center">
+        <button>
+          + Add Subscriber
+        </button>
+        </Link>
         <button className="border px-4 py-2 rounded w-full sm:w-auto whitespace-nowrap">🟰 Bulk Actions</button>
       </div>
 
