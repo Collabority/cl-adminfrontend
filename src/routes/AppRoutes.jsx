@@ -1,56 +1,49 @@
-// routes/AppRoutes.jsx
 import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Loader from "../components/Loader";
 import AuthLayout from "../layouts/AuthLayout";
 
-// General Pages
+// General
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const Login = lazy(() => import("../pages/Login"));
 const Signup = lazy(() => import("../pages/Signup"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
-// Blog Pages
+// Blog
 const BlogManagement = lazy(() => import("../pages/BlogManagement"));
 const CreateBlogPost = lazy(() => import("../pages/CreateBlogPost"));
 const EditBlogPost = lazy(() => import("../pages/EditBlogPost"));
 
-// Review Pages
+// Reviews
 const Reviews = lazy(() => import("../pages/Reviews"));
 const AddReview = lazy(() => import("../pages/AddReview"));
 
-// Contact Pages
+// Contact
 const ContactQueries = lazy(() => import("../pages/ContactQueries"));
 
-// Service Pages
+// Services
 const ServicesManagement = lazy(() => import("../pages/ServicesManagement"));
 const CreateService = lazy(() => import("../pages/CreateService"));
 const EditService = lazy(() => import("../pages/EditService"));
 
-// Career Pages
+// Careers
 const Applications = lazy(() => import("../pages/Careers/Applications"));
 const CreateJob = lazy(() => import("../pages/Careers/CreateJob"));
 
-// Newsletter Pages
-const NewsletterManagement = lazy(() =>
-  import("../pages/NewsletterManagement")
-);
+// Newsletter
+const NewsletterManagement = lazy(() => import("../pages/NewsletterManagement"));
 
-// User Management
-const UserManagementPage = lazy(() =>
-  import("../pages/UserManagement/UserManagementPage")
-);
-const AddNewUser = lazy(() =>
-  import("../pages/UserManagement/AddNewUser")
-);
+// Users
+const UserManagementPage = lazy(() => import("../pages/UserManagement/UserManagementPage"));
+const AddNewUser = lazy(() => import("../pages/UserManagement/AddNewUser"));
 
 const AppRoutes = () => {
   return (
     <Suspense fallback={<Loader />}>
       <Routes>
-        <Route element={<AuthLayout />}>
-          {/* Dashboard */}
+        {/* 🔐 Protected Routes */}
+        <Route element={<AuthLayout authenticationReq={true} />}>
           <Route path="/" element={<Dashboard />} />
 
           {/* Blog Routes */}
@@ -79,9 +72,6 @@ const AppRoutes = () => {
             <Route path="edit/:id" element={<EditService />} />
           </Route>
 
-          {/* Newsletter */}
-          <Route path="/newsletter" element={<NewsletterManagement />} />
-
           {/* Reviews */}
           <Route path="/reviews">
             <Route index element={<Reviews />} />
@@ -90,11 +80,25 @@ const AppRoutes = () => {
 
           {/* Contact */}
           <Route path="/contact" element={<ContactQueries />} />
+
+          {/* Newsletter */}
+          <Route path="/newsletter" element={<NewsletterManagement />} />
         </Route>
 
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/sign-up" element={<Signup />} />
+        {/* 🪪 Public Routes */}
+        <Route path="/login" element={
+          <AuthLayout authenticationReq={false}>
+            <Login />
+          </AuthLayout>
+        } />
+        
+        <Route path="/sign-up" element={
+          <AuthLayout authenticationReq={false}>
+            <Signup />
+          </AuthLayout>
+        } />
+
+        {/* Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
