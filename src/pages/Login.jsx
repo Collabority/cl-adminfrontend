@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useLogin } from "../hooks/useLogin";
 
 const Login = () => {
+  const { loginUser, loading } = useLogin();
+
   const [formData, setFormData] = useState({
     usernameOrEmail: "",
     password: "",
@@ -43,6 +46,10 @@ const Login = () => {
       setErrors(validationErrors);
     } else {
       setErrors({});
+      loginUser({
+        email: formData.usernameOrEmail,
+        password: formData.password,
+      });
       console.log("Form submitted:", formData);
       // Proceed with API call here
     }

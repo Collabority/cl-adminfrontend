@@ -8,8 +8,10 @@ import { FaStar, FaNewspaper } from "react-icons/fa6";
 import { IoMdMail } from "react-icons/io";
 import { RxExit } from "react-icons/rx";
 import { AppContext } from "../context/AppContext";
+import { useLogout } from "../hooks/useLogout";
 
 const Sidebar = () => {
+  const logout = useLogout();
   const location = useLocation();
   const path = location.pathname;
 
@@ -44,7 +46,6 @@ const Sidebar = () => {
       isActive(tabPath) ? "bg-blue-100" : ""
     }`;
 
-
   const getIconClasses = (tabPath) =>
     `text-2xl group-hover:text-blue-500 ${
       isActive(tabPath) ? "text-blue-500" : "text-black"
@@ -71,7 +72,6 @@ const Sidebar = () => {
         <Link to="/" className={getItemClasses("/")}>
           <BsGraphUp className={getIconClasses("/")} />
           <h5 className={getTextClasses("/")}>Dashboard</h5>
-
         </Link>
 
         <Link to="/blog" className={getItemClasses("/blog")}>
@@ -85,7 +85,9 @@ const Sidebar = () => {
         </Link>
 
         <Link to="/services" className={getItemClasses("/services")}>
-          <MdOutlineMiscellaneousServices className={getIconClasses("/services")} />
+          <MdOutlineMiscellaneousServices
+            className={getIconClasses("/services")}
+          />
           <h5 className={getTextClasses("/services")}>Services</h5>
         </Link>
 
@@ -112,7 +114,6 @@ const Sidebar = () => {
 
       {/* Admin Section at Bottom */}
       <div className="pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
-
         <img
           src="https://randomuser.me/api/portraits/men/32.jpg"
           alt="Admin"
@@ -124,7 +125,7 @@ const Sidebar = () => {
           <p className="text-xs text-gray-500">admin@company.com</p>
         </div>
 
-        <Link to="/login">
+        <Link onClick={logout}>
           <RxExit
             className="text-xl text-gray-600 hover:text-red-500 cursor-pointer"
             title="Logout"
@@ -136,5 +137,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
-
