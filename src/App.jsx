@@ -26,6 +26,7 @@ const App = () => {
 
 
   return (
+    // we nee add chnages on CSS styles based on dark mode and light mode
     <div className={`h-screen flex flex-col ${darkMode && "dark"}`}>
       {!isLoginPage && !isSignupPage && <Navbar />}
       <div className="flex flex-1 overflow-hidden">
