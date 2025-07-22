@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Outlet, useLocation, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux"; // or your own auth context
+import { useSelector } from "react-redux";
 import { AppContext } from "../context/AppContext";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -13,17 +13,17 @@ const AuthLayout = ({ authenticationReq = true, children }) => {
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
-  // 🛡️ Redirect unauthenticated users from protected pages
+  
   if (authenticationReq && !isAuthenticated) {
     return <Navigate to="/login" />;
   }
 
-  // 🚫 Redirect already logged-in users from login/signup
+  
   if (!authenticationReq && isAuthenticated) {
     return <Navigate to="/" />;
   }
 
-  // ✅ Auth is fine, show layout
+  
   return (
     <div className={`h-screen flex flex-col ${darkMode && "dark"}`}>
       {!isLoginPage && !isSignupPage && <Navbar />}

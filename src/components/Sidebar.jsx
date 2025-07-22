@@ -9,12 +9,13 @@ import { IoMdMail } from "react-icons/io";
 import { RxExit } from "react-icons/rx";
 import { AppContext } from "../context/AppContext";
 import { useLogout } from "../hooks/useLogout";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const logout = useLogout();
   const location = useLocation();
   const path = location.pathname;
-
+  const { admin } = useSelector((state) => state.auth.user);
   const { isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
   const sidebarRef = useRef(null);
 
@@ -121,8 +122,12 @@ const Sidebar = () => {
         />
 
         <div className="flex flex-col text-center">
-          <p className="text-sm font-semibold text-gray-700">Admin</p>
-          <p className="text-xs text-gray-500">admin@company.com</p>
+          <p className="text-sm font-semibold text-gray-700">
+            {admin ? admin.name : "Admin"}
+          </p>
+          <p className="text-xs text-gray-500">
+            {admin ? admin.email : "admin@company.com"}
+          </p>
         </div>
 
         <Link onClick={logout}>

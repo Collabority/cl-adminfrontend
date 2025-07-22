@@ -17,7 +17,7 @@ export const useAuthCheck = () => {
           dispatch(logout());
           throw new Error("Admin not authenticated");
         }
-        dispatch(login({ seller: response.data.data }));
+        dispatch(login({ admin: response.data.data }));
       } catch (error) {
         console.log("Failed to maintain auth:", error.message);
       } finally {

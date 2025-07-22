@@ -6,12 +6,18 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import CreateBlogContent from "../components/CreateBlogContent";
 import SEOSettingsSection from "../components/SEOSettingsSection";
 import PublishingOptionsSection from "../components/PublishingOptionsSection";
+import { useCreateBlog } from "../hooks/FormHooks/useCreateBlog";
+import { useSelector } from "react-redux";
 
 const CreateBlogPost = () => {
+  const { createBlog, loading } = useCreateBlog();
+  
+
+  // console.log(admin);
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
-    author: "",
+    author:"",
     category: "",
     tags: [],
     metaTitle: "",
@@ -27,15 +33,12 @@ const CreateBlogPost = () => {
 
   const fileInputRef = useRef(null);
 
-
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
-
-  // i need add changes here
-  const handleSubmit = (e , status="draft") => {
+  const handleSubmit = async (e, status = "draft") => {
     e.preventDefault();
-   
+
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (key === "tags") {
@@ -45,17 +48,15 @@ const CreateBlogPost = () => {
       }
     });
 
-    
-      data.set("status", status);
-   
-    // Replace this with your actual API call
-    console.log("Submitting form with data:", Object.fromEntries(data));
+    data.set("status", status);
 
-    // Example:
-    // fetch("/api/blogs", {
-    //   method: "POST",
-    //   body: data,
-    // });
+    try {
+      await createBlog(data); // ← call your hook's function
+      console.log("Blog submitted successfully");
+      // Optionally: navigate or show success toast
+    } catch (err) {
+      console.error("Error submitting blog:", err);
+    }
   };
 
   const coverImage = () => (
@@ -121,7 +122,7 @@ const CreateBlogPost = () => {
   );
 
   return (
-    <form className="flex flex-col gap-6 p-4" >
+    <form className="flex flex-col gap-6 p-4">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <h3 className="text-base text-gray-700 font-semibold flex items-center">
@@ -131,9 +132,7 @@ const CreateBlogPost = () => {
       </div>
 
       {/* Page Title */}
-      <h1 className="text-2xl font-semibold">
-        Create New Blog Post
-      </h1>
+      <h1 className="text-2xl font-semibold">Create New Blog Post</h1>
       <p className="text-base text-gray-600 font-semibold">
         Fill in the details below to create and publish your blog post.
       </p>

@@ -18,11 +18,7 @@ function useLogin() {
         throw new Error(response.data?.message || "Registration failed.");
       }
 
-      dispatch(
-        login({
-          seller: response.data.data,
-        })
-      );
+      dispatch(login({ admin: response.data.data }));
       console.log("Successfully registered. Logging you in...");
     } catch (error) {
       const message =
