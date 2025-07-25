@@ -1,14 +1,13 @@
-import React, { useState } from "react";
 import { FaBlog } from "react-icons/fa";
 import { PiNotePencilBold } from "react-icons/pi";
 import { FaStar } from "react-icons/fa6";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { IoMdSearch } from "react-icons/io";
-import { FaFilter } from "react-icons/fa";
-import { LuRefreshCw } from "react-icons/lu";
-import { MdDelete } from "react-icons/md";
+
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
+import BlogsCard from "../components/blog-components/BlogsCard";
+import MiddleSection from "../components/blog-components/MiddleSection";
+import { useState } from "react";
 
 const blogPosts = [
   {
@@ -134,134 +133,6 @@ const BlogManagement = () => {
     </div>
   );
 
-  const middleSection = () => (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 border border-gray-300 rounded-xl bg-white shadow-sm w-full">
-      {/* Left section: search and filters */}
-      <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center w-full">
-        {/* Search bar */}
-        <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto">
-          <IoMdSearch className="text-gray-500 text-xl" />
-          <input
-            type="text"
-            placeholder="Search blog posts..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="outline-none bg-transparent w-full sm:w-60 font-semibold"
-          />
-        </div>
-
-        {/* Category select */}
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold"
-        >
-          <option>All Categories</option>
-          <option>Technology</option>
-          <option>Design</option>
-          <option>Business</option>
-          <option>Marketing</option>
-        </select>
-
-        {/* Status select */}
-        <select
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold"
-        >
-          <option>All Status</option>
-          <option>Published</option>
-          <option>Draft</option>
-          <option>Scheduled</option>
-        </select>
-      </div>
-
-      {/* Right section: icons */}
-      <div className="flex items-center gap-4 text-gray-600 text-xl self-end md:self-auto">
-        <FaFilter className="cursor-pointer hover:text-black transition" />
-        {/* refresh filter reset to defaults */}
-        <LuRefreshCw
-          className="cursor-pointer hover:text-black transition"
-          onClick={() => {
-            setSearchTerm("");
-            setSelectedCategory("All Categories");
-            setSelectedStatus("All Status");
-          }}
-        />
-      </div>
-    </div>
-  );
-
-  const BlogCardS = () => (
-    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-      {filteredPosts.map((post, index) => (
-        <div
-          key={index}
-          className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
-        >
-          {/* Top Image */}
-          <div className="relative">
-            <img
-              src={post.img}
-              alt={post.title}
-              className="w-full h-48 object-cover"
-            />
-            <span
-              className={`absolute top-2 left-2 text-xs px-2 py-1 rounded-full ${
-                post.status === "Published"
-                  ? "bg-green-100 text-green-700"
-                  : post.status === "Scheduled"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {post.status}
-            </span>
-          </div>
-
-          {/* Content */}
-          <div className="p-4 flex flex-col gap-2">
-            {/* Category and Date */}
-            <div className="flex justify-between text-sm text-gray-500 font-medium">
-              <span>{post.category}</span>
-              <span>{post.date}</span>
-            </div>
-
-            {/* Title */}
-            <h2 className="text-lg font-semibold text-gray-800">
-              {post.title}
-            </h2>
-
-            {/* Description */}
-            <p className="text-base font-semibold text-gray-600 line-clamp-3">
-              {post.desc}
-            </p>
-
-            {/* Footer: Author + Actions */}
-            <div className="flex justify-between items-center mt-4">
-              <div className="flex items-center gap-2">
-                <img
-                  src={post.authorImg}
-                  alt={post.author}
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-                <span className="text-base font-medium text-gray-700">
-                  {post.author}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 text-xl text-gray-500">
-                <Link to={`edit-blog-post/${post.id}`}>
-                  <PiNotePencilBold className="cursor-pointer text-blue-500 hover:text-blue-800 transition" />
-                </Link>
-                <MdDelete className="cursor-pointer text-red-600 hover:text-red-800 transition" />
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
   return (
     <div className="flex flex-col gap-6 p-4">
       <div className="flex justify-end">
@@ -275,13 +146,18 @@ const BlogManagement = () => {
       </div>
       {/* ------- Top Section ------- */}
       {topSection()}
-
       {/*-------------middile filters section ------------- */}
-      {middleSection()}
-
+      <MiddleSection
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedStatus={selectedStatus}
+        setSelectedStatus={setSelectedStatus}
+      />
       {/* -----------------bottom section---------------- */}
       {/* -------------bottom blog cards section---------- */}
-      {BlogCardS()}
+      {<BlogsCard filteredPosts={filteredPosts} />}
     </div>
   );
 };
