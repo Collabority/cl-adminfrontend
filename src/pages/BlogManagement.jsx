@@ -178,7 +178,6 @@ const BlogManagement = () => {
 
       {/* Right section: icons */}
       <div className="flex items-center gap-4 text-gray-600 text-xl self-end md:self-auto">
-        <FaFilter className="cursor-pointer hover:text-black transition" />
         {/* refresh filter reset to defaults */}
         <LuRefreshCw
           className="cursor-pointer hover:text-black transition"
