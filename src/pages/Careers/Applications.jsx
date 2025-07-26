@@ -8,8 +8,6 @@ import {
   Eye,
   XCircle,
   Search,
-  Filter,
-  RefreshCcw,
   Plus
 } from "lucide-react";
 import { Link } from 'react-router-dom';
@@ -139,7 +137,7 @@ const Applications = () => {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-semibold">Applications</h1>
         <Link to="/careers/create">
-          <button className="text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 px-4 py-2">
+          <button className="text-white rounded hover:bg-blue-700 flex items-center gap-2 bg-blue-600 px-4 py-2">
             <Plus className="w-4 h-4" />
             <span className="text-sm sm:text-base">Create Job</span>
           </button>
@@ -185,7 +183,6 @@ const Applications = () => {
             <input type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="px-4 py-2 border rounded-lg text-gray-600" />
           </div>
           <div className="flex gap-2 justify-end w-full md:w-auto">
-            <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"><Filter className="w-5 h-5" /></button>
           </div>
         </div>
       </div>
@@ -222,7 +219,7 @@ const Applications = () => {
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">{applicant.experience} years</td>
                 <td className="px-4 py-3">
-                  <span className={`text-xs px-2 py-1 rounded-full ${getStatusClasses(applicant.status)}`}>{applicant.status}</span>
+                  <span className={`text-xs px-2 py-1 whitespace-nowrap rounded-full ${getStatusClasses(applicant.status)}`}>{applicant.status}</span>
                 </td>
                 <td className="px-4 py-3 hidden lg:table-cell text-sm">{applicant.appliedDate}</td>
                 <td className="px-4 py-3 hidden sm:table-cell">
