@@ -24,6 +24,7 @@ const Applications = () => {
       experience: '5',
       status: 'Under Review',
       appliedDate: '2025-01-08',
+      resume: 'https://example.com/resumes/john_smith.pdf'
     },
     {
       id: 2,
@@ -35,6 +36,7 @@ const Applications = () => {
       experience: '3',
       status: 'Shortlisted',
       appliedDate: '2025-01-07',
+      resume: 'https://example.com/resumes/sarah_johnson.pdf'
     },
     {
       id: 3,
@@ -46,6 +48,7 @@ const Applications = () => {
       experience: '4',
       status: 'New',
       appliedDate: '2025-01-09',
+      resume: 'https://example.com/resumes/michael_chen.pdf'
     },
     {
       id: 4,
@@ -57,6 +60,7 @@ const Applications = () => {
       experience: '1',
       status: 'New',
       appliedDate: '2025-01-09',
+      resume: 'https://example.com/resumes/emily_davis.pdf'
     },
   ];
 
@@ -73,6 +77,7 @@ const Applications = () => {
     experience: '',
     status: '',
   });
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
 
   const filteredApplications = applications.filter((app) => {
     const matchSearch =
@@ -100,7 +105,7 @@ const Applications = () => {
   };
 
   const handleView = (app) => {
-    alert(`Applicant Details:\n\nName: ${app.name}\nEmail: ${app.email}\nPosition: ${app.position}\nExperience: ${app.experience} years\nStatus: ${app.status}`);
+    setSelectedApplicant(app);
   };
 
   const handleEditSave = () => {
@@ -171,8 +176,6 @@ const Applications = () => {
             </select>
             <input type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="px-4 py-2 border rounded-lg text-gray-600" />
           </div>
-          <div className="flex gap-2 justify-end w-full md:w-auto">
-          </div>
         </div>
       </div>
 
@@ -212,10 +215,10 @@ const Applications = () => {
                 </td>
                 <td className="px-4 py-3 hidden lg:table-cell text-sm">{applicant.appliedDate}</td>
                 <td className="px-4 py-3 hidden sm:table-cell">
-                  <button className="text-blue-600 text-sm flex items-center gap-1">
+                  <a href={applicant.resume} target="_blank" className="text-blue-600 text-sm flex items-center gap-1">
                     <Download className="w-4 h-4" />
                     Download
-                  </button>
+                  </a>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
@@ -229,29 +232,39 @@ const Applications = () => {
         </table>
       </div>
 
-      {/* Edit Modal */}
-      {editingReview && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-            <h2 className="text-lg font-bold mb-4">Edit Application</h2>
-            <div className="space-y-3">
-              <InputField label="Name" value={editForm.name} onChange={v => setEditForm(f => ({ ...f, name: v }))} />
-              <InputField label="Position" value={editForm.position} onChange={v => setEditForm(f => ({ ...f, position: v }))} />
-              <InputField label="Department" value={editForm.department} onChange={v => setEditForm(f => ({ ...f, department: v }))} />
-              <InputField label="Experience (years)" type="number" value={editForm.experience} onChange={v => setEditForm(f => ({ ...f, experience: v }))} />
-              <div>
-                <label className="block text-base font-semibold">Status</label>
-                <select className="w-full border rounded px-2 py-1" value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))}>
-                  <option value="New">New</option>
-                  <option value="Under Review">Under Review</option>
-                  <option value="Shortlisted">Shortlisted</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
+      {/* View Modal */}
+      {selectedApplicant && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md relative shadow-lg">
+            <button
+              onClick={() => setSelectedApplicant(null)}
+              className="absolute top-3 right-4 text-gray-600 hover:text-gray-800 text-2xl"
+            >
+              &times;
+            </button>
+
+            <h2 className="text-xl font-semibold mb-4">Applicant Details</h2>
+
+            <div className="space-y-2 text-gray-700 text-sm">
+              <p><span className="font-semibold">Name:</span> {selectedApplicant.name}</p>
+              <p><span className="font-semibold">Email:</span> {selectedApplicant.email}</p>
+              <p><span className="font-semibold">Position:</span> {selectedApplicant.position}</p>
+              <p><span className="font-semibold">Department:</span> {selectedApplicant.department}</p>
+              <p><span className="font-semibold">Experience:</span> {selectedApplicant.experience} years</p>
+              <p><span className="font-semibold">Status:</span> {selectedApplicant.status}</p>
+              <p><span className="font-semibold">Applied On:</span> {selectedApplicant.appliedDate}</p>
+
+              <div className="mt-4">
+                <span className="font-semibold">Resume:</span>{" "}
+                <a
+                  href={selectedApplicant.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  View Resume
+                </a>
               </div>
-            </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleEditSave}>Save</button>
-              <button className="bg-gray-300 px-4 py-2 rounded" onClick={() => setEditingReview(null)}>Cancel</button>
             </div>
           </div>
         </div>
