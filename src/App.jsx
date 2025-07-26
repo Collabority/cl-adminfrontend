@@ -1,6 +1,6 @@
 import "./App.css";
 
-import React, { Suspense, lazy, useContext, useEffect } from "react";
+import { Suspense, lazy, useContext } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Loader from "./components/Loader";
 import { AppContext } from "./context/AppContext";

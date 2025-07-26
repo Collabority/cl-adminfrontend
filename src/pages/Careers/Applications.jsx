@@ -103,17 +103,6 @@ const Applications = () => {
     alert(`Applicant Details:\n\nName: ${app.name}\nEmail: ${app.email}\nPosition: ${app.position}\nExperience: ${app.experience} years\nStatus: ${app.status}`);
   };
 
-  const handleEdit = (app) => {
-    setEditingReview(app.id);
-    setEditForm({
-      name: app.name,
-      position: app.position,
-      department: app.department,
-      experience: app.experience,
-      status: app.status,
-    });
-  };
-
   const handleEditSave = () => {
     setApplications(applications =>
       applications.map(app =>
@@ -231,7 +220,6 @@ const Applications = () => {
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
                     <button className="text-blue-600" onClick={() => handleView(applicant)}><Eye className="w-4 h-4" /></button>
-                    <button className="text-green-600" onClick={() => handleEdit(applicant)}><Pencil className="w-4 h-4" /></button>
                     <button className="text-red-600" onClick={() => handleDelete(applicant.id)}><XCircle className="w-4 h-4" /></button>
                   </div>
                 </td>
