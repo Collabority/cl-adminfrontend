@@ -11,13 +11,12 @@ import { useSelector } from "react-redux";
 
 const CreateBlogPost = () => {
   const { createBlog, loading } = useCreateBlog();
-  
 
   // console.log(admin);
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
-    author:"",
+    author: "",
     category: "",
     tags: [],
     metaTitle: "",
@@ -59,6 +58,13 @@ const CreateBlogPost = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
   const coverImage = () => (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4 ">
       <h1 className="text-2xl font-semibold text-black">Cover Image</h1>
