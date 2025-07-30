@@ -1,8 +1,7 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { PiNotePencilBold } from "react-icons/pi";
 import { MdDelete } from "react-icons/md";
-// TODO: Import icons and utilities as needed
+import { useState } from "react";
 
 const services = [
   // Example data
@@ -13,7 +12,8 @@ const services = [
     category: "Development",
     status: "Published",
     date: "Jan 15, 2025",
-    coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
+    coverImage:
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: 2,
@@ -22,7 +22,8 @@ const services = [
     category: "Development",
     status: "Published",
     date: "Jan 12, 2025",
-    coverImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
+    coverImage:
+      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: 3,
@@ -31,7 +32,8 @@ const services = [
     category: "Consulting",
     status: "Draft",
     date: "Jan 10, 2025",
-    coverImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+    coverImage:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: 4,
@@ -40,12 +42,23 @@ const services = [
     category: "Design",
     status: "Published",
     date: "Jan 8, 2025",
-    coverImage: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+    coverImage:
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
   },
 ];
 
 const ServicesManagement = () => {
-  // TODO: Add state and handlers for CRUD, filters, etc.
+  const [serviceList, setServiceList] = useState(services);
+  const handleDelete = (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this service?"
+    );
+    if (!confirmDelete) return;
+
+    const updatedList = serviceList.filter((service) => service.id !== id);
+    setServiceList(updatedList);
+  };
+
   return (
     <div className="flex flex-col gap-6 p-4">
       <div className="flex justify-end">
@@ -60,26 +73,36 @@ const ServicesManagement = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-base text-gray-600 font-semibold">Total Services</h2>
+            <h2 className="text-base text-gray-600 font-semibold">
+              Total Services
+            </h2>
             <h1 className="text-2xl font-bold">{services.length}</h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
             <h2 className="text-base text-gray-600 font-semibold">Published</h2>
-            <h1 className="text-2xl font-bold text-green-600">{services.filter(s => s.status === 'Published').length}</h1>
+            <h1 className="text-2xl font-bold text-green-600">
+              {services.filter((s) => s.status === "Published").length}
+            </h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
             <h2 className="text-base text-gray-600 font-semibold">Drafts</h2>
-            <h1 className="text-2xl font-bold text-red-600">{services.filter(s => s.status === 'Draft').length}</h1>
+            <h1 className="text-2xl font-bold text-red-600">
+              {services.filter((s) => s.status === "Draft").length}
+            </h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-base text-gray-600 font-semibold">Categories</h2>
-            <h1 className="text-2xl font-bold text-purple-500">{[...new Set(services.map(s => s.category))].length}</h1>
+            <h2 className="text-base text-gray-600 font-semibold">
+              Categories
+            </h2>
+            <h1 className="text-2xl font-bold text-purple-500">
+              {[...new Set(services.map((s) => s.category))].length}
+            </h1>
           </div>
         </div>
       </div>
@@ -106,9 +129,9 @@ const ServicesManagement = () => {
       </div>
       {/* Service cards grid (like blog cards) */}
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {services.map((service, index) => (
+       {serviceList.map((service, index) => (
           <div
-            key={service.id}
+            key={index}
             className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
           >
             {/* Cover Image */}
@@ -144,7 +167,10 @@ const ServicesManagement = () => {
                 <Link to={`/services/edit/${service.id}`}>
                   <PiNotePencilBold className="cursor-pointer text-blue-500 hover:text-blue-800 transition" />
                 </Link>
-                <button className="cursor-pointer text-red-600 hover:text-red-800 transition">
+                <button
+                  onClick={() => handleDelete(service.id)}
+                  className="cursor-pointer text-red-600 hover:text-red-800 transition"
+                >
                   <MdDelete />
                 </button>
               </div>
@@ -156,4 +182,4 @@ const ServicesManagement = () => {
   );
 };
 
-export default ServicesManagement; 
+export default ServicesManagement;
