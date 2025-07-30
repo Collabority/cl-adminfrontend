@@ -17,6 +17,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/Login"))
 const Reviews = lazy(() => import("./pages/Reviews"));
 const AddReview = lazy(() => import("./pages/AddReview"));
+const EditReview = lazy(() => import("./pages/EditReview"));
 const ContactQueries = lazy(() => import("./pages/ContactQueries"));
 const ServicesManagement = lazy(() => import("./pages/ServicesManagement"));
 const CreateService = lazy(() => import("./pages/CreateService"));
@@ -72,6 +73,7 @@ const App = () => {
               <Route path="/login" element={<Login/>} />
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/reviews/add" element={<AddReview />} />
+              <Route path="/reviews/edit/:id" element={<EditReview />} />
               <Route path="/contact" element={<ContactQueries />} />
               
              
