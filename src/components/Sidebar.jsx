@@ -4,7 +4,7 @@ import { BsGraphUp } from "react-icons/bs";
 import { FaBlog, FaUsers } from "react-icons/fa";
 import { PiSuitcaseSimpleBold } from "react-icons/pi";
 import { MdOutlineMiscellaneousServices } from "react-icons/md";
-import { FaStar, FaNewspaper } from "react-icons/fa6";
+import { FaStar, FaNewspaper, FaHandHoldingDroplet } from "react-icons/fa6";
 import { IoMdMail } from "react-icons/io";
 import { RxExit } from "react-icons/rx";
 import { AppContext } from "../context/AppContext";
@@ -44,7 +44,6 @@ const Sidebar = () => {
       isActive(tabPath) ? "bg-blue-100" : ""
     }`;
 
-
   const getIconClasses = (tabPath) =>
     `text-2xl group-hover:text-blue-500 ${
       isActive(tabPath) ? "text-blue-500" : "text-black"
@@ -71,7 +70,6 @@ const Sidebar = () => {
         <Link to="/" className={getItemClasses("/")}>
           <BsGraphUp className={getIconClasses("/")} />
           <h5 className={getTextClasses("/")}>Dashboard</h5>
-
         </Link>
 
         <Link to="/blog" className={getItemClasses("/blog")}>
@@ -85,7 +83,9 @@ const Sidebar = () => {
         </Link>
 
         <Link to="/services" className={getItemClasses("/services")}>
-          <MdOutlineMiscellaneousServices className={getIconClasses("/services")} />
+          <MdOutlineMiscellaneousServices
+            className={getIconClasses("/services")}
+          />
           <h5 className={getTextClasses("/services")}>Services</h5>
         </Link>
 
@@ -108,11 +108,15 @@ const Sidebar = () => {
           <FaUsers className={getIconClasses("/users")} />
           <h5 className={getTextClasses("/users")}>User Management</h5>
         </Link>
+
+        <Link to="/createCampaign" className={getItemClasses("/createCampaign")}>
+          <FaHandHoldingDroplet className={getIconClasses("/createCampaign")} />
+          <h5 className={getTextClasses("/createCampaign")}>Create Campaign</h5>
+        </Link>
       </div>
 
       {/* Admin Section at Bottom */}
       <div className="pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
-
         <img
           src="https://randomuser.me/api/portraits/men/32.jpg"
           alt="Admin"
@@ -136,5 +140,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
-

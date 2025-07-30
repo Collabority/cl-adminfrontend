@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { FaSave, FaTelegramPlane, FaCloudUploadAlt } from "react-icons/fa";
+import { FaSave, FaCloudUploadAlt } from "react-icons/fa";
 import QuillEditor from "../components/CreateBlogContent";
 
 // Dummy data to simulate backend or context (replace with API/context in real app)
