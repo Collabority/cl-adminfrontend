@@ -25,6 +25,10 @@ const EditService = lazy(() => import("./pages/EditService"));
 const Applications = lazy(() => import("./pages/Careers/Applications"));
 const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
 const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
+const AddNewSubscriber = lazy(() => import("./pages/AddNewSubscriber"));
+const CreateCampaign = lazy(() => import("./pages/CreateCampaign"));
+const EditSubscriber = lazy(() => import("./pages/EditSubscriber"));
+
 const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
 const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
 const Signup = lazy(()=> import("./pages/Signup"))
@@ -69,6 +73,10 @@ const App = () => {
               <Route path="/services/create" element={<CreateService />} />  
               <Route path="/services/edit/:id" element={<EditService />} />
               <Route path="/newsletter" element={<NewsletterManagement />} />
+              <Route path="/addSubscriber" element={<AddNewSubscriber />} />
+              <Route path="/createCampaign" element={<CreateCampaign />} />
+              <Route path="/editSubscriber" element={<EditSubscriber/>}/>
+
 
               <Route path="/login" element={<Login/>} />
               <Route path="/reviews" element={<Reviews />} />
