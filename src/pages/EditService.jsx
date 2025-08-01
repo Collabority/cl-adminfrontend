@@ -3,9 +3,15 @@ import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaSave, FaTelegramPlane } from "react-icons/fa";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import QuillEditor from "../components/CreateBlogContent";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import instance from "../lib/axios";
 
 const EditService = () => {
   // Prefilled mock data for demonstration
+  const { id } = useParams();
+  // console.log(id);
+
   const [formData, setFormData] = useState({
     title: "Web Development",
     category: "Development",
@@ -14,9 +20,21 @@ const EditService = () => {
     focusKeyword: "web development, IT services",
     status: "published",
     publishDate: "2025-01-15",
-    coverImage: null,
+    coverImage: "",
     content: "We build custom websites tailored to your business needs.",
   });
+
+  useEffect(() => {
+    async function fetchServiceData() {
+      try {
+        const response = await instance.get(`/services/${id}`);
+        setFormData(response.data?.data || {});
+      } catch (error) {
+        console.error("Error fetching service data:", error);
+      }
+    }
+    fetchServiceData();
+  }, [id]);
 
   const fileInputRef = useRef(null);
 
@@ -40,9 +58,7 @@ const EditService = () => {
       <h1 className="text-xl font-semibold text-black">Cover Image</h1>
       <div className="flex flex-col items-center gap-4 border-3 border-dashed border-gray-300 hover:border-[#1447E6] transition-all duration-300 p-8 sm:p-10 md:p-12 rounded-md text-center w-full">
         <FaCloudUploadAlt className="text-5xl text-gray-400" />
-        <h2 className="text-lg font-semibold text-black">
-          Upload Cover Image
-        </h2>
+        <h2 className="text-lg font-semibold text-black">Upload Cover Image</h2>
         <h3 className="font-semibold text-gray-700 text-base">
           Click to browse Choose File
         </h3>
@@ -82,7 +98,7 @@ const EditService = () => {
         </p>
         {formData.coverImage && (
           <img
-            src={URL.createObjectURL(formData.coverImage)}
+            src={formData.coverImage}
             alt="Preview"
             className="mt-2 max-h-20 rounded-lg"
           />
@@ -92,7 +108,7 @@ const EditService = () => {
   );
 
   return (
-    <form className="flex flex-col gap-6 p-4" >
+    <form className="flex flex-col gap-6 p-4">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <h3 className="text-gray-700 font-semibold flex items-center text-lg">
@@ -101,9 +117,7 @@ const EditService = () => {
         </h3>
       </div>
       {/* Page Title */}
-      <h1 className="text-2xl font-semibold">
-        Edit Service
-      </h1>
+      <h1 className="text-2xl font-semibold">Edit Service</h1>
       <p className="text-gray-600 font-semibold text-base">
         Update the details below to edit and publish your service.
       </p>
@@ -114,14 +128,18 @@ const EditService = () => {
           type="text"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.title}
-          onChange={e => setFormData({ ...formData, title: e.target.value })}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
         />
-        <label className="font-semibold text-gray-700 text-base">Category</label>
+        <label className="font-semibold text-gray-700 text-base">
+          Category
+        </label>
         <select
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.category}
-          onChange={e => setFormData({ ...formData, category: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, category: e.target.value })
+          }
           required
         >
           <option value="">Select Category</option>
@@ -138,51 +156,69 @@ const EditService = () => {
       </div>
       {/* SEO Settings */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <label className="font-semibold text-gray-700 text-base">Meta Title</label>
+        <label className="font-semibold text-gray-700 text-base">
+          Meta Title
+        </label>
         <input
           type="text"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.metaTitle}
-          onChange={e => setFormData({ ...formData, metaTitle: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, metaTitle: e.target.value })
+          }
         />
-        <label className="font-semibold text-gray-700 text-base">Meta Description</label>
+        <label className="font-semibold text-gray-700 text-base">
+          Meta Description
+        </label>
         <textarea
           className="border border-gray-300 rounded-lg px-3 py-2 min-h-[80px]"
           value={formData.metaDescription}
-          onChange={e => setFormData({ ...formData, metaDescription: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, metaDescription: e.target.value })
+          }
         />
-        <label className="font-semibold text-gray-700 text-base">Focus Keyword</label>
+        <label className="font-semibold text-gray-700 text-base">
+          Focus Keyword
+        </label>
         <input
           type="text"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.focusKeyword}
-          onChange={e => setFormData({ ...formData, focusKeyword: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, focusKeyword: e.target.value })
+          }
         />
       </div>
       {/* Publishing Options */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <label className="font-semibold text-gray-700 text-base">Publishing Status</label>
+        <label className="font-semibold text-gray-700 text-base">
+          Publishing Status
+        </label>
         <select
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.status}
-          onChange={e => setFormData({ ...formData, status: e.target.value })}
+          onChange={(e) => setFormData({ ...formData, status: e.target.value })}
         >
           <option value="draft">Draft</option>
           <option value="published">Published</option>
         </select>
-        <label className="font-semibold text-gray-700 text-base">Publish Date</label>
+        <label className="font-semibold text-gray-700 text-base">
+          Publish Date
+        </label>
         <input
           type="date"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.publishDate}
-          onChange={e => setFormData({ ...formData, publishDate: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, publishDate: e.target.value })
+          }
         />
       </div>
       {/* Buttons aligned right */}
       <div className="flex justify-end gap-3 mt-4">
         <button
           type="button"
-          onClick={e => handleSubmit(e, "draft")}
+          onClick={(e) => handleSubmit(e, "draft")}
           name="draft"
           className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-white font-semibold text-base text-gray-600 cursor-pointer"
         >
@@ -191,7 +227,7 @@ const EditService = () => {
         </button>
         <button
           type="button"
-          onClick={e => handleSubmit(e, "published")}
+          onClick={(e) => handleSubmit(e, "published")}
           name="publish"
           className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-[#1447E6] font-semibold text-white text-base cursor-pointer hover:bg-[#0f36a8]"
         >
@@ -203,4 +239,4 @@ const EditService = () => {
   );
 };
 
-export default EditService; 
+export default EditService;

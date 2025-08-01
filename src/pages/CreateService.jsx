@@ -3,7 +3,8 @@ import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaSave, FaTelegramPlane } from "react-icons/fa";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import QuillEditor from "../components/CreateBlogContent";
-import { useCreateService } from "../hooks/serviceHooks";
+import { useCreateService } from "../hooks/servicesHooks/useCreateService";
+
 // TODO: Import or create ServiceBasicInfoSection, ServiceContentSection, SEOSettingsSection, PublishingOptionsSection
 
 const CreateService = () => {

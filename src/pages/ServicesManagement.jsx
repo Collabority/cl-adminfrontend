@@ -2,50 +2,68 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { PiNotePencilBold } from "react-icons/pi";
 import { MdDelete } from "react-icons/md";
+import useGetAllServices from "../hooks/servicesHooks/useGetAllServices";
+import instance from "../lib/axios";
+
 // TODO: Import icons and utilities as needed
 
-const services = [
-  // Example data
-  {
-    id: 1,
-    title: "Web Development",
-    description: "Custom website development services",
-    category: "Development",
-    status: "Published",
-    date: "Jan 15, 2025",
-    coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    id: 2,
-    title: "Mobile App Development",
-    description: "iOS and Android app development",
-    category: "Development",
-    status: "Published",
-    date: "Jan 12, 2025",
-    coverImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    id: 3,
-    title: "Business Consulting",
-    description: "Strategic business consultation",
-    category: "Consulting",
-    status: "Draft",
-    date: "Jan 10, 2025",
-    coverImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    id: 4,
-    title: "UI/UX Design",
-    description: "User interface and experience design",
-    category: "Design",
-    status: "Published",
-    date: "Jan 8, 2025",
-    coverImage: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
-  },
-];
+// const services = [
+//   // Example data
+//   {
+//     id: 1,
+//     title: "Web Development",
+//     description: "Custom website development services",
+//     category: "Development",
+//     status: "Published",
+//     date: "Jan 15, 2025",
+//     coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
+//   },
+//   {
+//     id: 2,
+//     title: "Mobile App Development",
+//     description: "iOS and Android app development",
+//     category: "Development",
+//     status: "Published",
+//     date: "Jan 12, 2025",
+//     coverImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
+//   },
+//   {
+//     id: 3,
+//     title: "Business Consulting",
+//     description: "Strategic business consultation",
+//     category: "Consulting",
+//     status: "Draft",
+//     date: "Jan 10, 2025",
+//     coverImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+//   },
+//   {
+//     id: 4,
+//     title: "UI/UX Design",
+//     description: "User interface and experience design",
+//     category: "Design",
+//     status: "Published",
+//     date: "Jan 8, 2025",
+//     coverImage: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+//   },
+// ];
 
 const ServicesManagement = () => {
   // TODO: Add state and handlers for CRUD, filters, etc.
+  const handleDeleteService = async (serviceId) => {
+    try {
+      await instance.delete(`/services/delete/${serviceId}`);
+
+      console.log("Service deleted successfully");
+    } catch (error) {
+      console.error("Error deleting service:", error);
+    }
+  };
+
+  const { services, loading } = useGetAllServices();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="flex flex-col gap-6 p-4">
       <div className="flex justify-end">
@@ -60,26 +78,36 @@ const ServicesManagement = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-base text-gray-600 font-semibold">Total Services</h2>
+            <h2 className="text-base text-gray-600 font-semibold">
+              Total Services
+            </h2>
             <h1 className="text-2xl font-bold">{services.length}</h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
             <h2 className="text-base text-gray-600 font-semibold">Published</h2>
-            <h1 className="text-2xl font-bold text-green-600">{services.filter(s => s.status === 'Published').length}</h1>
+            <h1 className="text-2xl font-bold text-green-600">
+              {services.filter((s) => s.status === "Published").length}
+            </h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
             <h2 className="text-base text-gray-600 font-semibold">Drafts</h2>
-            <h1 className="text-2xl font-bold text-red-600">{services.filter(s => s.status === 'Draft').length}</h1>
+            <h1 className="text-2xl font-bold text-red-600">
+              {services.filter((s) => s.status === "Draft").length}
+            </h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-base text-gray-600 font-semibold">Categories</h2>
-            <h1 className="text-2xl font-bold text-purple-500">{[...new Set(services.map(s => s.category))].length}</h1>
+            <h2 className="text-base text-gray-600 font-semibold">
+              Categories
+            </h2>
+            <h1 className="text-2xl font-bold text-purple-500">
+              {[...new Set(services.map((s) => s.category))].length}
+            </h1>
           </div>
         </div>
       </div>
@@ -108,7 +136,7 @@ const ServicesManagement = () => {
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
         {services.map((service, index) => (
           <div
-            key={service.id}
+            key={service._id}
             className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
           >
             {/* Cover Image */}
@@ -125,7 +153,7 @@ const ServicesManagement = () => {
                     : "bg-red-100 text-red-700"
                 }`}
               >
-                {service.status}
+                {service.publishStatus}
               </span>
             </div>
             {/* Content */}
@@ -141,11 +169,11 @@ const ServicesManagement = () => {
                 {service.description}
               </p>
               <div className="flex justify-end items-center gap-3 text-xl text-gray-500 mt-2">
-                <Link to={`/services/edit/${service.id}`}>
+                <Link to={`/services/edit/${service._id}`}>
                   <PiNotePencilBold className="cursor-pointer text-blue-500 hover:text-blue-800 transition" />
                 </Link>
-                <button className="cursor-pointer text-red-600 hover:text-red-800 transition">
-                  <MdDelete />
+                <button onClick={() => handleDeleteService(service._id)}>
+                  <MdDelete className="cursor-pointer text-red-600 hover:text-red-800 transition" />
                 </button>
               </div>
             </div>
@@ -156,4 +184,4 @@ const ServicesManagement = () => {
   );
 };
 
-export default ServicesManagement; 
+export default ServicesManagement;

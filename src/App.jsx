@@ -4,7 +4,7 @@ import AppRoutes from "./routes/AppRoutes";
 import { useAuthCheck } from "./hooks/useAuthCheck";
 
 const App = () => {
-  const loading = useAuthCheck();
+  const { loading, error } = useAuthCheck();
 
   if (loading) {
     return (

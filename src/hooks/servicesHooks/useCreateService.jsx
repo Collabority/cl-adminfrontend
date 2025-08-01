@@ -1,5 +1,5 @@
 import { useState } from "react";
-import instance from "../lib/axios";
+import instance from "../../lib/axios";
 
 const useCreateService = () => {
   const [loading, setLoading] = useState(false);

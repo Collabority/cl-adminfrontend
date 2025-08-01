@@ -6,8 +6,8 @@ import instance from "../../lib/axios";
 const BlogsCard = ({ filteredPosts }) => {
   const handleDeleteBlog = async (postId) => {
     try {
-      await instance.delete(`http://localhost:3000/blogs/delete/${postId}`);
-      
+      await instance.delete(`/blogs/delete/${postId}`);
+
       console.log("Blog post deleted successfully");
     } catch (error) {
       console.error("Error deleting blog post:", error);

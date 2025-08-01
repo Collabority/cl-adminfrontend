@@ -10,7 +10,7 @@ import { AppContext } from "../context/AppContext";
 const Navbar = () => {
   const { activeTab, isSidebarOpen, setIsSidebarOpen, darkMode, setDarkMode } =
     useContext(AppContext);
-  console.log(darkMode);
+  // console.log(darkMode);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
