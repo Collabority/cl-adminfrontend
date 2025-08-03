@@ -5,7 +5,7 @@ import { MdDelete } from "react-icons/md";
 import useGetAllServices from "../hooks/servicesHooks/useGetAllServices";
 import instance from "../lib/axios";
 
-// TODO: Import icons and utilities as needed
+
 
 // const services = [
 //   // Example data
@@ -48,7 +48,7 @@ import instance from "../lib/axios";
 // ];
 
 const ServicesManagement = () => {
-  // TODO: Add state and handlers for CRUD, filters, etc.
+
   const handleDeleteService = async (serviceId) => {
     try {
       await instance.delete(`/services/delete/${serviceId}`);
@@ -165,9 +165,10 @@ const ServicesManagement = () => {
               <h2 className="text-lg font-semibold text-gray-800">
                 {service.title}
               </h2>
-              <p className="text-base font-semibold text-gray-600 line-clamp-3">
-                {service.description}
-              </p>
+              <div
+                className="text-base font-semibold text-gray-600 line-clamp-3"
+                dangerouslySetInnerHTML={{ __html: service.description }}
+              />
               <div className="flex justify-end items-center gap-3 text-xl text-gray-500 mt-2">
                 <Link to={`/services/edit/${service._id}`}>
                   <PiNotePencilBold className="cursor-pointer text-blue-500 hover:text-blue-800 transition" />

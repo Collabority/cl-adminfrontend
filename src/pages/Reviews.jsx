@@ -1,83 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useReviewService } from "../hooks/ReviewHooks/useReviewService";
-
-const stats = [
-  {
-    label: "Total Reviews",
-    value: 127,
-    icon: (
-      <span className="bg-blue-100 p-2 rounded-full">
-        <svg
-          className="w-5 h-5 text-blue-500"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.045 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z" />
-        </svg>
-      </span>
-    ),
-    sub: "+12% from last month",
-    subClass: "text-green-600",
-  },
-  {
-    label: "Average Rating",
-    value: 4.8,
-    icon: (
-      <span className="bg-yellow-100 p-2 rounded-full">
-        <svg
-          className="w-5 h-5 text-yellow-500"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path d="M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2M16 11V7a4 4 0 00-8 0v4M12 17v.01" />
-        </svg>
-      </span>
-    ),
-    sub: <span className="flex text-yellow-400">{"★".repeat(5)}</span>,
-  },
-  {
-    label: "Published",
-    value: 89,
-    icon: (
-      <span className="bg-green-100 p-2 rounded-full">
-        <svg
-          className="w-5 h-5 text-green-500"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fillRule="evenodd"
-            d="M16.707 5.293a1 1 0 00-1.414 0L9 11.586 6.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </span>
-    ),
-    sub: "70% of total",
-  },
-  {
-    label: "Pending",
-    value: 38,
-    icon: (
-      <span className="bg-orange-100 p-2 rounded-full">
-        <svg
-          className="w-5 h-5 text-orange-500"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path d="M12 8v4l3 3" />
-          <circle cx="12" cy="12" r="10" />
-        </svg>
-      </span>
-    ),
-    sub: "Awaiting approval",
-  },
-];
+import TotalReviewsIcon from "../assets/icons/TotalReviewsIcon";
+import AverageReviewsIcon from "../assets/icons/AverageReviewsIcon";
+import PublishedReviewsIcon from "../assets/icons/PublishedReviewsIcon";
+import PendingReviewsIcon from "../assets/icons/PendingReviewsIcon";
 
 const statusColors = {
   Published: "bg-green-100 text-green-700",
@@ -92,24 +19,25 @@ const Reviews = () => {
     updateReview,
     deleteReview,
     updateStatus,
-    loading,
-    error,
+    getReviewHighlights,
   } = useReviewService();
 
   // Loading and error states
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
 
-  // Fetch reviews when component mounts
+  const [highlights, setHighlights] = useState(null);
+
+  // Fetch reviews and highlights when component mounts
   useEffect(() => {
     const fetchReviews = async () => {
       setIsLoading(true);
       setApiError(null);
       try {
         const response = await getAllReviews();
-        // Fix: set only the reviews array, not the whole response
+        const highlightsRes = await getReviewHighlights();
         setReviews(response.data?.reviews || []);
-        console.log(response.data?.reviews);
+        setHighlights(highlightsRes?.data || {});
       } catch (error) {
         setApiError("Failed to fetch reviews.");
         console.error("Failed to fetch reviews:", error);
@@ -118,7 +46,7 @@ const Reviews = () => {
       }
     };
     fetchReviews();
-  }, [getAllReviews]);
+  }, [getAllReviews, getReviewHighlights]);
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
@@ -135,13 +63,81 @@ const Reviews = () => {
     status: "Published",
   });
 
+  // Dynamic stats for topbar
+  const totalReviews = highlights?.totalReviews ?? reviews.length;
+  const publishedCount =
+    highlights?.published ??
+    reviews.filter((r) => r.status === "Published").length;
+  const pendingCount =
+    highlights?.pending ?? reviews.filter((r) => r.status === "Pending").length;
+  const draftCount =
+    highlights?.draft ?? reviews.filter((r) => r.status === "Draft").length;
+  const avgRating =
+    highlights?.averageRating ??
+    (reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) /
+          reviews.length
+        ).toFixed(1)
+      : "0.0");
+
+  const reviewStats = [
+    {
+      label: "Total Reviews",
+      value: totalReviews,
+      icon: <TotalReviewsIcon />,
+      sub: highlights?.totalReviewsChange
+        ? `${highlights.totalReviewsChange > 0 ? "+" : ""}${
+            highlights.totalReviewsChange
+          }% from last month`
+        : "",
+      subClass:
+        highlights?.totalReviewsChange > 0
+          ? "text-green-600"
+          : highlights?.totalReviewsChange < 0
+          ? "text-red-600"
+          : "text-gray-500",
+    },
+    {
+      label: "Average Rating",
+      value: avgRating,
+      icon: <AverageReviewsIcon />,
+      sub: (
+        <span className="flex text-yellow-400">
+          {"★".repeat(Math.round(avgRating))}
+          {"☆".repeat(5 - Math.round(avgRating))}
+        </span>
+      ),
+    },
+    {
+      label: "Published",
+      value: publishedCount,
+      icon: <PublishedReviewsIcon />,
+      sub: totalReviews
+        ? `${((publishedCount / totalReviews) * 100).toFixed(0)}% of total`
+        : "0%",
+    },
+    {
+      label: "Pending",
+      value: pendingCount,
+      icon: <PendingReviewsIcon />,
+      sub: `${pendingCount} awaiting`,
+    },
+    {
+      label: "Drafts",
+      value: draftCount,
+      icon: <TotalReviewsIcon />,
+      sub: `${draftCount} drafts`,
+    },
+  ];
+
   // Filtering
   const filtered = reviews.filter(
     (r) =>
       (status === "All" || r.status === status) &&
       (rating === "All" || r.rating === Number(rating)) &&
       (r.name?.toLowerCase().includes(search.toLowerCase()) ||
-        r.review?.toLowerCase().includes(search.toLowerCase()))
+        r.reviewContent?.toLowerCase().includes(search.toLowerCase()))
   );
 
   // Sorting
@@ -166,7 +162,7 @@ const Reviews = () => {
     try {
       await updateStatus(id, newStatus);
       setReviews((reviews) =>
-        reviews.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
+        reviews.map((r) => (r._id === id ? { ...r, status: newStatus } : r))
       );
     } catch (err) {
       setApiError("Failed to update status.");
@@ -176,13 +172,17 @@ const Reviews = () => {
   // View review
   const handleView = (r) => {
     alert(
-      `Review Details:\n\nName: ${r.name}\nTitle: ${r.title}\nRating: ${r.rating}\nReview: ${r.review}\nStatus: ${r.status}`
+      `Review Details:\n\nName: ${r.name}\nTitle: ${
+        r.designation || r.title
+      }\nCompany: ${r.companyName || ""}\nRating: ${r.rating}\nReview: ${
+        r.reviewContent
+      }\nStatus: ${r.status}`
     );
   };
 
   // Reply to review
   const handleReply = (r) => {
-    alert(`Reply to: ${r.name} (${r.title})`);
+    alert(`Reply to: ${r.name} (${r.title || r.designation})`);
     if (r.email) {
       window.location.href = `mailto:${r.email}`;
     }
@@ -190,11 +190,11 @@ const Reviews = () => {
 
   // Edit review
   const handleEdit = (r) => {
-    setEditingReview(r.id);
+    setEditingReview(r._id);
     setEditForm({
       name: r.name,
-      title: r.title,
-      review: r.review,
+      title: r.designation || r.title,
+      review: r.reviewContent || r.review,
       rating: r.rating,
       status: r.status,
     });
@@ -205,7 +205,9 @@ const Reviews = () => {
     try {
       await updateReview(editingReview, editForm);
       setReviews((reviews) =>
-        reviews.map((r) => (r.id === editingReview ? { ...r, ...editForm } : r))
+        reviews.map((r) =>
+          r._id === editingReview ? { ...r, ...editForm } : r
+        )
       );
       setEditingReview(null);
       alert("Review updated successfully!");
@@ -219,7 +221,7 @@ const Reviews = () => {
     if (window.confirm("Are you sure you want to delete this review?")) {
       try {
         await deleteReview(id);
-        setReviews((reviews) => reviews.filter((r) => r.id !== id));
+        setReviews((reviews) => reviews.filter((r) => r._id !== id));
       } catch (err) {
         setApiError("Failed to delete review.");
       }
@@ -236,6 +238,7 @@ const Reviews = () => {
 
   return (
     <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen">
+      {/* Topbar */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4 px-2 sm:px-4 pt-6 pb-2">
         <div className="flex items-center text-base font-semibold text-gray-700">
           <span>Reviews &amp; Testimonials</span>
@@ -277,14 +280,15 @@ const Reviews = () => {
         </div>
       </div>
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {stats.map((s, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6">
+        {reviewStats.map((s, i) => (
           <div
             key={i}
             className="bg-white rounded-xl shadow p-4 sm:p-5 flex flex-col gap-2"
           >
             <div className="flex items-center gap-2 text-gray-500 text-xs sm:text-sm font-medium">
-              {s.label} {s.icon}
+              {s.icon}
+              <span>{s.label}</span>
             </div>
             <div className="text-2xl sm:text-3xl font-bold">{s.value}</div>
             {s.sub && (
@@ -363,7 +367,7 @@ const Reviews = () => {
             </thead>
             <tbody>
               {sorted.map((r) => (
-                <tr key={r.id || r._id} className="border-b last:border-b-0">
+                <tr key={r._id || r.id} className="border-b last:border-b-0">
                   <td className="py-3 px-4 flex items-center gap-3">
                     <img
                       src={r.profilePicture}
@@ -374,8 +378,9 @@ const Reviews = () => {
                       <div className="font-semibold text-sm text-black">
                         {r.name}
                       </div>
-                      <div className="text-gray-400 text-xs  text-sm">
-                        {r.designation || "Reviewer"}
+                      <div className="text-gray-400 text-xs ">
+                        {r.designation || r.title || "Reviewer"},{" "}
+                        {r.companyName || "Company"}
                       </div>
                     </div>
                   </td>
@@ -389,7 +394,7 @@ const Reviews = () => {
                     </span>
                   </td>
                   <td className="py-3 px-4 text-black text-sm max-w-xs truncate">
-                    {r.reviewContent}
+                    {r.reviewContent || r.review}
                   </td>
                   <td className="py-3 px-4">
                     <select
@@ -397,7 +402,9 @@ const Reviews = () => {
                         statusColors[r.status]
                       }`}
                       value={r.status}
-                      onChange={(e) => handleStatusChange(r.id, e.target.value)}
+                      onChange={(e) =>
+                        handleStatusChange(r._id, e.target.value)
+                      }
                       style={{ minWidth: 90 }}
                     >
                       <option value="Published">Published</option>
@@ -455,7 +462,7 @@ const Reviews = () => {
                     <button
                       title="Delete"
                       className="text-red-600 hover:text-red-800"
-                      onClick={() => handleDelete(r.id)}
+                      onClick={() => handleDelete(r._id)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
