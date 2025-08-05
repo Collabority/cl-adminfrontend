@@ -6,6 +6,7 @@ import BlogsCard from "../components/blog-components/BlogsCard";
 import MiddleSection from "../components/blog-components/MiddleSection";
 import TopSection from "../components/blog-components/TopSection";
 import { transformBlogs } from "../utils/transformBlog";
+import instance from "../lib/axios";
 
 const BlogManagement = () => {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -16,10 +17,13 @@ const BlogManagement = () => {
   useEffect(() => {
     async function fetchBlogPosts() {
       try {
-        const response = await axios.get("http://localhost:3000/blogs/all");
+        const response = await instance.get("/blogs/all");
 
         const transformed = transformBlogs(response.data.data.blogs);
         setBlogPosts(transformed);
+
+        const blogHighlights = await instance.get("/blogs/highlights");
+        console.log(blogHighlights);
       } catch (error) {
         console.error("Error fetching blog posts:", error);
       }

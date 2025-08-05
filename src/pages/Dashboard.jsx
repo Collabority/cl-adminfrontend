@@ -3,7 +3,10 @@ import { FaBlog, FaUsers } from "react-icons/fa";
 import { MdWork } from "react-icons/md";
 import { FaStar } from "react-icons/fa6";
 import { LuPlus } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useEffect } from "react";
+import instance from "../lib/axios";
 
 const recentBlogPosts = [
   {
@@ -51,6 +54,21 @@ const recentApplications = [
 ];
 
 const Dashboard = () => {
+  const [loading, setLoading] = useState(false);
+  const [recentBlogs, setRecentBlogs] = useState([]);
+
+  useEffect(() => {
+    const fetchRecentBlogs = async () => {
+      setLoading(true);
+      // Simulate fetching data
+      const response = await instance.get("/blogs/recent");
+      // console.log(response.data.data);
+      setRecentBlogs(response.data.data);
+      setLoading(false);
+    };
+
+    fetchRecentBlogs();
+  }, []);
   const cardStyle =
     "flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white";
 
@@ -165,12 +183,15 @@ const Dashboard = () => {
       <div className="w-full lg:w-1/2 border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-700">Recent Blog Posts</h2>
-          <button className="text-blue-600 text-base font-semibold hover:underline">
+          <Link
+            to="/blog"
+            className="text-blue-600 text-base font-semibold hover:underline"
+          >
             View All
-          </button>
+          </Link>
         </div>
         <div className="flex flex-col gap-4">
-          {recentBlogPosts.map((post, index) => (
+          {recentBlogs.map((post, index) => (
             <div
               key={index}
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
@@ -178,7 +199,7 @@ const Dashboard = () => {
               <div className="flex gap-3 items-start sm:items-center w-full sm:w-auto">
                 <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
                   <img
-                    src={post.thumbnail}
+                    src={post.coverImage}
                     alt={post.title}
                     className="w-full h-full object-cover"
                   />
@@ -194,7 +215,7 @@ const Dashboard = () => {
                         : "text-green-500"
                     }`}
                   >
-                    {post.status} • {post.time}
+                    {post.status} • {post.createdAt}
                   </p>
                 </div>
               </div>
@@ -262,7 +283,9 @@ const Dashboard = () => {
         {/* Total Blogs */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-base text-gray-600 font-semibold">Total Blogs</h2>
+            <h2 className="text-base text-gray-600 font-semibold">
+              Total Blogs
+            </h2>
             <h1 className="text-2xl font-bold">24</h1>
             <p className="text-green-600 text-sm font-medium">+3 this week</p>
           </div>
@@ -320,7 +343,7 @@ const Dashboard = () => {
 
       {/* ------- Middle Section ------- */}
       {MiddleSection()}
- 
+
       {/* ------- Bottom Section ------- */}
       {bottomSection()}
     </div>
