@@ -160,6 +160,7 @@ const Reviews = () => {
   // Persist status change to backend
   const handleStatusChange = async (id, newStatus) => {
     try {
+      // console.log(id, newStatus);
       await updateStatus(id, newStatus);
       setReviews((reviews) =>
         reviews.map((r) => (r._id === id ? { ...r, status: newStatus } : r))

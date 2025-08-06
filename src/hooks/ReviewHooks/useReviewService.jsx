@@ -62,11 +62,24 @@ export const useReviewService = () => {
     }
   }, []);
 
+  const updateStatus = useCallback(async (reviewId, newStatus) => {
+    try {
+      const response = await instance.put(`/reviews/updateStatus/${reviewId}`, {
+        status: newStatus,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error?.response?.data?.message || "Failed to update review status."
+      );
+    }
+  }, []);
   return {
     createReview,
     getAllReviews,
     deleteReview,
     getReviewHighlights,
+    updateStatus,
 
     loading: {
       creating,

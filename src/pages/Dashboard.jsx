@@ -8,29 +8,29 @@ import { useState } from "react";
 import { useEffect } from "react";
 import instance from "../lib/axios";
 
-const recentBlogPosts = [
-  {
-    title: "Getting Started with React Hooks",
-    status: "Published",
-    time: "2 days ago",
-    thumbnail:
-      "https://www.orientsoftware.com/Themes/Content/Images/blog/2024-05-08/react-custom-hooks-thumbnail.webp",
-  },
-  {
-    title: "Advanced CSS Techniques",
-    status: "Draft",
-    time: "1 week ago",
-    thumbnail:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgq3ySvdsfVDPeTC_Ep4mrnpifaii2-PQtRQ&s",
-  },
-  {
-    title: "JavaScript Best Practices",
-    status: "Published",
-    time: "1 week ago",
-    thumbnail:
-      "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/master-javascript-programming-beginner-friend-design-template-057f79a6b5ce0bbbaf0a2a579865a4fc_screen.jpg?ts=1683752393",
-  },
-];
+// const recentBlogPosts = [
+//   {
+//     title: "Getting Started with React Hooks",
+//     status: "Published",
+//     time: "2 days ago",
+//     thumbnail:
+//       "https://www.orientsoftware.com/Themes/Content/Images/blog/2024-05-08/react-custom-hooks-thumbnail.webp",
+//   },
+//   {
+//     title: "Advanced CSS Techniques",
+//     status: "Draft",
+//     time: "1 week ago",
+//     thumbnail:
+//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgq3ySvdsfVDPeTC_Ep4mrnpifaii2-PQtRQ&s",
+//   },
+//   {
+//     title: "JavaScript Best Practices",
+//     status: "Published",
+//     time: "1 week ago",
+//     thumbnail:
+//       "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/master-javascript-programming-beginner-friend-design-template-057f79a6b5ce0bbbaf0a2a579865a4fc_screen.jpg?ts=1683752393",
+//   },
+// ];
 
 const recentApplications = [
   {
@@ -215,7 +215,7 @@ const Dashboard = () => {
                         : "text-green-500"
                     }`}
                   >
-                    {post.status} • {post.createdAt}
+                    {post.status} • {getTimeAgo(post.createdAt)}
                   </p>
                 </div>
               </div>
@@ -351,3 +351,19 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+// Helper function to show "time ago"
+function getTimeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHr = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHr / 24);
+
+  if (diffDay > 0) return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
+  if (diffHr > 0) return `${diffHr} hour${diffHr > 1 ? "s" : ""} ago`;
+  if (diffMin > 0) return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+  return "Just now";
+}
