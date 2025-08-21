@@ -1,59 +1,50 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSignUp } from "../hooks/useSignup";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Zod schema for validation
+const SignUpSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  email: z.string().min(1, "Email is required").email("Invalid email format"),
+  phone: z
+    .string()
+    .min(1, "Phone number is required")
+    .regex(/^\d{10}$/, "Phone must be 10 digits"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters"),
+});
 
 const Signup = () => {
   const { loading, signup } = useSignUp();
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    phone: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
 
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.username.trim()) newErrors.username = "Username is required";
-    if (!formData.email.trim()) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Invalid email format";
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    else if (!/^[0-9]{10}$/.test(formData.phone))
-      newErrors.phone = "Phone must be 10 digits";
-    if (!formData.password.trim()) newErrors.password = "Password is required";
-    else if (formData.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
-    return newErrors;
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(SignUpSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      phone: "",
+      password: "",
+    },
+  });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    setErrors({});
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-    } else {
-      setErrors({});
-      signup(formData);
-      console.log("Form submitted:", formData);
-      // Backend logic here
-    }
+  const onSubmit = (data) => {
+    signup(data);
+    console.log("Form submitted:", data);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-blue-100 px-4 sm:px-6 lg:px-8">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         className="bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg"
       >
         <h2 className="text-3xl font-bold text-center mb-6 text-blue-700">
@@ -67,19 +58,17 @@ const Signup = () => {
           </label>
           <input
             type="text"
-            name="username"
+            {...register("username")}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 placeholder:text-sm ${
               errors.username
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-500"
             }`}
-            value={formData.username}
-            onChange={handleChange}
             placeholder="Enter your username"
           />
           {errors.username && (
             <p className="text-red-500 text-sm mt-1 font-semibold">
-              {errors.username}
+              {errors.username.message}
             </p>
           )}
         </div>
@@ -89,19 +78,17 @@ const Signup = () => {
           <label className="block mb-1 font-medium text-gray-700">Email</label>
           <input
             type="email"
-            name="email"
+            {...register("email")}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 placeholder:text-sm ${
               errors.email
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-500"
             }`}
-            value={formData.email}
-            onChange={handleChange}
             placeholder="Enter your email"
           />
           {errors.email && (
             <p className="text-red-500 text-sm mt-1 font-semibold">
-              {errors.email}
+              {errors.email.message}
             </p>
           )}
         </div>
@@ -111,19 +98,17 @@ const Signup = () => {
           <label className="block mb-1 font-medium text-gray-700">Phone</label>
           <input
             type="text"
-            name="phone"
+            {...register("phone")}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 placeholder:text-sm ${
               errors.phone
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-500"
             }`}
-            value={formData.phone}
-            onChange={handleChange}
             placeholder="Enter your 10-digit phone number"
           />
           {errors.phone && (
             <p className="text-red-500 text-sm mt-1 font-semibold">
-              {errors.phone}
+              {errors.phone.message}
             </p>
           )}
         </div>
@@ -136,14 +121,12 @@ const Signup = () => {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              name="password"
+              {...register("password")}
               className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 placeholder:text-sm ${
                 errors.password
                   ? "border-red-500 focus:ring-red-400"
                   : "border-gray-300 focus:ring-blue-500"
               }`}
-              value={formData.password}
-              onChange={handleChange}
               placeholder="Create a password"
             />
             <button
@@ -156,7 +139,7 @@ const Signup = () => {
           </div>
           {errors.password && (
             <p className="text-red-500 text-sm mt-1 font-semibold">
-              {errors.password}
+              {errors.password.message}
             </p>
           )}
         </div>

@@ -1,89 +1,96 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useLogin } from "../hooks/useLogin";
 import instance from "../lib/axios";
 
+const LoginSchema = z.object({
+  usernameOrEmail: z
+    .string()
+    .trim()
+    .min(1, { message: "Username or Email is required" })
+    .refine((val) => /^[\w.@]+$/.test(val), {
+      message: "Enter a valid username or email",
+    })
+    .refine(
+      (val) =>
+        !val.includes("@") || /\S+@\S+\.\S+/.test(val),
+      { message: "Enter a valid email address" }
+    ),
+  password: z
+    .string()
+    .trim()
+    .min(6, { message: "Password must be at least 6 characters" }),
+  otp: z.string().optional(),
+});
+
 const Login = () => {
   const { loginUser, loading } = useLogin();
-
-  const [formData, setFormData] = useState({
-    usernameOrEmail: "",
-    password: "",
-    otp: "",
-  });
-
-  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
-  const [loader, setLoader] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [loader, setLoader] = useState(false);
 
-  // Improved validation logic
-  const validate = () => {
-    const newErrors = {};
+  const {
+    register,
+    handleSubmit,
+    setError,
+    clearErrors,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      usernameOrEmail: "",
+      password: "",
+      otp: "",
+    },
+  });
 
-    if (!formData.usernameOrEmail.trim()) {
-      newErrors.usernameOrEmail = "Username or Email is required";
-    } else if (
-      !/^[\w.@]+$/.test(formData.usernameOrEmail) ||
-      (formData.usernameOrEmail.includes("@") &&
-        !/\S+@\S+\.\S+/.test(formData.usernameOrEmail))
-    ) {
-      newErrors.usernameOrEmail = "Enter a valid username or email";
-    }
-
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    if (showOTP && !formData.otp.trim()) {
-      newErrors.otp = "OTP is required";
-    }
-
-    return newErrors;
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-    setErrors((prev) => ({ ...prev, [e.target.id]: undefined }));
-  };
-
-  const handleLogin = async () => {
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+  const onSubmit = async (data) => {
+    if (showOTP && !data.otp.trim()) {
+      setError("otp", { message: "OTP is required" });
       return;
     }
-    setErrors({});
-    await loginUser({
-      email: formData.usernameOrEmail,
-      password: formData.password,
-      otp: formData.otp,
-    });
-    // You can handle login response here (redirect, etc.)
+
+    try {
+      clearErrors("otp");
+
+      await loginUser({
+        email: data.usernameOrEmail,
+        password: data.password,
+        otp: data.otp,
+      });
+    } catch (err) {
+    }
   };
 
   const handleGetOTP = async () => {
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    const values = getValues();
+
     try {
-      setLoader(true);
-      const response = await instance.post("/admin/sendEmail", {
-        email: formData.usernameOrEmail,
-        password: formData.password,
-      });
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(response.data?.message || "Failed to send OTP.");
-      }
-      setShowOTP(true);
-      setOtpSent(true);
+      await handleSubmit(async () => {
+        setLoader(true);
+        // const response = await instance.post("/admin/sendEmail", {
+        //   email: values.usernameOrEmail,
+        //   password: values.password,
+        // });
+        console.log('sunmited');
+        
+
+        if (response.status < 200 || response.status >= 300) {
+          throw new Error(response.data?.message || "Failed to send OTP.");
+        }
+
+        setShowOTP(true);
+        setOtpSent(true);
+      })();
     } catch (err) {
-      setErrors({ otp: err.message || "Failed to send OTP." });
+      setError("otp", {
+        message: err.message || "Failed to send OTP.",
+      });
     } finally {
       setLoader(false);
     }
@@ -98,18 +105,14 @@ const Login = () => {
 
         {/* Username or Email */}
         <div className="mb-6">
-          <label
-            htmlFor="usernameOrEmail"
-            className="block text-base font-semibold text-gray-700 mb-2"
-          >
+          <label htmlFor="usernameOrEmail" className="block text-base font-semibold text-gray-700 mb-2">
             Username or Email
           </label>
           <input
             type="text"
             id="usernameOrEmail"
             autoComplete="username"
-            value={formData.usernameOrEmail}
-            onChange={handleChange}
+            {...register("usernameOrEmail")}
             placeholder="Enter your username or email"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 placeholder:text-base transition ${
               errors.usernameOrEmail
@@ -119,17 +122,14 @@ const Login = () => {
           />
           {errors.usernameOrEmail && (
             <p className="text-sm text-red-600 mt-1 font-semibold">
-              {errors.usernameOrEmail}
+              {errors.usernameOrEmail.message}
             </p>
           )}
         </div>
 
         {/* Password */}
         <div className="mb-6">
-          <label
-            htmlFor="password"
-            className="block text-base font-semibold text-gray-700 mb-2"
-          >
+          <label htmlFor="password" className="block text-base font-semibold text-gray-700 mb-2">
             Password
           </label>
           <div className="relative">
@@ -137,8 +137,7 @@ const Login = () => {
               type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
+              {...register("password")}
               placeholder="Enter your password"
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 placeholder:text-base transition ${
                 errors.password
@@ -157,7 +156,7 @@ const Login = () => {
           </div>
           {errors.password && (
             <p className="text-sm text-red-600 mt-1 font-semibold">
-              {errors.password}
+              {errors.password.message}
             </p>
           )}
         </div>
@@ -165,18 +164,14 @@ const Login = () => {
         {/* OTP */}
         {showOTP && (
           <div className="mb-6">
-            <label
-              htmlFor="otp"
-              className="block text-base font-semibold text-gray-700 mb-2"
-            >
+            <label htmlFor="otp" className="block text-base font-semibold text-gray-700 mb-2">
               OTP
             </label>
             <input
               type="text"
               id="otp"
               autoComplete="one-time-code"
-              value={formData.otp}
-              onChange={handleChange}
+              {...register("otp")}
               placeholder="Enter the OTP"
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 placeholder:text-base transition ${
                 errors.otp
@@ -186,7 +181,7 @@ const Login = () => {
             />
             {errors.otp && (
               <p className="text-sm text-red-600 mt-1 font-semibold">
-                {errors.otp}
+                {errors.otp.message}
               </p>
             )}
             {otpSent && !errors.otp && (
@@ -202,7 +197,7 @@ const Login = () => {
           {showOTP ? (
             <button
               type="button"
-              onClick={handleLogin}
+              onClick={handleSubmit(onSubmit)}
               className="w-full py-3 bg-blue-600 text-white font-semibold text-base rounded-lg hover:bg-blue-700 transition-all duration-200 shadow"
               disabled={loading}
             >
