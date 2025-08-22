@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from "react";
 import {
   Search,
   Users,
@@ -8,18 +8,17 @@ import {
   Eye,
   Pencil,
   Trash,
-  ArrowDownToLine,
-  Settings,
-  Plus
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
+  Plus,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 const initialUsers = [
   {
     id: 1,
-    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg",
-    name: "Sarah Johnson",
-    email: "sarah@company.com",
+    avatar:
+      "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg",
+    name: "Gaurav Shukla",
+    email: "gaurav@collegepur.com",
     role: "Super Admin",
     roleColor: "purple",
     status: "Active",
@@ -29,9 +28,10 @@ const initialUsers = [
   },
   {
     id: 2,
-    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
-    name: "Mike Chen",
-    email: "mike@company.com",
+    avatar:
+      "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
+    name: "Kartikesh Pachkawade",
+    email: "kartikesh@gmail.com",
     role: "Admin",
     roleColor: "blue",
     status: "Active",
@@ -41,7 +41,8 @@ const initialUsers = [
   },
   {
     id: 3,
-    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg",
+    avatar:
+      "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg",
     name: "David Wilson",
     email: "david@company.com",
     role: "Editor",
@@ -53,7 +54,8 @@ const initialUsers = [
   },
   {
     id: 4,
-    avatar: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg",
+    avatar:
+      "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg",
     name: "Emily Davis",
     email: "emily@company.com",
     role: "Viewer",
@@ -66,29 +68,45 @@ const initialUsers = [
 ];
 
 export default function UserManagementPage() {
-  const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('All Roles');
-  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("All Roles");
+  const [statusFilter, setStatusFilter] = useState("All Status");
   const [users, setUsers] = useState(initialUsers);
   const [editUser, setEditUser] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', role: '', status: '', permissions: '' });
+  const [editForm, setEditForm] = useState({
+    name: "",
+    role: "",
+    status: "",
+    permissions: "",
+  });
 
-  const filteredUsers = users.filter(user => {
+
+  const stats = useMemo(() => {
+    const totalUsers = users.length;
+    const activeUsers = users.filter((u) => u.status === "Active").length;
+    const pendingUsers = users.filter((u) => u.status === "Pending").length;
+    const superAdmins = users.filter((u) => u.role === "Super Admin").length;
+
+    return { totalUsers, activeUsers, pendingUsers, superAdmins };
+  }, [users]);
+
+  const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(search.toLowerCase()) ||
       user.email.toLowerCase().includes(search.toLowerCase());
 
-    const matchesRole =
-      roleFilter === 'All Roles' || user.role === roleFilter;
+    const matchesRole = roleFilter === "All Roles" || user.role === roleFilter;
 
     const matchesStatus =
-      statusFilter === 'All Status' || user.status === statusFilter;
+      statusFilter === "All Status" || user.status === statusFilter;
 
     return matchesSearch && matchesRole && matchesStatus;
   });
 
   const handleView = (user) => {
-    alert(`User Details:\n\nName: ${user.name}\nEmail: ${user.email}\nRole: ${user.role}\nStatus: ${user.status}\nLast Login: ${user.lastLogin}\nPermissions: ${user.permissions}`)
+    alert(
+      `User Details:\n\nName: ${user.name}\nEmail: ${user.email}\nRole: ${user.role}\nStatus: ${user.status}\nLast Login: ${user.lastLogin}\nPermissions: ${user.permissions}`
+    );
   };
 
   const handleEdit = (user) => {
@@ -102,28 +120,30 @@ export default function UserManagementPage() {
   };
 
   const handleEditSave = () => {
-    setUsers(prev =>
-      prev.map(user =>
+    setUsers((prev) =>
+      prev.map((user) =>
         user.id === editUser ? { ...user, ...editForm } : user
       )
     );
     setEditUser(null);
-    alert('User updated successfully!');
+    alert("User updated successfully!");
   };
 
   const handleDelete = (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      setUsers(prev => prev.filter(u => u.id !== userId));
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
     }
   };
 
   const handleStatusChange = (id, newStatus) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: newStatus } : u));
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, status: newStatus } : u))
+    );
   };
 
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
-      <div className='flex items-center justify-between mb-6'>
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold mb-1">User Management</h1>
           <p className="text-base text-gray-500 mb-6">
@@ -132,18 +152,39 @@ export default function UserManagementPage() {
         </div>
         <Link to="/users/roles">
           <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3">
-            <span className="text-base flex items-center"><Plus className='mr-2' />Add New User</span>
+            <span className="text-base flex items-center">
+              <Plus className="mr-2" />
+              Add New User
+            </span>
           </button>
         </Link>
       </div>
 
+ 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <SummaryCard icon={<Users className="text-gray-600 w-6 h-6" />} title="Total Users" value="12" />
-        <SummaryCard icon={<CheckCircle className="text-green-500 w-6 h-6" />} title="Active Users" value="10" />
-        <SummaryCard icon={<Clock className="text-yellow-500 w-6 h-6" />} title="Pending" value="2" />
-        <SummaryCard icon={<Crown className="text-purple-500 w-6 h-6" />} title="Super Admins" value="3" />
+        <SummaryCard
+          icon={<Users className="text-gray-600 w-6 h-6" />}
+          title="Total Users"
+          value={stats.totalUsers}
+        />
+        <SummaryCard
+          icon={<CheckCircle className="text-green-500 w-6 h-6" />}
+          title="Active Users"
+          value={stats.activeUsers}
+        />
+        <SummaryCard
+          icon={<Clock className="text-yellow-500 w-6 h-6" />}
+          title="Pending"
+          value={stats.pendingUsers}
+        />
+        <SummaryCard
+          icon={<Crown className="text-purple-500 w-6 h-6" />}
+          title="Super Admins"
+          value={stats.superAdmins}
+        />
       </div>
 
+      {/* Search + filters */}
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4 items-stretch sm:items-center mt-4">
         <div className="relative w-full sm:flex-1 sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -178,6 +219,7 @@ export default function UserManagementPage() {
         </select>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
         <table className="w-full text-sm">
           <thead>
@@ -194,28 +236,40 @@ export default function UserManagementPage() {
           <tbody>
             {filteredUsers.map((user, idx) => (
               <tr key={idx} className="border-t hover:bg-gray-50">
-                <td className="p-3"><input type="checkbox" /></td>
+                <td className="p-3">
+                  <input type="checkbox" />
+                </td>
                 <td className="p-3 flex items-center space-x-2">
-                  <img src={user.avatar} alt="avatar" className="w-8 h-8 rounded-full" />
+                  <img
+                    src={user.avatar}
+                    alt="avatar"
+                    className="w-8 h-8 rounded-full"
+                  />
                   <div>
                     <div className="font-medium text-gray-900">{user.name}</div>
                     <div className="text-xs text-gray-500">{user.email}</div>
                   </div>
                 </td>
                 <td className="p-3 hidden sm:table-cell">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${user.roleColor}-100 text-${user.roleColor}-600`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium bg-${user.roleColor}-100 text-${user.roleColor}-600`}
+                  >
                     {user.role}
                   </span>
                 </td>
                 <td className="p-3">
                   <select
                     className={`px-3 py-1 rounded-full text-xs font-semibold focus:outline-none ${
-                      user.status === 'Active' ? 'bg-green-100 text-green-600' :
-                      user.status === 'Pending' ? 'bg-yellow-100 text-yellow-600' :
-                      'bg-gray-100 text-gray-600'
+                      user.status === "Active"
+                        ? "bg-green-100 text-green-600"
+                        : user.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-600"
+                        : "bg-gray-100 text-gray-600"
                     }`}
                     value={user.status}
-                    onChange={e => handleStatusChange(user.id, e.target.value)}
+                    onChange={(e) =>
+                      handleStatusChange(user.id, e.target.value)
+                    }
                     style={{ minWidth: 80 }}
                   >
                     <option value="Active">Active</option>
@@ -226,13 +280,25 @@ export default function UserManagementPage() {
                 <td className="p-3 hidden md:table-cell">{user.lastLogin}</td>
                 <td className="p-3 hidden lg:table-cell">{user.permissions}</td>
                 <td className="p-3 space-x-2">
-                  <button onClick={() => handleView(user)} className="text-green-600 p-1 rounded hover:bg-green-50" title="View">
+                  <button
+                    onClick={() => handleView(user)}
+                    className="text-green-600 p-1 rounded hover:bg-green-50"
+                    title="View"
+                  >
                     <Eye className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleEdit(user)} className="text-blue-500 p-1 rounded hover:bg-blue-50" title="Edit">
+                  <button
+                    onClick={() => handleEdit(user)}
+                    className="text-blue-500 p-1 rounded hover:bg-blue-50"
+                    title="Edit"
+                  >
                     <Pencil className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(user.id)} className="text-red-500 p-1 rounded hover:bg-red-50" title="Delete">
+                  <button
+                    onClick={() => handleDelete(user.id)}
+                    className="text-red-500 p-1 rounded hover:bg-red-50"
+                    title="Delete"
+                  >
                     <Trash className="w-4 h-4" />
                   </button>
                 </td>
@@ -242,29 +308,66 @@ export default function UserManagementPage() {
         </table>
       </div>
 
+      {/* Edit Modal */}
       {editUser && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
             <h2 className="text-lg font-bold mb-4">Edit User</h2>
             <div className="mb-2">
               <label className="block text-base font-semibold">Name</label>
-              <input className="w-full border rounded px-3 py-1" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
+              <input
+                className="w-full border rounded px-3 py-1"
+                value={editForm.name}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, name: e.target.value }))
+                }
+              />
             </div>
             <div className="mb-2">
               <label className="block text-base font-semibold">Role</label>
-              <input className="w-full border rounded px-3 py-1" value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))} />
+              <input
+                className="w-full border rounded px-3 py-1"
+                value={editForm.role}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, role: e.target.value }))
+                }
+              />
             </div>
             <div className="mb-2">
               <label className="block text-base font-semibold">Status</label>
-              <input className="w-full border rounded px-3 py-1" value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))} />
+              <input
+                className="w-full border rounded px-3 py-1"
+                value={editForm.status}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, status: e.target.value }))
+                }
+              />
             </div>
             <div className="mb-4">
-              <label className="block text-base font-semibold">Permissions</label>
-              <input className="w-full border rounded px-3 py-1" value={editForm.permissions} onChange={e => setEditForm(f => ({ ...f, permissions: e.target.value }))} />
+              <label className="block text-base font-semibold">
+                Permissions
+              </label>
+              <input
+                className="w-full border rounded px-3 py-1"
+                value={editForm.permissions}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, permissions: e.target.value }))
+                }
+              />
             </div>
             <div className="flex justify-end gap-2">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleEditSave}>Save</button>
-              <button className="bg-gray-300 px-4 py-2 rounded" onClick={() => setEditUser(null)}>Cancel</button>
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+                onClick={handleEditSave}
+              >
+                Save
+              </button>
+              <button
+                className="bg-gray-300 px-4 py-2 rounded"
+                onClick={() => setEditUser(null)}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>

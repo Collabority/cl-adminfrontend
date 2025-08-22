@@ -15,7 +15,10 @@ const Sidebar = () => {
   const logout = useLogout();
   const location = useLocation();
   const path = location.pathname;
-  const { admin } = useSelector((state) => state.auth.user);
+  // Fix: safely get admin from Redux
+  const user = useSelector((state) => state.auth.user);
+  const admin = user?.admin || user || null;
+
   const { isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
   const sidebarRef = useRef(null);
 
@@ -57,6 +60,13 @@ const Sidebar = () => {
       isActive(tabPath) ? "text-blue-500" : "text-gray-500"
     }`;
 
+  // Fix: Use <button> for logout, not <Link>
+  // Fix: Use admin image if available, fallback to default
+  const adminImage =
+    admin && admin.image
+      ? admin.image
+      : "https://randomuser.me/api/portraits/men/32.jpg";
+
   return (
     <div
       ref={sidebarRef}
@@ -67,6 +77,7 @@ const Sidebar = () => {
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         sm:translate-x-0 sm:static
       `}
+      aria-label="Sidebar"
     >
       {/* Navigation Links */}
       <div className="flex flex-col gap-5">
@@ -116,26 +127,28 @@ const Sidebar = () => {
       {/* Admin Section at Bottom */}
       <div className="pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
         <img
-          src="https://randomuser.me/api/portraits/men/32.jpg"
-          alt="Admin"
+          src={adminImage}
+          alt={admin && admin.name ? admin.name : "Admin"}
           className="w-10 h-10 rounded-full object-cover"
         />
 
         <div className="flex flex-col text-center">
           <p className="text-sm font-semibold text-gray-700">
-            {admin ? admin.name : "Admin"}
+            {admin && admin.name ? admin.name : "Admin"}
           </p>
           <p className="text-xs text-gray-500">
-            {admin ? admin.email : "admin@company.com"}
+            {admin && admin.email ? admin.email : "admin@company.com"}
           </p>
         </div>
 
-        <Link onClick={logout}>
-          <RxExit
-            className="text-xl text-gray-600 hover:text-red-500 cursor-pointer"
-            title="Logout"
-          />
-        </Link>
+        <button
+          onClick={logout}
+          aria-label="Logout"
+          className="bg-transparent border-none p-0 m-0"
+          title="Logout"
+        >
+          <RxExit className="text-xl text-gray-600 hover:text-red-500 cursor-pointer" />
+        </button>
       </div>
     </div>
   );

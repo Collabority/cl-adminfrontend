@@ -56,6 +56,7 @@ const recentApplications = [
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [recentBlogs, setRecentBlogs] = useState([]);
+  const [highlights, setHighlights] = useState();
 
   useEffect(() => {
     const fetchRecentBlogs = async () => {
@@ -66,8 +67,16 @@ const Dashboard = () => {
       setRecentBlogs(response.data.data);
       setLoading(false);
     };
+    const fetchHighlights = async () => {
+      setLoading(true);
+      const response = await instance.get("/admin/highlights");
+      setHighlights(response.data?.data);
+      console.log(highlights);
+      setLoading(false);
+    };
 
     fetchRecentBlogs();
+    fetchHighlights();
   }, []);
   const cardStyle =
     "flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white";
@@ -286,8 +295,12 @@ const Dashboard = () => {
             <h2 className="text-base text-gray-600 font-semibold">
               Total Blogs
             </h2>
-            <h1 className="text-2xl font-bold">24</h1>
-            <p className="text-green-600 text-sm font-medium">+3 this week</p>
+            <h1 className="text-2xl font-bold">
+              {highlights?.blogHighlights.totalBlogs || 0}
+            </h1>
+            <p className="text-green-600 text-sm font-medium">
+              {highlights?.blogHighlights.inWeek || 0} this week
+            </p>
           </div>
           {iconWrapper(
             <FaBlog className="text-3xl text-blue-600" />,
@@ -301,8 +314,12 @@ const Dashboard = () => {
             <h2 className="text-base text-gray-600 font-semibold">
               Job Openings
             </h2>
-            <h1 className="text-2xl font-bold">8</h1>
-            <p className="text-blue-600 text-sm font-medium">2 expiring soon</p>
+            <h1 className="text-2xl font-bold">
+              {highlights?.jobHighlights.totalJobOpenings || 0}
+            </h1>
+            <p className="text-blue-600 text-sm font-medium">
+              {highlights?.jobHighlights.expiringJobs || 0} expiring soon
+            </p>
           </div>
           {iconWrapper(
             <MdWork className="text-3xl text-green-600" />,
@@ -329,9 +346,11 @@ const Dashboard = () => {
         <div className={cardStyle}>
           <div>
             <h2 className="text-base text-gray-600 font-semibold">Reviews</h2>
-            <h1 className="text-2xl font-bold">56</h1>
+            <h1 className="text-2xl font-bold">
+              {highlights?.reviewHighlights.reviews || 0}
+            </h1>
             <p className="text-purple-600 text-sm font-medium">
-              4.8 avg rating
+              {highlights?.reviewHighlights.avgReviewRating || 0} avg rating
             </p>
           </div>
           {iconWrapper(

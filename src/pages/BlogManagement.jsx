@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
-import axios from "axios";
 import BlogsCard from "../components/blog-components/BlogsCard";
 import MiddleSection from "../components/blog-components/MiddleSection";
 import TopSection from "../components/blog-components/TopSection";
@@ -13,17 +12,23 @@ const BlogManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedStatus, setSelectedStatus] = useState("All Status");
+  const [blogHighlights, setBlogHighlights] = useState({
+    totalBlogs: 0,
+    draftBlogs: 0,
+    publishedBlogs: 0,
+  });
 
   useEffect(() => {
     async function fetchBlogPosts() {
       try {
         const response = await instance.get("/blogs/all");
-
         const transformed = transformBlogs(response.data.data.blogs);
         setBlogPosts(transformed);
 
-        const blogHighlights = await instance.get("/blogs/highlights");
-        console.log(blogHighlights);
+        const highlightsRes = await instance.get("/blogs/highlights");
+        if (highlightsRes.data && highlightsRes.data.data) {
+          setBlogHighlights(highlightsRes.data.data);
+        }
       } catch (error) {
         console.error("Error fetching blog posts:", error);
       }
@@ -57,8 +62,8 @@ const BlogManagement = () => {
         </Link>
       </div>
 
-      {/* Top Section */}
-      <TopSection />
+      {/* Top Section with dynamic data */}
+      <TopSection blogHighlights={blogHighlights} />
 
       {/* Filters Section */}
       <MiddleSection
