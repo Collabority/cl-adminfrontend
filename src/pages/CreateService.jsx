@@ -2,7 +2,8 @@ import React, { useRef, useState } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaSave, FaTelegramPlane } from "react-icons/fa";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import QuillEditor from "../components/CreateBlogContent";
+// Removed QuillEditor import
+// import QuillEditor from "../components/CreateBlogContent";
 import { useCreateService } from "../hooks/servicesHooks/useCreateService";
 
 // TODO: Import or create ServiceBasicInfoSection, ServiceContentSection, SEOSettingsSection, PublishingOptionsSection
@@ -162,8 +163,16 @@ const CreateService = () => {
       {coverImage()}
       {/* Description/Content */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <h2 className="text-lg font-semibold text-black mb-2">Description</h2>
-        <QuillEditor formData={formData} setFormData={setFormData} />
+          <h2 className="text-lg font-semibold text-black mb-2">Description</h2>
+          <textarea
+          className="border border-gray-300 rounded-lg px-3 py-2 min-h-[120px]"
+          value={formData.content}
+          onChange={(e) =>
+            setFormData({ ...formData, content: e.target.value })
+          }
+          placeholder="Enter service description here..."
+          required
+        />
       </div>
       {/* SEO Settings */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
