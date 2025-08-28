@@ -23,7 +23,9 @@ const CreateBlogPost = () => {
     metaDescription: "",
     focusKeyword: "",
     status: "draft",
-    publishDate: "",
+    publishDate: new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16),
     featured: false,
     allowComments: true,
     coverImage: null,
