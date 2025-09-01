@@ -14,7 +14,9 @@ export const transformBlogs = (rawBlogs) =>
         year: "numeric",
       }
     ),
+    createdAt: blog.createdAt,
     author: `${blog.author?.name} `.trim() || "Unknown",
+    coverImage: blog.coverImage,
     img: blog.coverImage,
     authorImg:
       blog.author?.profilePicture ||

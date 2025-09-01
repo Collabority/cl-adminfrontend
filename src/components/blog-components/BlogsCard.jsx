@@ -73,7 +73,7 @@ const BlogsCard = ({ filteredPosts }) => {
               </div>
 
               <div className="flex items-center gap-3 text-xl text-gray-500">
-                <Link to={`edit-blog-post/${post.id}`}>
+                <Link to={`edit-blog-post/${post.id}`} state={{ post }}>
                   <PiNotePencilBold className="cursor-pointer text-blue-500 hover:text-blue-800 transition" />
                 </Link>
                 <button onClick={() => handleDeleteBlog(post.id)}>
