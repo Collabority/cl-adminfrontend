@@ -108,7 +108,7 @@ const EditBlogPost = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-b-4 border-gray-200 mb-4"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-b-4  mb-4"></div>
         <span className="text-lg font-semibold text-blue-700">Saving...</span>
       </div>
     );

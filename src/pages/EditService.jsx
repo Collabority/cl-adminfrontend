@@ -1,16 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaSave, FaTelegramPlane } from "react-icons/fa";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import QuillEditor from "../components/CreateBlogContent";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
 import instance from "../lib/axios";
 
 const EditService = () => {
-  // Prefilled mock data for demonstration
   const { id } = useParams();
-  // console.log(id);
 
   const [formData, setFormData] = useState({
     title: "Web Development",
@@ -18,7 +15,7 @@ const EditService = () => {
     metaTitle: "Web Development Services",
     metaDescription: "Custom website development services for businesses.",
     focusKeyword: "web development, IT services",
-    status: "published",
+    status: "draft",
     publishDate: "2025-01-15",
     coverImage: "",
     content: "We build custom websites tailored to your business needs.",
@@ -28,12 +25,31 @@ const EditService = () => {
     async function fetchServiceData() {
       try {
         const response = await instance.get(`/services/${id}`);
-        setFormData(response.data?.data || {});
+        const data = response.data?.data || {};
+
+        setFormData((prev) => ({
+          ...prev,
+          title: data.title ?? prev.title,
+          category: data.category ?? prev.category,
+          metaTitle: data.metaData?.metaTitle ?? prev.metaTitle,
+          metaDescription:
+            data.metaData?.metaDescription ?? prev.metaDescription,
+          focusKeyword: data.metaData?.focusKeyword ?? prev.focusKeyword,
+          status: data.publishStatus
+            ? String(data.publishStatus).toLowerCase()
+            : prev.status,
+          publishDate: data.publishDate
+            ? new Date(data.publishDate).toISOString().split("T")[0]
+            : prev.publishDate,
+          coverImage: data.coverImage ?? prev.coverImage,
+          // set quill editor content from response.description
+          content: data.description ?? prev.content,
+        }));
       } catch (error) {
         console.error("Error fetching service data:", error);
       }
     }
-    fetchServiceData();
+    if (id) fetchServiceData();
   }, [id]);
 
   const fileInputRef = useRef(null);
@@ -49,7 +65,7 @@ const EditService = () => {
       data.append(key, value);
     });
     data.set("status", status);
-    // Replace this with your actual API call
+    
     console.log("Submitting service form with data:", Object.fromEntries(data));
   };
 
@@ -98,7 +114,11 @@ const EditService = () => {
         </p>
         {formData.coverImage && (
           <img
-            src={formData.coverImage}
+            src={
+              typeof formData.coverImage === "string"
+                ? formData.coverImage
+                : URL.createObjectURL(formData.coverImage)
+            }
             alt="Preview"
             className="mt-2 max-h-20 rounded-lg"
           />

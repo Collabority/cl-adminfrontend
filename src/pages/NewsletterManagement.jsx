@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Pencil, Trash, Eye } from "lucide-react";
-import { useEffect } from "react";
 import instance from "../lib/axios";
 
 const colors = {
@@ -13,27 +12,30 @@ const colors = {
 
 const initialSubscribers = [
   {
+    _id: "local-1",
     email: "john.doe@email.com",
     name: "John Doe",
     status: "Active",
     segment: "Customers",
-    date: "Dec 10, 2024",
+    createdAt: "2024-12-10T00:00:00.000Z",
     color: "blue",
   },
   {
+    _id: "local-2",
     email: "sarah.smith@company.com",
     name: "Sarah Smith",
     status: "Active",
     segment: "Prospects",
-    date: "Dec 8, 2024",
+    createdAt: "2024-12-08T00:00:00.000Z",
     color: "purple",
   },
   {
+    _id: "local-3",
     email: "emily.tan@example.com",
     name: "Emily Tan",
     status: "Unsubscribed",
     segment: "General",
-    date: "Nov 30, 2024",
+    createdAt: "2024-11-30T00:00:00.000Z",
     color: "green",
   },
 ];
@@ -43,7 +45,8 @@ export default function NewsletterManagement() {
   const [status, setStatus] = useState("All Status");
   const [segment, setSegment] = useState("All Segments");
   const [subscribers, setSubscribers] = useState(initialSubscribers);
-  const [editingSubscriber, setEditingSubscriber] = useState(null);
+  const [editingSubscriberId, setEditingSubscriberId] = useState(null);
+
   const [editForm, setEditForm] = useState({
     name: "",
     email: "",
@@ -53,24 +56,67 @@ export default function NewsletterManagement() {
 
   useEffect(() => {
     async function getAllNewsletterMembers() {
-      const response = await instance.get("/newsletter");
-      setSubscribers(response.data.data);
-      console.log(response.data.data);
+      try {
+        const response = await instance.get("/newsletter");
+        const raw = response?.data?.data;
+        if (Array.isArray(raw)) {
+          // normalize shape to expected fields
+          const normalized = raw.map((s) => ({
+            _id:
+              s._id || s.id || s.email || Math.random().toString(36).slice(2),
+            email: s.email || s.emailAddress || s.email_address || "",
+            name: s.name || s.fullName || s.full_name || "",
+            status:
+              s.status && typeof s.status === "string"
+                ? capitalize(s.status)
+                : "Active",
+            segment:
+              s.segment && typeof s.segment === "string"
+                ? capitalize(s.segment)
+                : "General",
+            createdAt:
+              s.createdAt ||
+              s.subscribedAt ||
+              s.date ||
+              new Date().toISOString(),
+            color: segmentToColor(s.segment || s.segmentName || s.segment),
+          }));
+          setSubscribers(normalized);
+        } else {
+          // fallback if payload is not array
+          setSubscribers(initialSubscribers);
+        }
+      } catch (err) {
+        console.error("Failed to fetch subscribers:", err);
+        setSubscribers(initialSubscribers);
+      }
     }
     getAllNewsletterMembers();
   }, []);
 
   const filteredSubscribers = subscribers.filter((sub) => {
     const matchesSearch =
-      sub.email.toLowerCase().includes(search.toLowerCase()) ||
-      sub.name.toLowerCase().includes(search.toLowerCase());
-
+      (sub.email || "").toLowerCase().includes(search.toLowerCase()) ||
+      (sub.name || "").toLowerCase().includes(search.toLowerCase());
     const matchesStatus = status === "All Status" || sub.status === status;
     const matchesSegment =
       segment === "All Segments" || sub.segment === segment;
-
     return matchesSearch && matchesStatus && matchesSegment;
   });
+
+  function capitalize(str) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+
+  function segmentToColor(seg) {
+    if (!seg) return "gray";
+    const key = capitalize(seg);
+    if (key === "Customers") return "green";
+    if (key === "Prospects") return "blue";
+    if (key === "General") return "purple";
+    return "gray";
+  }
 
   const handleView = (sub) => {
     alert(
@@ -79,49 +125,103 @@ export default function NewsletterManagement() {
   };
 
   const handleEdit = (sub) => {
-    setEditingSubscriber(sub.email);
+    setEditingSubscriberId(sub._id);
     setEditForm({
-      name: sub.name,
-      email: sub.email,
-      status: sub.status,
-      segment: sub.segment,
+      name: sub.name || "",
+      email: sub.email || "",
+      status: sub.status || "Active",
+      segment: sub.segment || "General",
     });
   };
 
-  const handleEditSave = () => {
-    setSubscribers((prev) =>
-      prev.map((sub) =>
-        sub.email === editingSubscriber ? { ...sub, ...editForm } : sub
-      )
-    );
-    setEditingSubscriber(null);
-  };
-
-  const handleDelete = async (email, id) => {
-    if (window.confirm("Are you sure you want to delete this subscriber?")) {
-      const response = await instance.delete(`/newsletter/${id}`);
-      if (response.status === 200) {
-        setSubscribers((prev) => prev.filter((sub) => sub.email !== email));
-      } else {
-        alert("Failed to delete subscriber");
+  const handleEditSave = async () => {
+    const id = editingSubscriberId;
+    if (!id) return;
+    try {
+      // Optimistic update locally
+      setSubscribers((prev) =>
+        prev.map((s) => (s._id === id ? { ...s, ...editForm } : s))
+      );
+      setEditingSubscriberId(null);
+      // Call API to persist
+      await instance.put(`/newsletter/${id}`, {
+        name: editForm.name,
+        email: editForm.email,
+        segment: editForm.segment,
+        status: editForm.status,
+      });
+    } catch (err) {
+      console.error("Failed to save edit:", err);
+      alert("Failed to save subscriber. Changes reverted.");
+      // revert by refetching or minimal rollback; refetch for simplicity
+      try {
+        const resp = await instance.get("/newsletter");
+        const raw = resp?.data?.data || [];
+        const normalized = raw.map((s) => ({
+          _id: s._id || s.id || s.email || Math.random().toString(36).slice(2),
+          email: s.email || s.emailAddress || "",
+          name: s.name || "",
+          status: capitalize(s.status),
+          segment: capitalize(s.segment),
+          createdAt: s.createdAt || new Date().toISOString(),
+          color: segmentToColor(s.segment),
+        }));
+        setSubscribers(normalized);
+      } catch (e) {
+        console.error("Failed to reload subscribers:", e);
       }
     }
   };
 
-  const handleStatusChange = (email, id, newStatus) => {
-    instance
-      .put(`/newsletter/${id}`, { status: newStatus })
-      .then((response) => {
-        if (response.status === 200) {
-          setSubscribers((prev) =>
-            prev.map((sub) =>
-              sub.email === email ? { ...sub, status: newStatus } : sub
-            )
-          );
-        } else {
-          alert("Failed to update status");
-        }
-      });
+  const handleDelete = async (emailOrId) => {
+    if (!window.confirm("Are you sure you want to delete this subscriber?"))
+      return;
+    try {
+      // Accept both id and email; prefer id if present in object
+      const id = emailOrId;
+      const response = await instance.delete(`/newsletter/${id}`);
+      if (response.status === 200 || response.status === 204) {
+        setSubscribers((prev) => prev.filter((sub) => sub._id !== id));
+      } else {
+        throw new Error("Delete failed");
+      }
+    } catch (err) {
+      console.error("Failed to delete subscriber:", err);
+      alert("Failed to delete subscriber");
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const payload = { status: newStatus };
+      const response = await instance.put(`/newsletter/${id}`, payload);
+      if (response.status === 200) {
+        setSubscribers((prev) =>
+          prev.map((s) => (s._id === id ? { ...s, status: newStatus } : s))
+        );
+      } else {
+        throw new Error("Failed to update status");
+      }
+    } catch (err) {
+      console.error("Failed to update status:", err);
+      alert("Failed to update status");
+    }
+  };
+
+  const handleUpdateNewsletter = async (id, updatedFields) => {
+    try {
+      const response = await instance.put(`/newsletter/${id}`, updatedFields);
+      if (response.status === 200) {
+        setSubscribers((prev) =>
+          prev.map((s) => (s._id === id ? { ...s, ...updatedFields } : s))
+        );
+      } else {
+        throw new Error("Failed to update");
+      }
+    } catch (err) {
+      console.error("Failed to update newsletter subscriber:", err);
+      alert("Failed to update subscriber");
+    }
   };
 
   return (
@@ -136,7 +236,7 @@ export default function NewsletterManagement() {
         </div>
         <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
           <span className="text-base bg-green-100 text-green-600 px-3 py-1 rounded-full">
-            1,248 Subscribers
+            {subscribers.length.toLocaleString()} Subscribers
           </span>
           <span className="text-base bg-blue-100 text-blue-600 px-3 py-1 rounded-full">
             12 Campaigns
@@ -148,7 +248,7 @@ export default function NewsletterManagement() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card
           title="Total Subscribers"
-          value="1,248"
+          value={subscribers.length.toLocaleString()}
           icon="👥"
           delta="+12.5%"
           deltaColor="text-green-500"
@@ -242,17 +342,13 @@ export default function NewsletterManagement() {
           <tbody>
             {filteredSubscribers.map((sub, index) => (
               <Row
-                key={index}
+                key={sub._id || sub.email || index}
                 {...sub}
-                // onClick={() =>}
-                onView={() => {
-                  console.log(sub._id);
-                  handleView(sub);
-                }}
+                onView={() => handleView(sub)}
                 onEdit={() => handleEdit(sub)}
-                onDelete={() => handleDelete(sub.email, sub._id)}
+                onDelete={() => handleDelete(sub._id)}
                 onStatusChange={(newStatus) =>
-                  handleStatusChange(sub.email, sub._id, newStatus)
+                  handleStatusChange(sub._id, newStatus)
                 }
               />
             ))}
@@ -261,7 +357,7 @@ export default function NewsletterManagement() {
       </div>
 
       {/* Edit Modal */}
-      {editingSubscriber && (
+      {editingSubscriberId && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
             <h2 className="text-lg font-bold mb-4">Edit Subscriber</h2>
@@ -318,7 +414,7 @@ export default function NewsletterManagement() {
               </button>
               <button
                 className="bg-gray-200 px-4 py-2 rounded"
-                onClick={() => setEditingSubscriber(null)}
+                onClick={() => setEditingSubscriberId(null)}
               >
                 Cancel
               </button>
@@ -402,13 +498,15 @@ function Row({
         </span>
       </td>
       <td className="p-3 whitespace-nowrap text-gray-500 hidden lg:table-cell">
-        {new Date(createdAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
+        {createdAt
+          ? new Date(createdAt).toLocaleString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "-"}
       </td>
       <td className="p-3 whitespace-nowrap space-x-2">
         <button
@@ -428,7 +526,7 @@ function Row({
         <button
           className="text-red-500 p-1 rounded hover:bg-red-50"
           title="Delete"
-          onClick={() => onDelete()}
+          onClick={onDelete}
         >
           <Trash className="w-4 h-4" />
         </button>
