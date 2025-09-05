@@ -1,13 +1,16 @@
 import React, { useContext } from "react";
 import { MdNightlightRound } from "react-icons/md";
+import { MdOutlineLightMode } from "react-icons/md";
+
 import { IoIosNotifications } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RxCross2 } from "react-icons/rx";
 import { AppContext } from "../context/AppContext";
 
 const Navbar = () => {
-  const { activeTab, isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
-
+  const { activeTab, isSidebarOpen, setIsSidebarOpen, darkMode, setDarkMode } =
+    useContext(AppContext);
+  console.log(darkMode);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -26,7 +29,17 @@ const Navbar = () => {
 
       {/* Right: Icons */}
       <div className="flex items-center gap-4 sm:gap-6">
-        <MdNightlightRound className="text-gray-500 text-xl sm:text-2xl cursor-pointer" />
+        {darkMode ? (
+          <MdOutlineLightMode
+            onClick={() => setDarkMode((prev) => !prev)}
+            className="text-gray-500 text-xl sm:text-2xl cursor-pointer"
+          />
+        ) : (
+          <MdNightlightRound
+            onClick={() => setDarkMode((prev) => !prev)}
+            className="text-gray-500 text-xl sm:text-2xl cursor-pointer"
+          />
+        )}
 
         {/* Notification with red dot */}
         <div className="relative">

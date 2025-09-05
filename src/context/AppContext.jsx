@@ -4,29 +4,23 @@ import { useLocation } from "react-router-dom";
 export const AppContext = createContext();
 
 const getTabNameFromPath = (pathname) => {
-  switch (pathname) {
-    case "/":
-      return "Dashboard";
-    case "/blog":
-    case "/create-blog-post":
-      return "Blog Management";
-    case "/careers":
-    case "/careers/create":
-      return "Careers";
-    case "/services":
-      return "Services";
-    case "/reviews":
-      return "Reviews";
-    case "/contact":
-      return "Contact Queries";
-    case "/newsletter":
-      return "Newsletter";
-    case "/users":
-    case "/users/roles":
-      return "User Management";
-    default:
-      return "Dashboard";
-  }
+  if (pathname === "/") return "Dashboard";
+
+  if (pathname.startsWith("/blog")) return "Blog Management";
+
+  if (pathname.startsWith("/careers")) return "Careers";
+
+  if (pathname.startsWith("/services")) return "Services";
+
+  if (pathname.startsWith("/reviews")) return "Reviews";
+
+  if (pathname.startsWith("/contact")) return "Contact Queries";
+
+  if (pathname.startsWith("/newsletter")) return "Newsletter";
+
+  if (pathname.startsWith("/users")) return "User Management";
+
+  return "Dashboard";
 };
 
 export const AppProvider = ({ children }) => {
@@ -41,7 +35,6 @@ export const AppProvider = ({ children }) => {
     const tabName = getTabNameFromPath(location.pathname);
     setActiveTab(tabName);
   }, [location.pathname]);
-
 
   return (
     <AppContext.Provider

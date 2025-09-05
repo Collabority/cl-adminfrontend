@@ -44,6 +44,7 @@ const Sidebar = () => {
       isActive(tabPath) ? "bg-blue-100" : ""
     }`;
 
+
   const getIconClasses = (tabPath) =>
     `text-2xl group-hover:text-blue-500 ${
       isActive(tabPath) ? "text-blue-500" : "text-black"
@@ -70,6 +71,7 @@ const Sidebar = () => {
         <Link to="/" className={getItemClasses("/")}>
           <BsGraphUp className={getIconClasses("/")} />
           <h5 className={getTextClasses("/")}>Dashboard</h5>
+
         </Link>
 
         <Link to="/blog" className={getItemClasses("/blog")}>
@@ -110,22 +112,29 @@ const Sidebar = () => {
 
       {/* Admin Section at Bottom */}
       <div className="pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
+
         <img
           src="https://randomuser.me/api/portraits/men/32.jpg"
           alt="Admin"
           className="w-10 h-10 rounded-full object-cover"
         />
+
         <div className="flex flex-col text-center">
           <p className="text-sm font-semibold text-gray-700">Admin</p>
           <p className="text-xs text-gray-500">admin@company.com</p>
         </div>
-        <RxExit
-          className="text-xl text-gray-600 hover:text-red-500 cursor-pointer"
-          title="Logout"
-        />
+
+        <Link to="/login">
+          <RxExit
+            className="text-xl text-gray-600 hover:text-red-500 cursor-pointer"
+            title="Logout"
+          />
+        </Link>
       </div>
     </div>
   );
 };
 
 export default Sidebar;
+
+

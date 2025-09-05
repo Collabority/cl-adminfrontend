@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+.ql-editor.ql-blank::before {
+  color: #d2d3d7;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 1rem;
+}
+
+.dark div {
+  background-color: rgb(42, 40, 40);
+}
+
+.dark p,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark span,
+.dark label,
+.dark input,
+.dark select,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: white;
+}
+
+.dark option,
+.dark span {
+  color: black;
+}
+
