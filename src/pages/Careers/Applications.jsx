@@ -186,6 +186,7 @@ const Applications = () => {
           </div>
           <div className="flex gap-2 justify-end w-full md:w-auto">
             <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"><Filter className="w-5 h-5" /></button>
+            <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"><RefreshCcw className="w-5 h-5" /></button>
           </div>
         </div>
       </div>
