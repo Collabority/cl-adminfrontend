@@ -293,4 +293,5 @@ const StatCard = ({ icon, title, value }) => (
   </div>
 );
 
+
 export default Applications;
