@@ -221,15 +221,15 @@ const Login = () => {
         </div>
 
         {/* Sign up link */}
-        <p className="text-base text-center mt-6 text-gray-600">
+        {/* <p className="text-base text-center mt-6 text-gray-600">
           Don’t have an account?{" "}
           <Link
-            to="/sign-up"
+            to="/sign-up" 
             className="text-blue-600 font-semibold text-base hover:underline"
           >
             Sign Up
           </Link>
-        </p>
+        </p> */}
       </div>
     </div>
   );

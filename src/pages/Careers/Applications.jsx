@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FileText,
   PlusCircle,
@@ -9,68 +9,39 @@ import {
   XCircle,
   Search,
   Filter,
-  RefreshCcw,
   Plus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import instance from "../../lib/axios";
+
+const DEFAULT_AVATAR =
+  "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg";
+
+function transformApiApplication(apiApp) {
+  return {
+    id: apiApp._id || apiApp.id,
+    name: apiApp.name || "",
+    email: apiApp.email || "",
+    avatar: DEFAULT_AVATAR,
+    position: apiApp.position || "",
+    department: apiApp.department || "",
+    experience: apiApp.experience || "",
+    status: apiApp.status || "",
+    appliedDate: apiApp.appliedDate
+      ? new Date(apiApp.appliedDate).toISOString().split("T")[0]
+      : "",
+    resume: apiApp.resume || "",
+    coverLetter: apiApp.coverLetter || "",
+  };
+}
 
 const Applications = () => {
-  const allApplications = [
-    {
-      id: 1,
-      name: "John Smith",
-      email: "john.smith@email.com",
-      avatar:
-        "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
-      position: "Senior Frontend Developer",
-      department: "Engineering",
-      experience: "5",
-      status: "Under Review",
-      appliedDate: "2025-01-08",
-    },
-    {
-      id: 2,
-      name: "Sarah Johnson",
-      email: "sarah.j@email.com",
-      avatar:
-        "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg",
-      position: "UX/UI Designer",
-      department: "Design",
-      experience: "3",
-      status: "Shortlisted",
-      appliedDate: "2025-01-07",
-    },
-    {
-      id: 3,
-      name: "Michael Chen",
-      email: "m.chen@email.com",
-      avatar:
-        "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg",
-      position: "Backend Developer",
-      department: "Engineering",
-      experience: "4",
-      status: "New",
-      appliedDate: "2025-01-09",
-    },
-    {
-      id: 4,
-      name: "Emily Davis",
-      email: "emily.davis@email.com",
-      avatar:
-        "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg",
-      position: "Marketing Intern",
-      department: "Marketing",
-      experience: "1",
-      status: "New",
-      appliedDate: "2025-01-09",
-    },
-  ];
-
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [jobFilter, setJobFilter] = useState("All Jobs");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [dateFilter, setDateFilter] = useState("");
-  const [applications, setApplications] = useState(allApplications);
   const [editingReview, setEditingReview] = useState(null);
   const [editForm, setEditForm] = useState({
     name: "",
@@ -80,16 +51,42 @@ const Applications = () => {
     status: "",
   });
 
+  // Fetch applications from API
+  const fetchApplications = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await instance.get("/career/applications");
+      if (res.data.success && Array.isArray(res.data.data)) {
+        setApplications(res.data.data.map(transformApiApplication));
+      } else {
+        setApplications([]);
+      }
+    } catch (error) {
+      setApplications([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.title = "Applications - CL Admin";
+    fetchApplications();
+  }, [fetchApplications]);
+
+  // Get unique job titles for filter dropdown
+  const jobTitles = [
+    ...new Set(applications.map((app) => app.position).filter(Boolean)),
+  ];
+
+  // Filtering logic
   const filteredApplications = applications.filter((app) => {
     const matchSearch =
       app.name.toLowerCase().includes(search.toLowerCase()) ||
       app.email.toLowerCase().includes(search.toLowerCase());
-
     const matchJob = jobFilter === "All Jobs" || app.position === jobFilter;
     const matchStatus =
       statusFilter === "All Status" || app.status === statusFilter;
     const matchDate = !dateFilter || app.appliedDate === dateFilter;
-
     return matchSearch && matchJob && matchStatus && matchDate;
   });
 
@@ -101,6 +98,8 @@ const Applications = () => {
         return "bg-purple-100 text-purple-800";
       case "New":
         return "bg-green-100 text-green-800";
+      case "Rejected":
+        return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -133,11 +132,20 @@ const Applications = () => {
     alert("Application updated successfully!");
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this application?")) {
-      setApplications((applications) =>
-        applications.filter((app) => app.id !== id)
-      );
+  const handleDelete = async (id) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this application? This action cannot be undone."
+      )
+    ) {
+      try {
+        await instance.delete(`/career/applications/${id}`);
+        setApplications((applications) =>
+          applications.filter((app) => app.id !== id)
+        );
+      } catch (error) {
+        alert("Failed to delete application.");
+      }
     }
   };
 
@@ -158,22 +166,22 @@ const Applications = () => {
         <StatCard
           icon={<FileText className="text-blue-600 w-6 h-6" />}
           title="Total Applications"
-          value="148"
+          value={applications.length}
         />
         <StatCard
           icon={<PlusCircle className="text-green-600 w-6 h-6" />}
           title="New Today"
-          value="7"
+          value={applications.filter((a) => a.status === "New").length}
         />
         <StatCard
           icon={<Clock className="text-orange-600 w-6 h-6" />}
           title="Under Review"
-          value="34"
+          value={applications.filter((a) => a.status === "Under Review").length}
         />
         <StatCard
           icon={<Pencil className="text-purple-600 w-6 h-6" />}
           title="Shortlisted"
-          value="12"
+          value={applications.filter((a) => a.status === "Shortlisted").length}
         />
       </div>
 
@@ -197,10 +205,9 @@ const Applications = () => {
               className="px-4 py-2 border rounded-lg text-gray-600"
             >
               <option>All Jobs</option>
-              <option>Senior Frontend Developer</option>
-              <option>UX/UI Designer</option>
-              <option>Backend Developer</option>
-              <option>Marketing Intern</option>
+              {jobTitles.map((title) => (
+                <option key={title}>{title}</option>
+              ))}
             </select>
             <select
               value={statusFilter}
@@ -230,101 +237,119 @@ const Applications = () => {
 
       {/* Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="px-4 py-3">
-                <input type="checkbox" />
-              </th>
-              <th className="px-4 py-3 text-left">Applicant</th>
-              <th className="px-4 py-3 text-left hidden sm:table-cell">
-                Position
-              </th>
-              <th className="px-4 py-3 text-left hidden md:table-cell">
-                Experience
-              </th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left hidden lg:table-cell">
-                Applied Date
-              </th>
-              <th className="px-4 py-3 text-left hidden sm:table-cell">
-                Resume
-              </th>
-              <th className="px-4 py-3 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {filteredApplications.map((applicant) => (
-              <tr key={applicant.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-4  border-b-4 border-gray-200 mr-4"></div>
+            <span className="text-lg text-gray-600">
+              Loading applications...
+            </span>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-4 py-3">
                   <input type="checkbox" />
-                </td>
-                <td className="px-4 py-3 flex items-center gap-3">
-                  <img
-                    src={applicant.avatar}
-                    className="w-9 h-9 rounded-full"
-                    alt="avatar"
-                  />
-                  <div>
-                    <div className="font-medium">{applicant.name}</div>
-                    <div className="text-xs text-gray-500">
-                      {applicant.email}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3 hidden sm:table-cell">
-                  <div className="text-sm">{applicant.position}</div>
-                  <div className="text-xs text-gray-500">
-                    {applicant.department}
-                  </div>
-                </td>
-                <td className="px-4 py-3 hidden md:table-cell">
-                  {applicant.experience} years
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${getStatusClasses(
-                      applicant.status
-                    )}`}
-                  >
-                    {applicant.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 hidden lg:table-cell text-sm">
-                  {applicant.appliedDate}
-                </td>
-                <td className="px-4 py-3 hidden sm:table-cell">
-                  <button className="text-blue-600 text-sm flex items-center gap-1">
-                    <Download className="w-4 h-4" />
-                    Download
-                  </button>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    <button
-                      className="text-blue-600"
-                      onClick={() => handleView(applicant)}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="text-green-600"
-                      onClick={() => handleEdit(applicant)}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="text-red-600"
-                      onClick={() => handleDelete(applicant.id)}
-                    >
-                      <XCircle className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
+                </th>
+                <th className="px-4 py-3 text-left">Applicant</th>
+                <th className="px-4 py-3 text-left hidden sm:table-cell">
+                  Position
+                </th>
+                <th className="px-4 py-3 text-left hidden md:table-cell">
+                  Experience
+                </th>
+                <th className="px-4 py-3 text-left">Status</th>
+                <th className="px-4 py-3 text-left hidden lg:table-cell">
+                  Applied Date
+                </th>
+                <th className="px-4 py-3 text-left hidden sm:table-cell">
+                  Resume
+                </th>
+                <th className="px-4 py-3 text-left">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y">
+              {filteredApplications.map((applicant) => (
+                <tr key={applicant.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <input type="checkbox" />
+                  </td>
+                  <td className="px-4 py-3 flex items-center gap-3">
+                    <img
+                      src={applicant.avatar}
+                      className="w-9 h-9 rounded-full"
+                      alt="avatar"
+                    />
+                    <div>
+                      <div className="font-medium">{applicant.name}</div>
+                      <div className="text-xs text-gray-500">
+                        {applicant.email}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 hidden sm:table-cell">
+                    <div className="text-sm">{applicant.position}</div>
+                    <div className="text-xs text-gray-500">
+                      {applicant.department}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 hidden md:table-cell">
+                    {applicant.experience} years
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${getStatusClasses(
+                        applicant.status
+                      )}`}
+                    >
+                      {applicant.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 hidden lg:table-cell text-sm">
+                    {applicant.appliedDate}
+                  </td>
+                  <td className="px-4 py-3 hidden sm:table-cell">
+                    <a
+                      href={applicant.resume.replace(
+                        "/upload/",
+                        "/upload/fl_attachment:resume.pdf/"
+                      )}
+                      className="text-blue-600 text-sm flex items-center gap-1"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download
+                    </a>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        className="text-blue-600"
+                        onClick={() => handleView(applicant)}
+                        title="View"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="text-green-600"
+                        onClick={() => handleEdit(applicant)}
+                        title="Edit"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="text-red-600"
+                        onClick={() => handleDelete(applicant.id)}
+                        title="Delete"
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* Edit Modal */}

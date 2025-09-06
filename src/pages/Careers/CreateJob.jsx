@@ -103,9 +103,13 @@ const CreateJob = () => {
               className="border rounded px-3 py-2 text-sm w-full"
             >
               <option value="">Select Department</option>
-              <option value="Engineering">Engineering</option>
-              <option value="Design">Design</option>
-              <option value="Marketing">Marketing</option>
+
+              <option value="cloud">Cloud & DevOps</option>
+              <option value="dev">Software Development</option>
+              <option value="data">Data & Analytics</option>
+              <option value="cyber">Cybersecurity</option>
+              <option value="consult">Consulting & Strategy</option>
+              <option value="infra">Infrastructure & Ops</option>
             </select>
           </div>
           <div>

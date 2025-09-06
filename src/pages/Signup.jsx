@@ -36,7 +36,6 @@ const Signup = () => {
     });
     setErrors({});
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -44,14 +43,18 @@ const Signup = () => {
       setErrors(validationErrors);
     } else {
       setErrors({});
-      signup(formData);
-      console.log("Form submitted:", formData);
+
+      // signup(formData);
+      // console.log("Form submitted:", formData);
       // Backend logic here
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-blue-100 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-blue-100 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-2xl font-bold text-center text-red-500">
+        This functionality is not Supported as of now.
+      </h1>
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg"
