@@ -178,7 +178,6 @@ const BlogManagement = () => {
 
       {/* Right section: icons */}
       <div className="flex items-center gap-4 text-gray-600 text-xl self-end md:self-auto">
-        <FaFilter className="cursor-pointer hover:text-black transition" />
         {/* refresh filter reset to defaults */}
         <LuRefreshCw
           className="cursor-pointer hover:text-black transition"
@@ -233,7 +232,7 @@ const BlogManagement = () => {
             </h2>
 
             {/* Description */}
-            <p className="text-sm font-semibold text-gray-600 line-clamp-3">
+            <p className="text-base font-semibold text-gray-600 line-clamp-3">
               {post.desc}
             </p>
 
@@ -245,7 +244,7 @@ const BlogManagement = () => {
                   alt={post.author}
                   className="w-8 h-8 rounded-full object-cover"
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-base font-medium text-gray-700">
                   {post.author}
                 </span>
               </div>

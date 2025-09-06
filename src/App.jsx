@@ -1,6 +1,6 @@
 import "./App.css";
 
-import React, { Suspense, lazy, useContext, useEffect } from "react";
+import { Suspense, lazy, useContext } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Loader from "./components/Loader";
 import { AppContext } from "./context/AppContext";
@@ -17,6 +17,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/Login"))
 const Reviews = lazy(() => import("./pages/Reviews"));
 const AddReview = lazy(() => import("./pages/AddReview"));
+const EditReview = lazy(() => import("./pages/EditReview"));
 const ContactQueries = lazy(() => import("./pages/ContactQueries"));
 const ServicesManagement = lazy(() => import("./pages/ServicesManagement"));
 const CreateService = lazy(() => import("./pages/CreateService"));
@@ -24,6 +25,10 @@ const EditService = lazy(() => import("./pages/EditService"));
 const Applications = lazy(() => import("./pages/Careers/Applications"));
 const CreateJob = lazy(() => import("./pages/Careers/CreateJob"));
 const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
+const AddNewSubscriber = lazy(() => import("./pages/AddNewSubscriber"));
+const CreateCampaign = lazy(() => import("./pages/CreateCampaign"));
+const EditSubscriber = lazy(() => import("./pages/EditSubscriber"));
+
 const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
 const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
 const Signup = lazy(()=> import("./pages/Signup"))
@@ -74,10 +79,15 @@ const App = () => {
               <Route path="/services/create" element={<CreateService />} />  
               <Route path="/services/edit/:id" element={<EditService />} />
               <Route path="/newsletter" element={<NewsletterManagement />} />
+              <Route path="/addSubscriber" element={<AddNewSubscriber />} />
+              <Route path="/createCampaign" element={<CreateCampaign />} />
+              <Route path="/editSubscriber" element={<EditSubscriber/>}/>
+
 
               <Route path="/login" element={<Login/>} />
-              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/reviews" element={<Reviews />} />   
               <Route path="/reviews/add" element={<AddReview />} />
+              <Route path="/reviews/edit/:id" element={<EditReview />} />
               <Route path="/contact" element={<ContactQueries />} />
               {/* <Route path="/newsletter" element={<NewsletterManagement />} /> */}
                           <Route path="/newsletter/add-subscriber" element={<AddSubscriber />} />

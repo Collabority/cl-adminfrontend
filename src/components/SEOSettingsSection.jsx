@@ -7,13 +7,13 @@ const SEOSettingsSection = ({ formData, setFormData }) => {
 
   return (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-      <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-black">
+      <h1 className="text-2xl font-semibold text-black">
         SEO Settings
       </h1>
 
       {/* Meta Title */}
       <div className="flex flex-col gap-1">
-        <label className="block text-sm sm:text-base font-medium text-gray-700">
+        <label className="block text-base font-medium text-gray-700">
           Meta Title
         </label>
         <input
@@ -24,14 +24,14 @@ const SEOSettingsSection = ({ formData, setFormData }) => {
           className="w-full border px-3 py-2 rounded border-gray-300 font-semibold text-gray-700 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="SEO optimized title (60 characters max)"
         />
-        <div className="text-xs sm:text-sm text-gray-500 font-medium text-right">
+        <div className="text-base text-gray-500 font-medium text-right">
           {formData.metaTitle.length}/60 characters
         </div>
       </div>
 
       {/* Meta Description */}
       <div className="flex flex-col gap-1">
-        <label className="block text-sm sm:text-base font-medium text-gray-700">
+        <label className="block text-base font-medium text-gray-700">
           Meta Description
         </label>
         <textarea
@@ -42,14 +42,14 @@ const SEOSettingsSection = ({ formData, setFormData }) => {
           placeholder="Brief description for search engines (160 characters max)"
           rows={3}
         />
-        <div className="text-xs sm:text-sm text-gray-500 font-medium text-right">
+        <div className="text-base text-gray-500 font-medium text-right">
           {formData.metaDescription.length}/160 characters
         </div>
       </div>
 
       {/* Focus Keyword */}
       <div className="flex flex-col gap-1">
-        <label className="block text-sm sm:text-base font-medium text-gray-700">
+        <label className="block text-base font-medium text-gray-700">
           Focus Keyword
         </label>
         <input

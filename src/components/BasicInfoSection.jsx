@@ -48,11 +48,11 @@ const BasicInfoSection = ({ formData, setFormData }) => {
   };
   return (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-      <h2 className="text-xl font-semibold text-black">Basic Information</h2>
+      <h2 className="text-2xl font-semibold text-black">Basic Information</h2>
 
       {/* Title Input */}
       <div>
-        <label className="block font-medium text-gray-700 mb-1">
+        <label className="block text-base font-medium text-gray-700 mb-1">
           Post Title *
         </label>
         <input
@@ -68,7 +68,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
 
       {/* URL Slug Display */}
       <div>
-        <label className="block font-medium text-gray-700 mb-1">URL Slug</label>
+        <label className="block text-base font-medium text-gray-700 mb-1">URL Slug</label>
         <div className="text-gray-600 flex items-center">
           <span className="pr-2 border border-gray-400 py-2 px-2 rounded-l-sm font-semibold">
             yoursite.com/blog/
@@ -86,7 +86,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
       {/* Author & Category Dropdowns */}
       <div className="flex flex-col md:flex-row gap-6">
         <div className="w-full">
-          <label className="block font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Author *
           </label>
           <select
@@ -104,7 +104,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
         </div>
 
         <div className="w-full">
-          <label className="block font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Category *
           </label>
           <select
@@ -126,7 +126,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
 
       {/* Tags Input */}
       <div>
-        <label className="block font-medium text-gray-700 mb-1">Tags</label>
+        <label className="block text-base font-medium text-gray-700 mb-1">Tags</label>
         <input
           type="text"
           value={tagInput}
@@ -135,7 +135,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
           placeholder="Separate tags with commas (e.g., web development, javascript, react)"
           className="w-full placeholder:text-gray-500 border border-gray-400 font-semibold  px-3 py-2 rounded outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <p className="text-sm text-gray-500 placeholder:text-gray-500 mt-1 font-semibold">
+        <p className="text-base text-gray-500 placeholder:text-gray-500 mt-1 font-semibold">
           Press Enter or comma to add tags
         </p>
 

@@ -117,18 +117,22 @@ export default function UserManagementPage() {
     }
   };
 
+  const handleStatusChange = (id, newStatus) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: newStatus } : u));
+  };
+
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className='flex items-center justify-between mb-6'>
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold mb-1">User Management</h1>
-          <p className="text-sm text-gray-500 mb-6">
+          <h1 className="text-2xl font-semibold mb-1">User Management</h1>
+          <p className="text-base text-gray-500 mb-6">
             Manage admin users, roles, and permissions for your portal.
           </p>
         </div>
         <Link to="/users/roles">
           <button className="mb-4 text-white rounded hover:bg-blue-700 flex gap-2 bg-blue-600 p-3">
-            <span className="text-sm sm:text-base flex items-center"><Plus className='mr-2' />Add New User</span>
+            <span className="text-base flex items-center"><Plus className='mr-2' />Add New User</span>
           </button>
         </Link>
       </div>
@@ -204,9 +208,20 @@ export default function UserManagementPage() {
                   </span>
                 </td>
                 <td className="p-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${user.statusColor}-100 text-${user.statusColor}-600`}>
-                    {user.status}
-                  </span>
+                  <select
+                    className={`px-3 py-1 rounded-full text-xs font-semibold focus:outline-none ${
+                      user.status === 'Active' ? 'bg-green-100 text-green-600' :
+                      user.status === 'Pending' ? 'bg-yellow-100 text-yellow-600' :
+                      'bg-gray-100 text-gray-600'
+                    }`}
+                    value={user.status}
+                    onChange={e => handleStatusChange(user.id, e.target.value)}
+                    style={{ minWidth: 80 }}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
                 </td>
                 <td className="p-3 hidden md:table-cell">{user.lastLogin}</td>
                 <td className="p-3 hidden lg:table-cell">{user.permissions}</td>
@@ -232,19 +247,19 @@ export default function UserManagementPage() {
           <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
             <h2 className="text-lg font-bold mb-4">Edit User</h2>
             <div className="mb-2">
-              <label className="block text-sm font-semibold">Name</label>
+              <label className="block text-base font-semibold">Name</label>
               <input className="w-full border rounded px-3 py-1" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
             </div>
             <div className="mb-2">
-              <label className="block text-sm font-semibold">Role</label>
+              <label className="block text-base font-semibold">Role</label>
               <input className="w-full border rounded px-3 py-1" value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))} />
             </div>
             <div className="mb-2">
-              <label className="block text-sm font-semibold">Status</label>
+              <label className="block text-base font-semibold">Status</label>
               <input className="w-full border rounded px-3 py-1" value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))} />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-semibold">Permissions</label>
+              <label className="block text-base font-semibold">Permissions</label>
               <input className="w-full border rounded px-3 py-1" value={editForm.permissions} onChange={e => setEditForm(f => ({ ...f, permissions: e.target.value }))} />
             </div>
             <div className="flex justify-end gap-2">
@@ -262,7 +277,7 @@ function SummaryCard({ icon, title, value }) {
   return (
     <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
       <div className="flex items-center justify-between mb-1">
-        <h4 className="text-sm font-medium text-gray-500">{title}</h4>
+        <h4 className="text-base font-medium text-gray-500">{title}</h4>
         {icon}
       </div>
       <div className="text-2xl font-semibold">{value}</div>

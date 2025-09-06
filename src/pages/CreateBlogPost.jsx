@@ -60,13 +60,13 @@ const CreateBlogPost = () => {
 
   const coverImage = () => (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4 ">
-      <h1 className="text-xl font-semibold text-black">Cover Image</h1>
+      <h1 className="text-2xl font-semibold text-black">Cover Image</h1>
       <div className="flex flex-col items-center gap-4 border-3 border-dashed border-gray-300 hover:border-blue-600 transition-all duration-300 p-8 sm:p-10 md:p-12 rounded-md text-center w-full">
         <FaCloudUploadAlt className="text-5xl text-gray-400" />
-        <h2 className="text-black text-xl sm:text-2xl font-semibold">
+        <h2 className="text-2xl font-semibold text-black">
           Upload Cover Image
         </h2>
-        <h3 className="font-semibold text-gray-700 text-sm sm:text-base">
+        <h3 className="font-semibold text-base text-gray-700">
           Click to browse Choose File
         </h3>
         <input
@@ -105,7 +105,7 @@ const CreateBlogPost = () => {
           Choose file
         </button>
 
-        <p className="font-semibold text-[13px] text-gray-500 mt-2">
+        <p className="font-semibold text-base text-gray-500 mt-2">
           Recommended size: 1200x630px, Max file size: 5MB
         </p>
 
@@ -124,17 +124,17 @@ const CreateBlogPost = () => {
     <form className="flex flex-col gap-6 p-4" >
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
-        <h3 className="text-gray-700 font-semibold flex items-center text-sm">
+        <h3 className="text-base text-gray-700 font-semibold flex items-center">
           <MdOutlineKeyboardArrowRight className="text-xl sm:text-2xl" />
           <span className="ml-1">Create New Post</span>
         </h3>
       </div>
 
       {/* Page Title */}
-      <h1 className="text-2xl sm:text-3xl font-semibold">
+      <h1 className="text-2xl font-semibold">
         Create New Blog Post
       </h1>
-      <p className="text-gray-600 font-semibold text-sm md:text-lg">
+      <p className="text-base text-gray-600 font-semibold">
         Fill in the details below to create and publish your blog post.
       </p>
 

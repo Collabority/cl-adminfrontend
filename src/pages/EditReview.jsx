@@ -1,8 +1,41 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCloudUploadAlt } from "react-icons/fa";
-
-const AddReview = () => {
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+const mockReviews = [
+  {
+    id: 1,
+    name: "Sarah Johnson",
+    title: "CEO, TechCorp",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    rating: 5,
+    review: "Exceptional service and outstanding results.",
+    status: "Published",
+    email: "sarah.johnson@techcorp.com",
+  },
+  {
+    id: 2,
+    name: "Michael Chen",
+    title: "CTO, StartupXYZ",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    rating: 4,
+    review: "Great collaboration and professional approach.",
+    status: "Pending",
+    email: "michael.chen@startupxyz.com",
+  },
+  {
+    id: 3,
+    name: "Emily Davis",
+    title: "Marketing Director, BigCorp",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    rating: 5,
+    review: "Incredible attention to detail and timely delivery.",
+    status: "Published",
+    email: "emily.davis@bigcorp.com",
+  },
+];
+const EditReview = () => {
   const navigate = useNavigate();
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
@@ -51,6 +84,25 @@ const AddReview = () => {
     }
     setProfilePic(file);
   };
+  const { id } = useParams();
+  const [reviewData, setReviewData] = useState(null);
+
+  useEffect(() => {
+    const found = mockReviews.find((r) => r.id === parseInt(id));
+    if (found) {
+      setReviewData(found);
+    }
+  }, [id]);
+  useEffect(() => {
+    if (reviewData) {
+      setName(reviewData.name || "");
+      setTitle(reviewData.title || "");
+      setEmail(reviewData.email || "");
+      setReviewContent(reviewData.review || "");
+      setRating(reviewData.rating || 0);
+      setStatus(reviewData.status || "Draft");
+    }
+  }, [reviewData]);
 
   return (
     <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen">
@@ -70,7 +122,7 @@ const AddReview = () => {
               d="M9 5l7 7-7 7"
             />
           </svg>
-          <span className="text-black font-bold">Add New Review</span>
+          <span className="text-black font-bold">Edit Review</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <button
@@ -88,38 +140,80 @@ const AddReview = () => {
         </div>
       </div>
       <div className="bg-white rounded-xl shadow p-4 sm:p-6 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-1">Add New Review &amp; Testimonial</h1>
-        <p className="text-base text-gray-500 mb-6">Create a new customer review or testimonial to showcase on your website.</p>
+        <h1 className="text-2xl font-bold mb-1">
+          Edit Review &amp; Testimonial
+        </h1>
+        <p className="text-base text-gray-500 mb-6">
+          Edit customer review or testimonial to showcase on your website.
+        </p>
         {/* Basic Information */}
         <div className="mb-8">
           <h2 className="font-semibold text-lg mb-4">Basic Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-base text-gray-700 mb-1">Reviewer Name *</label>
-              <input className="w-full border border-gray-200 rounded-lg px-4 py-2" placeholder="Enter reviewer's full name" value={name} onChange={e => setName(e.target.value)} required />
+              <label className="block text-base text-gray-700 mb-1">
+                Reviewer Name *
+              </label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-2"
+                placeholder="Enter reviewer's full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </div>
             <div>
-              <label className="block text-base text-gray-700 mb-1">Designation/Title *</label>
-              <input className="w-full border border-gray-200 rounded-lg px-4 py-2" placeholder="e.g., CEO, Marketing Director" value={title} onChange={e => setTitle(e.target.value)} required />
+              <label className="block text-base text-gray-700 mb-1">
+                Designation/Title *
+              </label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-2"
+                placeholder="e.g., CEO, Marketing Director"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
             </div>
             <div>
-              <label className="block text-base text-gray-700 mb-1">Company/Organization *</label>
-              <input className="w-full border border-gray-200 rounded-lg px-4 py-2" placeholder="Company name" value={company} onChange={e => setCompany(e.target.value)} required />
+              <label className="block text-base text-gray-700 mb-1">
+                Company/Organization *
+              </label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-2"
+                placeholder="Company name"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                required
+              />
             </div>
             <div>
-              <label className="block text-base text-gray-700 mb-1">Email *</label>
-              <input className="w-full border border-gray-200 rounded-lg px-4 py-2" placeholder="reviewer@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
+              <label className="block text-base text-gray-700 mb-1">
+                Email *
+              </label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-2"
+                placeholder="reviewer@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
           </div>
         </div>
         {/* Profile Picture */}
         <div className="mb-8">
           <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-2 ">
-            <h1 className="text-2xl font-semibold text-black">Profile Picture</h1>
+            <h1 className="text-2xl font-semibold text-black">
+              Profile Picture
+            </h1>
             <div className="flex flex-col items-center gap-4 border-2 border-dashed border-gray-300 hover:border-blue-600 transition-all duration-300 p-8 sm:p-10 md:p-12 rounded-md text-center w-full">
               <FaCloudUploadAlt className="text-5xl text-gray-400" />
-              <h2 className="text-black text-2xl font-semibold">Upload Profile Picture</h2>
-              <h3 className="font-semibold text-gray-700 text-base">Click to browse Choose File</h3>
+              <h2 className="text-black text-2xl font-semibold">
+                Upload Profile Picture
+              </h2>
+              <h3 className="font-semibold text-gray-700 text-base">
+                Click to browse Choose File
+              </h3>
               <input
                 name="profilePic"
                 type="file"
@@ -150,9 +244,13 @@ const AddReview = () => {
         </div>
         {/* Rating & Review Content */}
         <div className="mb-8">
-          <h2 className="font-semibold text-lg mb-4">Rating &amp; Review Content</h2>
+          <h2 className="font-semibold text-lg mb-4">
+            Rating &amp; Review Content
+          </h2>
           <div className="mb-4">
-            <label className="block text-base text-gray-700 mb-1">Rating *</label>
+            <label className="block text-base text-gray-700 mb-1">
+              Rating *
+            </label>
             <div className="flex items-center gap-1 mb-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -171,17 +269,35 @@ const AddReview = () => {
                   ★
                 </button>
               ))}
-              <span className="ml-2 text-gray-400 text-base">Click to rate</span>
+              <span className="ml-2 text-gray-400 text-base">
+                Click to rate
+              </span>
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-base text-gray-700 mb-1">Review Title</label>
-            <input className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm" placeholder="Brief title for the review" value={reviewTitle} onChange={e => setReviewTitle(e.target.value)} />
+            <label className="block text-base text-gray-700 mb-1">
+              Review Title
+            </label>
+            <input
+              className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
+              placeholder="Brief title for the review"
+              value={reviewTitle}
+              onChange={(e) => setReviewTitle(e.target.value)}
+            />
           </div>
           <div>
-            <label className="block text-base text-gray-700 mb-1">Review Content</label>
-            <textarea className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm min-h-[100px]" placeholder="Write the detailed review or testimonial content..." value={reviewContent} onChange={e => setReviewContent(e.target.value)}/>
-            <div className="text-xs text-gray-400 mt-1">Minimum 50 characters recommended</div>
+            <label className="block text-base text-gray-700 mb-1">
+              Review Content
+            </label>
+            <textarea
+              className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm min-h-[100px]"
+              placeholder="Write the detailed review or testimonial content..."
+              value={reviewContent}
+              onChange={(e) => setReviewContent(e.target.value)}
+            />
+            <div className="text-xs text-gray-400 mt-1">
+              Minimum 50 characters recommended
+            </div>
           </div>
         </div>
         {/* Additional Settings */}
@@ -189,7 +305,11 @@ const AddReview = () => {
           <h3 className="font-semibold text-lg mb-4">Additional Settings</h3>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <label className="text-base font-medium">Status:</label>
-            <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto" value={status} onChange={e => setStatus(e.target.value)}>
+            <select
+              className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
               <option>Draft</option>
               <option>Published</option>
               <option>Pending</option>
@@ -207,4 +327,4 @@ const AddReview = () => {
   );
 };
 
-export default AddReview;
+export default EditReview;

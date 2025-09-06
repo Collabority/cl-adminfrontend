@@ -30,13 +30,13 @@ const EditBlogPost = () => {
 
   const coverImage = () => (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4 ">
-      <h1 className="text-xl font-semibold text-black">Cover Image</h1>
+      <h2 className="text-lg font-semibold text-black">Cover Image</h2>
       <div className="flex flex-col items-center gap-4 border-3 border-dashed border-gray-300 hover:border-[#1447E6] transition-all duration-300 p-8 sm:p-10 md:p-12 rounded-md text-center w-full">
         <FaCloudUploadAlt className="text-5xl text-gray-400" />
-        <h2 className="text-black text-xl sm:text-2xl font-semibold">
+        <h2 className="text-lg font-semibold text-black">
           Upload Cover Image
         </h2>
-        <h3 className="font-semibold text-gray-700 text-sm sm:text-base">
+        <h3 className="font-semibold text-gray-700 text-base">
           Click to browse Choose File
         </h3>
         <input
@@ -70,7 +70,7 @@ const EditBlogPost = () => {
         >
           Choose file
         </button>
-        <p className="font-semibold text-[13px] text-gray-500 mt-2">
+        <p className="font-semibold text-base text-gray-500 mt-2">
           Recommended size: 1200x630px, Max file size: 5MB
         </p>
         {formData.img && (
@@ -92,21 +92,21 @@ const EditBlogPost = () => {
     <form className="flex flex-col gap-6 p-4">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
-        <h3 className="text-gray-700 font-semibold flex items-center text-sm">
+        <h3 className="text-gray-700 font-semibold flex items-center text-lg">
           <MdOutlineKeyboardArrowRight className="text-xl sm:text-2xl" />
           <span className="ml-1">Edit Blog Post</span>
         </h3>
       </div>
 
       {/* Page Title */}
-      <h1 className="text-2xl sm:text-3xl font-semibold">Edit Blog Post</h1>
-      <p className="text-gray-600 font-semibold text-sm md:text-lg">
+      <h1 className="text-2xl font-semibold">Edit Blog Post</h1>
+      <p className="text-gray-600 font-semibold text-base">
         Update the details below to edit and publish your service.
       </p>
 
       {/* Title and Category */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <label className="font-semibold text-gray-700">Title</label>
+        <label className="font-semibold text-gray-700 text-base">Title</label>
         <input
           type="text"
           className="w-full border px-3 py-2 rounded border-gray-400 font-semibold text-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
@@ -114,7 +114,7 @@ const EditBlogPost = () => {
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
         />
-        <label className="font-semibold text-gray-700">Category</label>
+        <label className="font-semibold text-gray-700 text-base">Category</label>
         <select
           className="border border-gray-400 font-semibold text-gray-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.category}
@@ -146,7 +146,7 @@ const EditBlogPost = () => {
 
       {/* Publishing Options */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <label className="font-semibold text-gray-700">Publishing Status</label>
+        <label className="font-semibold text-gray-700 text-base">Publishing Status</label>
         <select
           className="border border-gray-400 rounded-lg px-3 py-2 font-semibold text-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.status}
@@ -156,7 +156,7 @@ const EditBlogPost = () => {
           <option value="published">Published</option>
           <option value="scheduled">Scheduled</option>
         </select>
-        <label className="font-semibold text-gray-700">Publish Date</label>
+        <label className="font-semibold text-gray-700 text-base">Publish Date</label>
         <input
           type="date"
           className="border border-gray-400 font-semibold text-gray-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
@@ -173,7 +173,7 @@ const EditBlogPost = () => {
           type="button"
           onClick={(e) => handleSubmit(e, "draft")}
           name="draft"
-          className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-white font-semibold text-sm text-gray-600 sm:text-base cursor-pointer"
+          className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-white font-semibold text-base text-gray-600 cursor-pointer"
         >
           <FaSave className="text-sm text-gray-600" />
           Save Draft
@@ -182,7 +182,7 @@ const EditBlogPost = () => {
           type="button"
           onClick={(e) => handleSubmit(e, "published")}
           name="publish"
-          className="flex items-center gap-2 border rounded-xl py-2 px-4  border-gray-300 bg-[#1447E6] font-semibold text-white text-sm sm:text-base cursor-pointer hover:bg-[#0f36a8]"
+          className="flex items-center gap-2 border rounded-xl py-2 px-4  border-gray-300 bg-[#1447E6] font-semibold text-white text-base cursor-pointer hover:bg-[#0f36a8]"
         >
           <FaTelegramPlane className="text-sm" />
           Publish Service
