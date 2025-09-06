@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Pencil, Trash, Eye } from 'lucide-react';
+import AddSubscriber from './AddSubscriber';
+import {Link} from 'react-router-dom';
 
 const initialSubscribers = [
   {
@@ -132,7 +134,12 @@ export default function NewsletterManagement() {
           <option>Customers</option>
           <option>Prospects</option>
         </select>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto">+ Add Subscriber</button>
+        <Link to="/newsletter/add-subscriber" className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto text-center">
+        <button>
+          + Add Subscriber
+        </button>
+        </Link>
+        <button className="border px-4 py-2 rounded w-full sm:w-auto whitespace-nowrap">🟰 Bulk Actions</button>
       </div>
 
       {/* Table */}
@@ -213,7 +220,7 @@ function Card({ title, value, icon, delta, deltaColor }) {
   );
 }
 
-function Row({ email, name, status, segment, date, color, onView, onEdit, onDelete, onStatusChange }) {
+function Row({ email, name, status, segment, date, color, onView, onEdit, onDelete }) {
   const colorMap = {
     blue: 'bg-blue-100 text-blue-600',
     purple: 'bg-purple-100 text-purple-600',
@@ -230,20 +237,7 @@ function Row({ email, name, status, segment, date, color, onView, onEdit, onDele
         <div className="text-gray-900">{name}</div>
       </td>
       <td className="p-3 whitespace-nowrap">
-        <select
-          className={`px-3 py-1 rounded-full text-xs font-semibold focus:outline-none ${
-            status === 'Active' ? 'bg-green-100 text-green-600' :
-            status === 'Unsubscribed' ? 'bg-red-100 text-red-600' :
-            'bg-yellow-100 text-yellow-600'
-          }`}
-          value={status}
-          onChange={e => onStatusChange(e.target.value)}
-          style={{ minWidth: 100 }}
-        >
-          <option value="Active">Active</option>
-          <option value="Unsubscribed">Unsubscribed</option>
-          <option value="Bounced">Bounced</option>
-        </select>
+        <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium">{status}</span>
       </td>
       <td className="p-3 whitespace-nowrap hidden md:table-cell">
         <span className={`${colorMap[color] || 'bg-gray-100 text-gray-600'} px-2 py-1 rounded-full text-xs font-medium`}>

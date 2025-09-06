@@ -27,6 +27,12 @@ const NewsletterManagement = lazy(() => import("./pages/NewsletterManagement"));
 const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
 const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
 const Signup = lazy(()=> import("./pages/Signup"))
+const AddSubscriber = lazy(() => import("./pages/AddSubscriber"));
+// const AddNewUser = lazy(() => import("./pages/UserManagement/AddNewUser"));
+// const UserManagementPage = lazy(() => import("./pages/UserManagement/UserManagementPage"));
+
+
+
 
 
 const App = () => {
@@ -73,7 +79,8 @@ const App = () => {
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/reviews/add" element={<AddReview />} />
               <Route path="/contact" element={<ContactQueries />} />
-              
+              {/* <Route path="/newsletter" element={<NewsletterManagement />} /> */}
+                          <Route path="/newsletter/add-subscriber" element={<AddSubscriber />} />
              
               <Route path="/sign-up" element={<Signup/>} />
               <Route path="*" element={<NotFound />} />
