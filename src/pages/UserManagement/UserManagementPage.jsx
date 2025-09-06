@@ -117,10 +117,6 @@ export default function UserManagementPage() {
     }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: newStatus } : u));
-  };
-
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className='flex items-center justify-between mb-6'>
@@ -208,20 +204,9 @@ export default function UserManagementPage() {
                   </span>
                 </td>
                 <td className="p-3">
-                  <select
-                    className={`px-3 py-1 rounded-full text-xs font-semibold focus:outline-none ${
-                      user.status === 'Active' ? 'bg-green-100 text-green-600' :
-                      user.status === 'Pending' ? 'bg-yellow-100 text-yellow-600' :
-                      'bg-gray-100 text-gray-600'
-                    }`}
-                    value={user.status}
-                    onChange={e => handleStatusChange(user.id, e.target.value)}
-                    style={{ minWidth: 80 }}
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${user.statusColor}-100 text-${user.statusColor}-600`}>
+                    {user.status}
+                  </span>
                 </td>
                 <td className="p-3 hidden md:table-cell">{user.lastLogin}</td>
                 <td className="p-3 hidden lg:table-cell">{user.permissions}</td>
