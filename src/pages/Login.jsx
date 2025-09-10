@@ -172,7 +172,7 @@ const Login = () => {
               OTP
             </label>
             <input
-              type="text"
+              type="password"
               id="otp"
               autoComplete="one-time-code"
               value={formData.otp}
@@ -224,7 +224,7 @@ const Login = () => {
         {/* <p className="text-base text-center mt-6 text-gray-600">
           Don’t have an account?{" "}
           <Link
-            to="/sign-up" 
+            to="/sign-up"
             className="text-blue-600 font-semibold text-base hover:underline"
           >
             Sign Up

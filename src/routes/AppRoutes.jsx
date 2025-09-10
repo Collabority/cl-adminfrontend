@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Loader from "../components/Loader";
 import AuthLayout from "../layouts/AuthLayout";
+import EditReview from "../pages/EditReview";
 
 // General
 const Dashboard = lazy(() => import("../pages/Dashboard"));
@@ -76,6 +77,7 @@ const AppRoutes = () => {
           <Route path="/reviews">
             <Route index element={<Reviews />} />
             <Route path="add" element={<AddReview />} />
+            <Route path="edit/:id" element={<EditReview />} />
           </Route>
 
           {/* Contact */}
@@ -91,7 +93,7 @@ const AppRoutes = () => {
             <Login />
           </AuthLayout>
         } />
-        
+
         <Route path="/sign-up" element={
           <AuthLayout authenticationReq={false}>
             <Signup />

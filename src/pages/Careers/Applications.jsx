@@ -13,16 +13,17 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import instance from "../../lib/axios";
+import { FaEyeSlash } from "react-icons/fa";
 
 const DEFAULT_AVATAR =
-  "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg";
+  "https://res.cloudinary.com/dxo7rbhrl/image/upload/v1756140314/UnknownPerson_ybjokv.jpg";
 
 function transformApiApplication(apiApp) {
   return {
     id: apiApp._id || apiApp.id,
     name: apiApp.name || "",
     email: apiApp.email || "",
-    avatar: DEFAULT_AVATAR,
+    avatar: apiApp.avatar || DEFAULT_AVATAR,
     position: apiApp.position || "",
     department: apiApp.department || "",
     experience: apiApp.experience || "",
@@ -139,10 +140,14 @@ const Applications = () => {
       )
     ) {
       try {
-        await instance.delete(`/career/applications/${id}`);
-        setApplications((applications) =>
-          applications.filter((app) => app.id !== id)
-        );
+        const { data } = await instance.delete(`/career/applications/${id}`);
+        if (data.success) {
+          setApplications((applications) =>
+            applications.filter((app) => app.id !== id)
+          );
+        } else {
+          alert("Failed to delete application.");
+        }
       } catch (error) {
         alert("Failed to delete application.");
       }
@@ -310,14 +315,13 @@ const Applications = () => {
                   </td>
                   <td className="px-4 py-3 hidden sm:table-cell">
                     <a
-                      href={applicant.resume.replace(
-                        "/upload/",
-                        "/upload/fl_attachment:resume.pdf/"
-                      )}
+                      href={applicant.resume}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-blue-600 text-sm flex items-center gap-1"
                     >
-                      <Download className="w-4 h-4" />
-                      Download
+                      <Eye className="w-4 h-4" />
+                      View
                     </a>
                   </td>
                   <td className="px-4 py-3">

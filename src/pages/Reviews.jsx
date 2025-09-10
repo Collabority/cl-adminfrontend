@@ -5,12 +5,9 @@ import TotalReviewsIcon from "../assets/icons/TotalReviewsIcon";
 import AverageReviewsIcon from "../assets/icons/AverageReviewsIcon";
 import PublishedReviewsIcon from "../assets/icons/PublishedReviewsIcon";
 import PendingReviewsIcon from "../assets/icons/PendingReviewsIcon";
-
-const statusColors = {
-  Published: "bg-green-100 text-green-700",
-  Pending: "bg-orange-100 text-orange-700",
-  Draft: "bg-gray-200 text-gray-600",
-};
+import { ReviewView } from "../components/review-components/ReviewVIew";
+import { EditReview } from "../components/review-components/EditReview";
+import { ReviewRow } from "../components/review-components/ReviewRow";
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -170,35 +167,31 @@ const Reviews = () => {
     }
   };
 
+  const [viewingReview, setViewingReview] = useState(null);
   // View review
   const handleView = (r) => {
-    alert(
-      `Review Details:\n\nName: ${r.name}\nTitle: ${
-        r.designation || r.title
-      }\nCompany: ${r.companyName || ""}\nRating: ${r.rating}\nReview: ${
-        r.reviewContent
-      }\nStatus: ${r.status}`
-    );
+    setViewingReview(r);
   };
 
-  // Reply to review
-  const handleReply = (r) => {
-    alert(`Reply to: ${r.name} (${r.title || r.designation})`);
-    if (r.email) {
-      window.location.href = `mailto:${r.email}`;
-    }
-  };
+  // // Reply to review
+  // const handleReply = (r) => {
+  //   alert(`Reply to: ${r.name} (${r.title || r.designation})`);
+  //   if (r.email) {
+  //     window.location.href = `mailto:${r.email}`;
+  //   }
+  // };
 
   // Edit review
   const handleEdit = (r) => {
-    setEditingReview(r._id);
-    setEditForm({
-      name: r.name,
-      title: r.designation || r.title,
-      review: r.reviewContent || r.review,
-      rating: r.rating,
-      status: r.status,
-    });
+    navigate(`/reviews/edit/${r._id}`);
+    // setEditingReview(r._id);
+    // setEditForm({
+    //   name: r.name,
+    //   title: r.designation || r.title,
+    //   review: r.reviewContent || r.review,
+    //   rating: r.rating,
+    //   status: r.status,
+    // });
   };
 
   // Persist edit to backend
@@ -368,120 +361,14 @@ const Reviews = () => {
             </thead>
             <tbody>
               {sorted.map((r) => (
-                <tr key={r._id || r.id} className="border-b last:border-b-0">
-                  <td className="py-3 px-4 flex items-center gap-3">
-                    <img
-                      src={r.profilePicture}
-                      alt={r.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <div className="font-semibold text-sm text-black">
-                        {r.name}
-                      </div>
-                      <div className="text-gray-400 text-xs ">
-                        {r.designation || r.title || "Reviewer"},{" "}
-                        {r.companyName || "Company"}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="flex items-center gap-1 text-yellow-400">
-                      {"★".repeat(r.rating)}
-                      {"☆".repeat(5 - r.rating)}
-                    </span>
-                    <span className="ml-2 font-medium text-sm text-black">
-                      {Number(r.rating).toFixed(1)}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-black text-sm max-w-xs truncate">
-                    {r.reviewContent || r.review}
-                  </td>
-                  <td className="py-3 px-4">
-                    <select
-                      className={`px-3 py-1 rounded-full text-xs font-semibold focus:outline-none ${
-                        statusColors[r.status]
-                      }`}
-                      value={r.status}
-                      onChange={(e) =>
-                        handleStatusChange(r._id, e.target.value)
-                      }
-                      style={{ minWidth: 90 }}
-                    >
-                      <option value="Published">Published</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Draft">Draft</option>
-                    </select>
-                  </td>
-                  <td className="py-3 px-4 flex items-center gap-2">
-                    <button
-                      title="View"
-                      className="text-blue-600 hover:text-blue-800"
-                      onClick={() => handleView(r)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      title="Edit"
-                      className="text-green-600 hover:text-green-800"
-                      onClick={() => handleEdit(r)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11 5h2m2 0h.01M17 5a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h2m2 0V3m0 2v2"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      title="Delete"
-                      className="text-red-600 hover:text-red-800"
-                      onClick={() => handleDelete(r._id)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <ReviewRow
+                  key={r._id || r.id}
+                  r={r}
+                  handleStatusChange={handleStatusChange}
+                  handleDelete={handleDelete}
+                  handleView={handleView}
+                  handleEdit={handleEdit}
+                />
               ))}
               {sorted.length === 0 && (
                 <tr>
@@ -500,82 +387,19 @@ const Reviews = () => {
 
       {/* Edit Modal */}
       {editingReview && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-lg font-bold mb-4">Edit Review</h2>
-            <div className="mb-2">
-              <label className="block text-base font-semibold">Name</label>
-              <input
-                className="w-full border rounded px-2 py-1 text-base"
-                value={editForm.name}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, name: e.target.value }))
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-base font-semibold">Title</label>
-              <input
-                className="w-full border rounded px-2 py-1 text-base"
-                value={editForm.title}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, title: e.target.value }))
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-base font-semibold">Review</label>
-              <textarea
-                className="w-full border rounded px-2 py-1 text-base"
-                value={editForm.review}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, review: e.target.value }))
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-base font-semibold">Rating</label>
-              <input
-                type="number"
-                min="1"
-                max="5"
-                className="w-16 border rounded px-2 py-1 text-base"
-                value={editForm.rating}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, rating: Number(e.target.value) }))
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-base font-semibold">Status</label>
-              <select
-                className="w-full border rounded px-2 py-1 text-base"
-                value={editForm.status}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, status: e.target.value }))
-                }
-              >
-                <option value="Published">Published</option>
-                <option value="Pending">Pending</option>
-                <option value="Draft">Draft</option>
-              </select>
-            </div>
-            <div className="flex gap-2 mt-4">
-              <button
-                className="bg-blue-600 text-white px-4 py-2 rounded text-base"
-                onClick={handleEditSave}
-              >
-                Save
-              </button>
-              <button
-                className="bg-gray-300 px-4 py-2 rounded text-base"
-                onClick={() => setEditingReview(null)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <EditReview
+          handleEditSave={handleEditSave}
+          editForm={editForm}
+          setEditForm={setEditForm}
+          setEditingReview={setEditingReview}
+        />
+      )}
+
+      {viewingReview && (
+        <ReviewView
+          viewingReview={viewingReview}
+          setViewingReview={setViewingReview}
+        />
       )}
     </div>
   );

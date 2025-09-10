@@ -1,64 +1,9 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaCloudUploadAlt } from "react-icons/fa";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { z } from "zod";
+import React, { useState, useEffect, useRef } from "react";
 
-const mockReviews = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    title: "CEO",
-    company: "TechCorp",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    rating: 5,
-    review: "Exceptional service and outstanding results.",
-    status: "Published",
-    email: "sarah.johnson@techcorp.com",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    title: "CTO",
-    company: "StartupXYZ",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    rating: 4,
-    review: "Great collaboration and professional approach.",
-    status: "Pending",
-    email: "michael.chen@startupxyz.com",
-  },
-  {
-    id: 3,
-    name: "Emily Davis",
-    title: "Marketing Director",
-    company: "TechCorp",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    rating: 5,
-    review: "Incredible attention to detail and timely delivery.",
-    status: "Published",
-    email: "emily.davis@bigcorp.com",
-  },
-];
-
-const editReviewSchema = z.object({
-  name: z.string().min(1, "Reviewer name is required"),
-  title: z.string().min(1, "Designation/Title is required"),
-  company: z.string().min(1, "Company/Organization is required"),
-  email: z.string().email("Valid email is required"),
-  reviewTitle: z.string().min(1, "Review title is required"),
-  reviewContent: z.string().min(1, "Review content is required"),
-  category: z.string().min(1, "Category is required"),
-  rating: z
-    .number()
-    .min(1, "Rating must be at least 1")
-    .max(5, "Rating must be at most 5"),
-  status: z.enum(["Draft", "Published", "Pending"]),
-});
-
-const EditReview = () => {
+const ReviewForm = ({ existingReviewData }) => {
   const navigate = useNavigate();
-
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [email, setEmail] = useState("");
@@ -122,7 +67,7 @@ const EditReview = () => {
       setName(reviewData.name || "");
       setTitle(reviewData.title || "");
       setEmail(reviewData.email || "");
-      setReviewContent(reviewData.review || "");
+      setReviewContent(reviewData.reviewContent || "");
       setRating(reviewData.rating || 0);
       setStatus(reviewData.status || "Draft");
     }
@@ -224,6 +169,7 @@ const EditReview = () => {
             </div>
           </div>
         </div>
+
         {/* Profile Picture */}
         <div className="mb-8">
           <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-2 ">
@@ -351,4 +297,4 @@ const EditReview = () => {
   );
 };
 
-export default EditReview;
+export { ReviewForm };

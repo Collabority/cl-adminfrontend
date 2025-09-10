@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Pencil, Trash, Eye } from "lucide-react";
 import instance from "../lib/axios";
+import { SubscribersDetails } from "../components/SubscribersDetails";
 
 const colors = {
   Prospects: "bg-blue-100 text-blue-800",
@@ -118,10 +119,17 @@ export default function NewsletterManagement() {
     return "gray";
   }
 
-  const handleView = (sub) => {
-    alert(
-      `Name: ${sub.name}\nEmail: ${sub.email}\nStatus: ${sub.status}\nSegment: ${sub.segment}`
-    );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSubscriber, setSelectedSubscriber] = useState(null);
+
+  const handleView = (subscriber) => {
+    setSelectedSubscriber(subscriber);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSubscriber(null);
   };
 
   const handleEdit = (sub) => {
@@ -351,7 +359,12 @@ export default function NewsletterManagement() {
                   handleStatusChange(sub._id, newStatus)
                 }
               />
-            ))}
+            ))}{" "}
+            <SubscribersDetails
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              subscriber={selectedSubscriber}
+            />
           </tbody>
         </table>
       </div>

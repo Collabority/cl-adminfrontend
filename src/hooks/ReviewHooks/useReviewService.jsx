@@ -74,13 +74,28 @@ export const useReviewService = () => {
       );
     }
   }, []);
+
+  const updateReview = useCallback(async (reviewId, updatedData) => {
+    try {
+      const response = await instance.put(
+        `/reviews/update/${reviewId}`,
+        updatedData
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error?.response?.data?.message || "Failed to update review."
+      );
+    }
+  }, []);
+
   return {
     createReview,
     getAllReviews,
     deleteReview,
     getReviewHighlights,
     updateStatus,
-
+    updateReview,
     loading: {
       creating,
       fetching,
