@@ -65,7 +65,7 @@ const Sidebar = () => {
   const adminImage =
     admin && admin.image
       ? admin.image
-      : "https://randomuser.me/api/portraits/men/32.jpg";
+      : "https://res.cloudinary.com/dxo7rbhrl/image/upload/v1756140314/UnknownPerson_ybjokv.jpg";
 
   return (
     <div
@@ -125,7 +125,7 @@ const Sidebar = () => {
       </div>
 
       {/* Admin Section at Bottom */}
-      <div className="pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
+      <div className="pt-4 border-t border-gray-300 flex items-center justify-evenly gap-3">
         <img
           src={adminImage}
           alt={admin && admin.name ? admin.name : "Admin"}

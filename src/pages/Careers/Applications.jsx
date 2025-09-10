@@ -14,6 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import instance from "../../lib/axios";
 import { FaEyeSlash } from "react-icons/fa";
+import { JobApplicantDetailsView } from "../../components/JobApplicantDetailsView";
 
 const DEFAULT_AVATAR =
   "https://res.cloudinary.com/dxo7rbhrl/image/upload/v1756140314/UnknownPerson_ybjokv.jpg";
@@ -105,13 +106,10 @@ const Applications = () => {
         return "bg-gray-100 text-gray-800";
     }
   };
-
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
   const handleView = (app) => {
-    alert(
-      `Applicant Details:\n\nName: ${app.name}\nEmail: ${app.email}\nPosition: ${app.position}\nExperience: ${app.experience} years\nStatus: ${app.status}`
-    );
+    setSelectedApplicant(app);
   };
-
   const handleEdit = (app) => {
     setEditingReview(app.id);
     setEditForm({
@@ -415,6 +413,12 @@ const Applications = () => {
             </div>
           </div>
         </div>
+      )}
+      {selectedApplicant && (
+        <JobApplicantDetailsView
+          selectedApplicant={selectedApplicant}
+          setSelectedApplicant={setSelectedApplicant}
+        />
       )}
     </main>
   );

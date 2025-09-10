@@ -1,41 +1,6 @@
 import React, { useState, useEffect } from "react";
 import instance from "../lib/axios";
-
-const mockQueries = [
-  {
-    id: 1,
-    status: "Unread",
-    name: "John Smith",
-    email: "john.smith@email.com",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    subject: "Website Development Inquiry",
-    message: "I'm interested in developing a new e-commerce website...",
-    date: "2024-12-15T14:30:00",
-    priority: "High",
-  },
-  {
-    id: 2,
-    status: "Replied",
-    name: "Sarah Johnson",
-    email: "sarah.j@company.com",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    subject: "Mobile App Quote Request",
-    message: "We need a mobile application for our restaurant...",
-    date: "2024-12-14T10:15:00",
-    priority: "Medium",
-  },
-  {
-    id: 3,
-    status: "Read",
-    name: "Mike Wilson",
-    email: "mike.wilson@startup.com",
-    avatar: "https://randomuser.me/api/portraits/men/65.jpg",
-    subject: "UI/UX Design Services",
-    message: "Looking for UI/UX design services for our fintech app...",
-    date: "2024-12-13T16:45:00",
-    priority: "Low",
-  },
-];
+import { ContactQueryView } from "../components/ContactQueryView";
 
 const statusColors = {
   Unread: "bg-red-100 text-red-500",
@@ -51,7 +16,6 @@ const priorityColors = {
 };
 
 const ContactQueries = () => {
-  const [queries, setQueries] = useState(mockQueries);
   const [myQueries, setMyQueries] = useState([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Status");
@@ -79,6 +43,7 @@ const ContactQueries = () => {
           name: q.name || q.from || "",
           email: q.email || q.from || "",
           id: q.id || q._id,
+          date: q.date || q.createdAt,
         }));
         setMyQueries(normalized);
       } catch (error) {
@@ -116,15 +81,17 @@ const ContactQueries = () => {
       prev.map((q) => (q.id === id ? { ...q, priority: newPriority } : q))
     );
   };
-  const handleView = (q) => {
-    alert(
-      `Contact Query Details:\n\nName: ${q.name}\nEmail: ${q.email}\nSubject: ${q.subject}\nMessage: ${q.message}\nStatus: ${q.status}\nPriority: ${q.priority}`
-    );
+
+  const [selectedQuery, setSelectedQuery] = useState(null);
+  const handleView = (query) => {
+    setSelectedQuery(query);
   };
+
   const handleReply = (q) => {
     alert(`Reply to: ${q.name} <${q.email}>`);
     window.location.href = `mailto:${q.email}`;
   };
+
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this query?")) {
       const response = await instance.delete(`/contact/deleteQuery/${id}`);
@@ -356,6 +323,12 @@ const ContactQueries = () => {
               )}
             </tbody>
           </table>
+          {selectedQuery && (
+            <ContactQueryView
+              selectedQuery={selectedQuery}
+              setSelectedQuery={setSelectedQuery}
+            />
+          )}
         </div>
       </div>
       {/* Table Section End */}

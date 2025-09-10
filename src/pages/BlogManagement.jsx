@@ -24,7 +24,6 @@ const BlogManagement = () => {
         const response = await instance.get("/blogs/all");
         const transformed = transformBlogs(response.data.data.blogs);
         setBlogPosts(transformed);
-
         const highlightsRes = await instance.get("/blogs/highlights");
         if (highlightsRes.data && highlightsRes.data.data) {
           setBlogHighlights(highlightsRes.data.data);
@@ -41,6 +40,7 @@ const BlogManagement = () => {
     const matchesSearch = post.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
+      
     const matchesCategory =
       selectedCategory === "All Categories" ||
       post.category === selectedCategory;
