@@ -1,7 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const BasicInfoSection = ({ formData, setFormData }) => {
   const [tagInput, setTagInput] = useState("");
+  const { admin } = useSelector((state) => state.auth.user);
+
+  // Ensure author _id is always set in formData when admin is available
+  useEffect(() => {
+    if (admin && admin._id && formData.author !== admin._id) {
+      setFormData((prev) => ({
+        ...prev,
+        author: admin._id,
+      }));
+    }
+  }, [admin, formData.author, setFormData]);
 
   const handleTitleChange = (e) => {
     const title = e.target.value;
@@ -48,11 +60,11 @@ const BasicInfoSection = ({ formData, setFormData }) => {
   };
   return (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-      <h2 className="text-xl font-semibold text-black">Basic Information</h2>
+      <h2 className="text-2xl font-semibold text-black">Basic Information</h2>
 
       {/* Title Input */}
       <div>
-        <label className="block font-medium text-gray-700 mb-1">
+        <label className="block text-base font-medium text-gray-700 mb-1">
           Post Title *
         </label>
         <input
@@ -68,7 +80,9 @@ const BasicInfoSection = ({ formData, setFormData }) => {
 
       {/* URL Slug Display */}
       <div>
-        <label className="block font-medium text-gray-700 mb-1">URL Slug</label>
+        <label className="block text-base font-medium text-gray-700 mb-1">
+          URL Slug
+        </label>
         <div className="text-gray-600 flex items-center">
           <span className="pr-2 border border-gray-400 py-2 px-2 rounded-l-sm font-semibold">
             yoursite.com/blog/
@@ -86,25 +100,22 @@ const BasicInfoSection = ({ formData, setFormData }) => {
       {/* Author & Category Dropdowns */}
       <div className="flex flex-col md:flex-row gap-6">
         <div className="w-full">
-          <label className="block font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Author *
           </label>
-          <select
-            name="author"
-            required
-            value={formData.author}
-            onChange={handleInputChange}
-            className="w-full border px-3 py-2 rounded border-gray-400 font-semibold outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select Author</option>
-            <option value="Lokeswara Rao">Lokeswara Rao</option>
-            <option value="JohnDoe">John Doe</option>
-            <option value="JaneSmith">Jane Smith</option>
-          </select>
+          <input
+            type="text"
+            value={admin ? admin.name : ""}
+            readOnly
+            className="w-full border px-3 py-2 rounded border-gray-400 font-semibold outline-none bg-gray-100 text-gray-500"
+            placeholder="Admin Name"
+          />
+          {/* Hidden field for author _id */}
+          <input type="hidden" name="author" value={admin ? admin._id : ""} />
         </div>
 
         <div className="w-full">
-          <label className="block font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Category *
           </label>
           <select
@@ -115,18 +126,20 @@ const BasicInfoSection = ({ formData, setFormData }) => {
             className="w-full border px-3 py-2 rounded border-gray-400 font-semibold outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Category</option>
-            <option value="technology">Technology</option>
-            <option value="design">Design</option>
-            <option value="marketing">Marketing</option>
-            <option value="business">Business</option>
-            <option value="tutorials">Tutorials</option>
+            <option value="Technology">Technology</option>
+            <option value="Design">Design</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Business">Business</option>
+            <option value="Tutorials">Tutorials</option>
           </select>
         </div>
       </div>
 
       {/* Tags Input */}
       <div>
-        <label className="block font-medium text-gray-700 mb-1">Tags</label>
+        <label className="block text-base font-medium text-gray-700 mb-1">
+          Tags
+        </label>
         <input
           type="text"
           value={tagInput}
@@ -135,7 +148,7 @@ const BasicInfoSection = ({ formData, setFormData }) => {
           placeholder="Separate tags with commas (e.g., web development, javascript, react)"
           className="w-full placeholder:text-gray-500 border border-gray-400 font-semibold  px-3 py-2 rounded outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <p className="text-sm text-gray-500 placeholder:text-gray-500 mt-1 font-semibold">
+        <p className="text-base text-gray-500 placeholder:text-gray-500 mt-1 font-semibold">
           Press Enter or comma to add tags
         </p>
 

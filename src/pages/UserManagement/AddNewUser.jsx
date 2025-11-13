@@ -4,8 +4,8 @@ export default function AddNewUser() {
   return (
     <div className='bg-gray-100 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-15'> {/* Added responsive padding */}
         <div className='mb-6 sm:mb-8 md:mb-10'> {/* Adjusted responsive margin-bottom */}
-            <h1 className="text-xl sm:text-2xl font-semibold mb-1">Add New User</h1> {/* Responsive font size */}
-            <p className="text-sm text-gray-500">Create a new admin user account with specific roles and permissions.</p>
+            <h1 className="text-2xl font-semibold mb-1">Add New User</h1> {/* Responsive font size */}
+            <p className="text-base text-gray-500">Create a new admin user account with specific roles and permissions.</p>
         </div>
     <div className="min-h-screen bg-white p-4 sm:p-6 text-gray-800 border border-gray-200 rounded-lg shadow-md"> {/* Adjusted responsive padding */}
       <form className="space-y-6">
@@ -30,7 +30,7 @@ export default function AddNewUser() {
               <button className="text-red-500 w-full sm:w-auto">Remove</button> {/* Full width on small, auto on medium+ */}
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-2 text-center sm:text-left">JPG, PNG up to 2MB. Recommended 400×400px.</p> {/* Center text on small, left on medium+ */}
+          <p className="text-base text-gray-500 mt-2 text-center sm:text-left">JPG, PNG up to 2MB. Recommended 400×400px.</p> {/* Center text on small, left on medium+ */}
         </div>
 
         {/* Account Settings */}
@@ -55,7 +55,7 @@ export default function AddNewUser() {
           <h2 className="text-lg font-medium mb-4">Permissions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> {/* Already responsive */}
             <div>
-              <label className="block mb-2 font-medium">Content Management</label> {/* Added font-medium for consistency */}
+              <label className="block mb-2 text-base font-medium">Content Management</label> {/* Added font-medium for consistency */}
               <div className="space-y-1">
                 <label className="flex items-center space-x-2"><input type="checkbox" /> <span>Blog Management</span></label>
                 <label className="flex items-center space-x-2"><input type="checkbox" /> <span>Services Management</span></label>
@@ -63,7 +63,7 @@ export default function AddNewUser() {
               </div>
             </div>
             <div>
-              <label className="block mb-2 font-medium">Admin Functions</label> {/* Added font-medium for consistency */}
+              <label className="block mb-2 text-base font-medium">Admin Functions</label> {/* Added font-medium for consistency */}
               <div className="space-y-1">
                 <label className="flex items-center space-x-2"><input type="checkbox" /> <span>Career Management</span></label>
                 <label className="flex items-center space-x-2"><input type="checkbox" /> <span>Contact Queries</span></label>
@@ -81,8 +81,8 @@ export default function AddNewUser() {
             <input type="password" className="border px-3 py-2 rounded w-full" placeholder="Enter temporary password" required />
             <input type="password" className="border px-3 py-2 rounded w-full" placeholder="Confirm password" required />
           </div>
-          <p className="text-xs text-gray-500 mt-1">User will be required to change on first login</p>
-          <p className="text-xs text-gray-500">Send login credentials via email</p>
+          <p className="text-base text-gray-500 mt-1">User will be required to change on first login</p>
+          <p className="text-base text-gray-500">Send login credentials via email</p>
         </div>
 
         {/* Additional Settings */}
@@ -106,7 +106,7 @@ export default function AddNewUser() {
 
         {/* Notes */}
         <h2 className="text-lg font-medium mb-4">Notes</h2>
-        <label className="block mb-2">Internal Notes</label>
+        <label className="block mb-2 text-base">Internal Notes</label>
         <textarea className="border border-gray-350 px-3 py-2 rounded w-full h-24 text-gray-400" placeholder="Add any internal notes about this user..."></textarea>
 
         <div className="border-t pt-4 mt-6 flex flex-col sm:flex-row justify-end gap-3 border-gray-200"> {/* Stack buttons on small screens, row on medium+ */}

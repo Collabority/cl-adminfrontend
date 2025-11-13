@@ -1,8 +1,4 @@
-import React, { useContext } from "react";
-import { MdNightlightRound } from "react-icons/md";
-import { MdOutlineLightMode } from "react-icons/md";
-
-import { IoIosNotifications } from "react-icons/io";
+import { useContext } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RxCross2 } from "react-icons/rx";
 import { AppContext } from "../context/AppContext";
@@ -10,7 +6,7 @@ import { AppContext } from "../context/AppContext";
 const Navbar = () => {
   const { activeTab, isSidebarOpen, setIsSidebarOpen, darkMode, setDarkMode } =
     useContext(AppContext);
-  console.log(darkMode);
+  // console.log(darkMode);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -29,6 +25,7 @@ const Navbar = () => {
 
       {/* Right: Icons */}
       <div className="flex items-center gap-4 sm:gap-6">
+        {/* 
         {darkMode ? (
           <MdOutlineLightMode
             onClick={() => setDarkMode((prev) => !prev)}
@@ -41,14 +38,13 @@ const Navbar = () => {
           />
         )}
 
-        {/* Notification with red dot */}
         <div className="relative">
           <IoIosNotifications className="text-gray-500 text-xl sm:text-2xl cursor-pointer" />
           <span className="absolute -top-3 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-[1px] rounded-full font-bold">
             3
           </span>
         </div>
-
+        */}
         {/* Hamburger Menu: Only visible on small screens */}
         {isSidebarOpen ? (
           <RxCross2

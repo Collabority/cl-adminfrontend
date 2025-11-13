@@ -3,31 +3,34 @@ import { FaBlog, FaUsers } from "react-icons/fa";
 import { MdWork } from "react-icons/md";
 import { FaStar } from "react-icons/fa6";
 import { LuPlus } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useEffect } from "react";
+import instance from "../lib/axios";
 
-const recentBlogPosts = [
-  {
-    title: "Getting Started with React Hooks",
-    status: "Published",
-    time: "2 days ago",
-    thumbnail:
-      "https://www.orientsoftware.com/Themes/Content/Images/blog/2024-05-08/react-custom-hooks-thumbnail.webp",
-  },
-  {
-    title: "Advanced CSS Techniques",
-    status: "Draft",
-    time: "1 week ago",
-    thumbnail:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgq3ySvdsfVDPeTC_Ep4mrnpifaii2-PQtRQ&s",
-  },
-  {
-    title: "JavaScript Best Practices",
-    status: "Published",
-    time: "1 week ago",
-    thumbnail:
-      "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/master-javascript-programming-beginner-friend-design-template-057f79a6b5ce0bbbaf0a2a579865a4fc_screen.jpg?ts=1683752393",
-  },
-];
+// const recentBlogPosts = [
+//   {
+//     title: "Getting Started with React Hooks",
+//     status: "Published",
+//     time: "2 days ago",
+//     thumbnail:
+//       "https://www.orientsoftware.com/Themes/Content/Images/blog/2024-05-08/react-custom-hooks-thumbnail.webp",
+//   },
+//   {
+//     title: "Advanced CSS Techniques",
+//     status: "Draft",
+//     time: "1 week ago",
+//     thumbnail:
+//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgq3ySvdsfVDPeTC_Ep4mrnpifaii2-PQtRQ&s",
+//   },
+//   {
+//     title: "JavaScript Best Practices",
+//     status: "Published",
+//     time: "1 week ago",
+//     thumbnail:
+//       "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/master-javascript-programming-beginner-friend-design-template-057f79a6b5ce0bbbaf0a2a579865a4fc_screen.jpg?ts=1683752393",
+//   },
+// ];
 
 const recentApplications = [
   {
@@ -51,6 +54,30 @@ const recentApplications = [
 ];
 
 const Dashboard = () => {
+  const [loading, setLoading] = useState(false);
+  const [recentBlogs, setRecentBlogs] = useState([]);
+  const [highlights, setHighlights] = useState();
+
+  useEffect(() => {
+    const fetchRecentBlogs = async () => {
+      setLoading(true);
+      // Simulate fetching data
+      const response = await instance.get("/blogs/recent");
+      // console.log(response.data.data);
+      setRecentBlogs(response.data.data);
+      setLoading(false);
+    };
+    const fetchHighlights = async () => {
+      setLoading(true);
+      const response = await instance.get("/admin/highlights");
+      setHighlights(response.data?.data);
+      console.log(highlights);
+      setLoading(false);
+    };
+
+    fetchRecentBlogs();
+    fetchHighlights();
+  }, []);
   const cardStyle =
     "flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white";
 
@@ -69,8 +96,8 @@ const Dashboard = () => {
         <LuPlus className={`${iconColor} text-3xl`} />
       </div>
       <div>
-        <h3 className="text-sm font-bold text-gray-700">{heading}</h3>
-        <p className="text-xs text-gray-500 font-semibold">{text}</p>
+        <h3 className="text-lg font-bold text-gray-700">{heading}</h3>
+        <p className="text-base text-gray-500 font-semibold">{text}</p>
       </div>
     </div>
   );
@@ -165,12 +192,15 @@ const Dashboard = () => {
       <div className="w-full lg:w-1/2 border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-700">Recent Blog Posts</h2>
-          <button className="text-blue-600 text-sm font-semibold hover:underline">
+          <Link
+            to="/blog"
+            className="text-blue-600 text-base font-semibold hover:underline"
+          >
             View All
-          </button>
+          </Link>
         </div>
         <div className="flex flex-col gap-4">
-          {recentBlogPosts.map((post, index) => (
+          {recentBlogs.map((post, index) => (
             <div
               key={index}
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
@@ -178,7 +208,7 @@ const Dashboard = () => {
               <div className="flex gap-3 items-start sm:items-center w-full sm:w-auto">
                 <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
                   <img
-                    src={post.thumbnail}
+                    src={post.coverImage}
                     alt={post.title}
                     className="w-full h-full object-cover"
                   />
@@ -194,7 +224,7 @@ const Dashboard = () => {
                         : "text-green-500"
                     }`}
                   >
-                    {post.status} • {post.time}
+                    {post.status} • {getTimeAgo(post.createdAt)}
                   </p>
                 </div>
               </div>
@@ -218,7 +248,7 @@ const Dashboard = () => {
           <h2 className="text-xl font-bold text-gray-700">
             Recent Applications
           </h2>
-          <button className="text-blue-600 text-sm font-semibold hover:underline">
+          <button className="text-blue-600 text-base font-semibold hover:underline">
             View All
           </button>
         </div>
@@ -237,15 +267,15 @@ const Dashboard = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-gray-800">
+                  <p className="text-base font-bold text-gray-800">
                     {applicant.name}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-base text-gray-500">
                     {applicant.role} • {applicant.time}
                   </p>
                 </div>
               </div>
-              <button className="text-blue-600 text-sm font-semibold hover:underline">
+              <button className="text-blue-600 text-base font-semibold hover:underline">
                 View
               </button>
             </div>
@@ -262,9 +292,15 @@ const Dashboard = () => {
         {/* Total Blogs */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">Total Blogs</h2>
-            <h1 className="text-2xl font-bold">24</h1>
-            <p className="text-green-600 text-sm font-medium">+3 this week</p>
+            <h2 className="text-base text-gray-600 font-semibold">
+              Total Blogs
+            </h2>
+            <h1 className="text-2xl font-bold">
+              {highlights?.blogHighlights.totalBlogs || 0}
+            </h1>
+            <p className="text-green-600 text-sm font-medium">
+              {highlights?.blogHighlights.inWeek || 0} this week
+            </p>
           </div>
           {iconWrapper(
             <FaBlog className="text-3xl text-blue-600" />,
@@ -275,11 +311,15 @@ const Dashboard = () => {
         {/* Job Openings */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">
+            <h2 className="text-base text-gray-600 font-semibold">
               Job Openings
             </h2>
-            <h1 className="text-2xl font-bold">8</h1>
-            <p className="text-blue-600 text-sm font-medium">2 expiring soon</p>
+            <h1 className="text-2xl font-bold">
+              {highlights?.jobHighlights.totalJobOpenings || 0}
+            </h1>
+            <p className="text-blue-600 text-sm font-medium">
+              {highlights?.jobHighlights.expiringJobs || 0} expiring soon
+            </p>
           </div>
           {iconWrapper(
             <MdWork className="text-3xl text-green-600" />,
@@ -290,7 +330,7 @@ const Dashboard = () => {
         {/* Applications */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">
+            <h2 className="text-base text-gray-600 font-semibold">
               Applications
             </h2>
             <h1 className="text-2xl font-bold">8</h1>
@@ -305,10 +345,12 @@ const Dashboard = () => {
         {/* Reviews */}
         <div className={cardStyle}>
           <div>
-            <h2 className="text-sm text-gray-600 font-semibold">Reviews</h2>
-            <h1 className="text-2xl font-bold">56</h1>
+            <h2 className="text-base text-gray-600 font-semibold">Reviews</h2>
+            <h1 className="text-2xl font-bold">
+              {highlights?.reviewHighlights.reviews || 0}
+            </h1>
             <p className="text-purple-600 text-sm font-medium">
-              4.8 avg rating
+              {highlights?.reviewHighlights.avgReviewRating || 0} avg rating
             </p>
           </div>
           {iconWrapper(
@@ -320,7 +362,7 @@ const Dashboard = () => {
 
       {/* ------- Middle Section ------- */}
       {MiddleSection()}
- 
+
       {/* ------- Bottom Section ------- */}
       {bottomSection()}
     </div>
@@ -328,3 +370,19 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+// Helper function to show "time ago"
+function getTimeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHr = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHr / 24);
+
+  if (diffDay > 0) return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
+  if (diffHr > 0) return `${diffHr} hour${diffHr > 1 ? "s" : ""} ago`;
+  if (diffMin > 0) return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+  return "Just now";
+}

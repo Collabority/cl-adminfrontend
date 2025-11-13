@@ -8,10 +8,16 @@ import { FaStar, FaNewspaper } from "react-icons/fa6";
 import { IoMdMail } from "react-icons/io";
 import { RxExit } from "react-icons/rx";
 import { AppContext } from "../context/AppContext";
+import { useLogout } from "../hooks/useLogout";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
+  const logout = useLogout();
   const location = useLocation();
   const path = location.pathname;
+  // Fix: safely get admin from Redux
+  const user = useSelector((state) => state.auth.user);
+  const admin = user?.admin || user || null;
 
   const { isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
   const sidebarRef = useRef(null);
@@ -44,7 +50,6 @@ const Sidebar = () => {
       isActive(tabPath) ? "bg-blue-100" : ""
     }`;
 
-
   const getIconClasses = (tabPath) =>
     `text-2xl group-hover:text-blue-500 ${
       isActive(tabPath) ? "text-blue-500" : "text-black"
@@ -54,6 +59,13 @@ const Sidebar = () => {
     `font-bold group-hover:text-blue-500 ${
       isActive(tabPath) ? "text-blue-500" : "text-gray-500"
     }`;
+
+  // Fix: Use <button> for logout, not <Link>
+  // Fix: Use admin image if available, fallback to default
+  const adminImage =
+    admin && admin.image
+      ? admin.image
+      : "https://res.cloudinary.com/dxo7rbhrl/image/upload/v1756140314/UnknownPerson_ybjokv.jpg";
 
   return (
     <div
@@ -65,13 +77,13 @@ const Sidebar = () => {
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         sm:translate-x-0 sm:static
       `}
+      aria-label="Sidebar"
     >
       {/* Navigation Links */}
       <div className="flex flex-col gap-5">
         <Link to="/" className={getItemClasses("/")}>
           <BsGraphUp className={getIconClasses("/")} />
           <h5 className={getTextClasses("/")}>Dashboard</h5>
-
         </Link>
 
         <Link to="/blog" className={getItemClasses("/blog")}>
@@ -85,7 +97,9 @@ const Sidebar = () => {
         </Link>
 
         <Link to="/services" className={getItemClasses("/services")}>
-          <MdOutlineMiscellaneousServices className={getIconClasses("/services")} />
+          <MdOutlineMiscellaneousServices
+            className={getIconClasses("/services")}
+          />
           <h5 className={getTextClasses("/services")}>Services</h5>
         </Link>
 
@@ -111,30 +125,33 @@ const Sidebar = () => {
       </div>
 
       {/* Admin Section at Bottom */}
-      <div className="pt-4 border-t border-gray-300 flex items-center justify-between gap-3">
-
+      <div className="pt-4 border-t border-gray-300 flex items-center justify-evenly gap-3">
         <img
-          src="https://randomuser.me/api/portraits/men/32.jpg"
-          alt="Admin"
+          src={adminImage}
+          alt={admin && admin.name ? admin.name : "Admin"}
           className="w-10 h-10 rounded-full object-cover"
         />
 
         <div className="flex flex-col text-center">
-          <p className="text-sm font-semibold text-gray-700">Admin</p>
-          <p className="text-xs text-gray-500">admin@company.com</p>
+          <p className="text-sm font-semibold text-gray-700">
+            {admin && admin.name ? admin.name : "Admin"}
+          </p>
+          <p className="text-xs text-gray-500">
+            {admin && admin.email ? admin.email : "admin@company.com"}
+          </p>
         </div>
 
-        <Link to="/login">
-          <RxExit
-            className="text-xl text-gray-600 hover:text-red-500 cursor-pointer"
-            title="Logout"
-          />
-        </Link>
+        <button
+          onClick={logout}
+          aria-label="Logout"
+          className="bg-transparent border-none p-0 m-0"
+          title="Logout"
+        >
+          <RxExit className="text-xl text-gray-600 hover:text-red-500 cursor-pointer" />
+        </button>
       </div>
     </div>
   );
 };
 
 export default Sidebar;
-
-
