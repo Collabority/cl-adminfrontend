@@ -1,19 +1,32 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { useReviewService } from "../hooks/ReviewHooks/useReviewService";
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 const AddReview = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("Draft");
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [designation, setDesignation] = useState("");
   const [company, setCompany] = useState("");
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewContent, setReviewContent] = useState("");
+  const [status, setStatus] = useState("Draft");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [title, setTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewContent, setReviewContent] = useState("");
+  const [category, setCategory] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicUrl, setProfilePicUrl] = useState(null);
   const fileInputRef = useRef();
@@ -57,6 +70,17 @@ const AddReview = () => {
 
     if (reviewContent.trim().length < 50) {
       alert("Review content should be at least 50 characters.");
+  const handleSaveReview = () => {
+    if (
+      !name.trim() ||
+      !title.trim() ||
+      !company.trim() ||
+      !reviewContent.trim() ||
+      !reviewTitle.trim() ||
+      !category.trim() ||
+      rating === 0
+    ) {
+      alert("Please fill in all required fields.");
       return;
     }
 
@@ -136,6 +160,7 @@ const AddReview = () => {
             className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 sm:px-5 py-2 font-bold transition text-base shadow-sm flex items-center gap-2"
             onClick={() => handleSaveReview("Published")}
           >
+          <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 sm:px-5 py-2 font-bold transition text-base shadow-sm flex items-center gap-2">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.045 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z" />
             </svg>
@@ -148,6 +173,10 @@ const AddReview = () => {
           Add New Review &amp; Testimonial
         </h1>
         <p className="text-base text-gray-500 mb-6">
+        <h2 className="text-lg sm:text-2xl font-bold mb-1">
+          Add New Review &amp; Testimonial
+        </h2>
+        <p className="text-gray-500 mb-6 text-xs sm:text-base">
           Create a new customer review or testimonial to showcase on your
           website.
         </p>
@@ -161,6 +190,16 @@ const AddReview = () => {
               </label>
               <input
                 className="w-full border border-gray-200 rounded-lg px-4 py-2"
+          <h3 className="font-semibold text-base sm:text-lg mb-4">
+            Basic Information
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 mb-1">
+                Reviewer Name *
+              </label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
                 placeholder="Enter reviewer's full name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -176,6 +215,14 @@ const AddReview = () => {
                 placeholder="e.g., CEO, Marketing Director"
                 value={designation}
                 onChange={(e) => setDesignation(e.target.value)}
+              <label className="block text-gray-700 mb-1">
+                Designation/Title *
+              </label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
+                placeholder="e.g., CEO, Marketing Director"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required
               />
             </div>
@@ -185,6 +232,11 @@ const AddReview = () => {
               </label>
               <input
                 className="w-full border border-gray-200 rounded-lg px-4 py-2"
+              <label className="block text-gray-700 mb-1">
+                Company/Organization *
+              </label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
                 placeholder="Company name"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
@@ -197,6 +249,9 @@ const AddReview = () => {
               </label>
               <input
                 className="w-full border border-gray-200 rounded-lg px-4 py-2"
+              <label className="block text-gray-700 mb-1">Email *</label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
                 placeholder="reviewer@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -209,6 +264,7 @@ const AddReview = () => {
         <div className="mb-8">
           <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-2 ">
             <h1 className="text-2xl font-semibold text-black">
+            <h1 className="text-xl font-semibold text-black">
               Profile Picture
             </h1>
             <div className="flex flex-col items-center gap-4 border-2 border-dashed border-gray-300 hover:border-blue-600 transition-all duration-300 p-8 sm:p-10 md:p-12 rounded-md text-center w-full">
@@ -217,6 +273,10 @@ const AddReview = () => {
                 Upload Profile Picture
               </h2>
               <h3 className="font-semibold text-gray-700 text-base">
+              <h2 className="text-black text-xl sm:text-xl font-semibold">
+                Upload Profile Picture
+              </h2>
+              <h3 className="font-semibold text-gray-700 text-sm sm:text-base">
                 Click to browse Choose File
               </h3>
               <input
@@ -252,6 +312,9 @@ const AddReview = () => {
           <h2 className="font-semibold text-lg mb-4">
             Rating &amp; Review Content
           </h2>
+          <h3 className="font-semibold text-base sm:text-lg mb-4">
+            Rating &amp; Review Content
+          </h3>
           <div className="mb-4">
             <label className="block text-base text-gray-700 mb-1">
               Rating *
@@ -283,6 +346,7 @@ const AddReview = () => {
             <label className="block text-base text-gray-700 mb-1">
               Review Title
             </label>
+            <label className="block text-gray-700 mb-1">Review Title</label>
             <input
               className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
               placeholder="Brief title for the review"
@@ -294,6 +358,7 @@ const AddReview = () => {
             <label className="block text-base text-gray-700 mb-1">
               Review Content
             </label>
+            <label className="block text-gray-700 mb-1">Review Content</label>
             <textarea
               className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm min-h-[100px]"
               placeholder="Write the detailed review or testimonial content..."
@@ -310,6 +375,23 @@ const AddReview = () => {
           <h3 className="font-semibold text-lg mb-4">Additional Settings</h3>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <label className="text-base font-medium">Status:</label>
+          <h3 className="font-semibold text-base sm:text-lg mb-4">
+            Additional Settings
+          </h3>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <label className="text-sm font-medium">Category: *</label>
+            <select
+              className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            >
+              <option value="">Select category</option>
+              <option value="product">Product Review</option>
+              <option value="service">Service Review</option>
+              <option value="testimonial">Testimonial</option>
+            </select>
+            <label className="text-sm font-medium">Status:</label>
             <select
               className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
               value={status}
@@ -322,6 +404,7 @@ const AddReview = () => {
             <button
               className="ml-auto bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2 font-bold transition text-base shadow-sm w-full sm:w-auto"
               onClick={() => handleSaveReview()}
+              onClick={handleSaveReview}
             >
               Save Review
             </button>

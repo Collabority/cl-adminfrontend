@@ -234,6 +234,8 @@ const Applications = () => {
             <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
               <Filter className="w-5 h-5" />
             </button>
+            <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"><Filter className="w-5 h-5" /></button>
+            <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"><RefreshCcw className="w-5 h-5" /></button>
           </div>
         </div>
       </div>
@@ -445,5 +447,4 @@ const StatCard = ({ icon, title, value }) => (
     {icon}
   </div>
 );
-
 export default Applications;
