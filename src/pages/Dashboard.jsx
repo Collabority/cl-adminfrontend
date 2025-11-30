@@ -1,37 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaBlog, FaUsers } from "react-icons/fa";
 import { MdWork } from "react-icons/md";
 import { FaStar } from "react-icons/fa6";
 import { LuPlus } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
 import instance from "../lib/axios";
 
-// const recentBlogPosts = [
-//   {
-//     title: "Getting Started with React Hooks",
-//     status: "Published",
-//     time: "2 days ago",
-//     thumbnail:
-//       "https://www.orientsoftware.com/Themes/Content/Images/blog/2024-05-08/react-custom-hooks-thumbnail.webp",
-//   },
-//   {
-//     title: "Advanced CSS Techniques",
-//     status: "Draft",
-//     time: "1 week ago",
-//     thumbnail:
-//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgq3ySvdsfVDPeTC_Ep4mrnpifaii2-PQtRQ&s",
-//   },
-//   {
-//     title: "JavaScript Best Practices",
-//     status: "Published",
-//     time: "1 week ago",
-//     thumbnail:
-//       "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/master-javascript-programming-beginner-friend-design-template-057f79a6b5ce0bbbaf0a2a579865a4fc_screen.jpg?ts=1683752393",
-//   },
-// ];
-
+// Hardcoded for now as we don't have an endpoint for applications provided yet
 const recentApplications = [
   {
     name: "John Smith",
@@ -54,37 +29,111 @@ const recentApplications = [
 ];
 
 const Dashboard = () => {
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  
+  // State for Lists
   const [recentBlogs, setRecentBlogs] = useState([]);
-  const [highlights, setHighlights] = useState();
+  
+  // State for Calculated Stats
+  const [stats, setStats] = useState({
+    totalBlogs: 0,
+    blogsThisWeek: 0,
+    totalJobs: 0,
+    activeJobs: 0,
+    totalReviews: 0,
+    avgRating: 0,
+    latestActivity: null
+  });
 
   useEffect(() => {
-    const fetchRecentBlogs = async () => {
+    const fetchDashboardData = async () => {
       setLoading(true);
-      // Simulate fetching data
-      const response = await instance.get("/blogs/recent");
-      // console.log(response.data.data);
-      setRecentBlogs(response.data.data);
-      setLoading(false);
-    };
-    const fetchHighlights = async () => {
-      setLoading(true);
-      const response = await instance.get("/admin/highlights");
-      setHighlights(response.data?.data);
-      console.log(highlights);
-      setLoading(false);
+      try {
+        //console.log("Fetching dashboard data...");
+
+        // 1. Fetch data from all endpoints
+        const [blogsRes, jobsRes, reviewsRes] = await Promise.allSettled([
+          instance.get("/blogs/all?limit=100"), 
+          instance.get("/career/get-jobs?limit=100"), 
+          instance.get("/reviews/getAll?limit=100")
+        ]);
+
+        // --- PROCESS BLOGS ---
+        let blogData = [];
+        if (blogsRes.status === "fulfilled") {
+           blogData = blogsRes.value.data?.data?.blogs || blogsRes.value.data?.blogs || [];
+        }
+
+        // --- PROCESS JOBS ---
+        let jobCount = 0;
+        let activeJobs = 0;
+        if (jobsRes.status === "fulfilled") {
+           const rawJobs = jobsRes.value.data?.data?.jobs || jobsRes.value.data?.jobs || [];
+           jobCount = rawJobs.length;
+           activeJobs = rawJobs.filter(j => j.status !== 'Closed').length; 
+        }
+
+        // --- PROCESS REVIEWS
+        let reviewCount = 0;
+        let average = 0;
+        
+        if (reviewsRes.status === "fulfilled") {
+           //console.log("Reviews API Response:", reviewsRes.value.data);
+
+           // Try to find the array of reviews
+           const rawReviews = 
+              reviewsRes.value.data?.data?.reviews || 
+              reviewsRes.value.data?.reviews || 
+              reviewsRes.value.data || 
+              [];
+           
+           if (Array.isArray(rawReviews)) {
+             reviewCount = rawReviews.length;
+             
+             if (reviewCount > 0) {
+               // Calculate Average (Force conversion to Number to avoid string math errors)
+               const sum = rawReviews.reduce((acc, curr) => acc + Number(curr.rating || 0), 0);
+               average = (sum / reviewCount).toFixed(1);
+             }
+           }
+        } else {
+           console.error("Reviews fetch failed:", reviewsRes.reason);
+        }
+
+        // --- UPDATE STATE ---
+        // Calculate new blogs this week
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const newBlogsCount = blogData.filter(b => new Date(b.createdAt) > oneWeekAgo).length;
+
+        setRecentBlogs(blogData.slice(0, 3));
+        
+        setStats({
+          totalBlogs: blogData.length,
+          blogsThisWeek: newBlogsCount,
+          totalJobs: jobCount,
+          activeJobs: activeJobs || jobCount,
+          totalReviews: reviewCount,    
+          avgRating: average,           
+          latestActivity: blogData[0] || null 
+        });
+
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchRecentBlogs();
-    fetchHighlights();
+    fetchDashboardData();
   }, []);
+
   const cardStyle =
     "flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white";
 
   const quickActionsCardStyle =
-    "border border-gray-200 shadow-sm rounded-xl p-4 bg-white hover:bg-blue-100 cursor-pointer";
-
-  const navigate = useNavigate();
+    "border border-gray-200 shadow-sm rounded-xl p-4 bg-white hover:bg-blue-100 cursor-pointer transition-colors duration-200";
 
   const iconWrapper = (icon, bgColor) => (
     <div className={`p-3 rounded-xl ${bgColor}`}>{icon}</div>
@@ -150,7 +199,7 @@ const Dashboard = () => {
           {/* Add Review */}
           <div
             className={quickActionsCardStyle}
-            onClick={() => navigate("/reviews/add")}
+            onClick={() => navigate("/reviews/add")} // Adjusted path guess
           >
             {quickActionsCard(
               "text-yellow-600",
@@ -168,25 +217,32 @@ const Dashboard = () => {
           Recent Activity
         </h2>
 
-        <div className="flex items-center gap-2">
-          <div className="rounded-full bg-blue-100 flex justify-center items-center h-10 w-10">
-            <FaBlog className="text-blue-500" />
+        {/* Dynamic Activity Item */}
+        {stats.latestActivity ? (
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-blue-100 flex justify-center items-center h-12 w-12 shrink-0">
+              <FaBlog className="text-blue-500 text-xl" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-700 line-clamp-1">
+                New post published
+              </p>
+              <p className="text-xs font-semibold text-gray-500 line-clamp-1">
+                "{stats.latestActivity.title}"
+              </p>
+              <span className="text-xs text-gray-400">
+                 {getTimeAgo(stats.latestActivity.createdAt)}
+              </span>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-bold text-gray-700">
-              New blog post published
-            </p>
-            <p className="text-xs font-semibold text-gray-500">
-              "Getting started with React"
-              <span className="text-gray-600"> - 2 hours ago</span>
-            </p>
-          </div>
-        </div>
+        ) : (
+           <p className="text-sm text-gray-500">No recent activity.</p>
+        )}
       </div>
     </div>
   );
 
-  const bottomSection = () => (
+  const BottomSection = () => (
     <div className="w-full flex flex-col lg:flex-row gap-4">
       {/* Recent Blog Posts */}
       <div className="w-full lg:w-1/2 border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
@@ -200,49 +256,41 @@ const Dashboard = () => {
           </Link>
         </div>
         <div className="flex flex-col gap-4">
-          {recentBlogs.map((post, index) => (
+          {loading ? <p>Loading...</p> : recentBlogs.map((post, index) => (
             <div
               key={index}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 last:border-0 pb-2 last:pb-0"
             >
               <div className="flex gap-3 items-start sm:items-center w-full sm:w-auto">
                 <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
                   <img
-                    src={post.coverImage}
+                    src={post.coverImage || "https://via.placeholder.com/150"}
                     alt={post.title}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-gray-800">
+                  <h3 className="text-sm font-bold text-gray-800 line-clamp-1">
                     {post.title}
                   </h3>
-                  <p
-                    className={`text-xs font-semibold ${
-                      post.status === "Draft"
-                        ? "text-yellow-500"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {post.status} • {getTimeAgo(post.createdAt)}
+                  <p className="text-xs font-semibold text-gray-500">
+                    {/* Handle casing for status */}
+                    {(post.status || post.publishStatus) === "Draft" || (post.status || post.publishStatus) === "draft" ? (
+                        <span className="text-yellow-600">Draft</span>
+                    ) : (
+                        <span className="text-green-600">Published</span>
+                    )}
+                    <span className="text-gray-400"> • {getTimeAgo(post.createdAt)}</span>
                   </p>
                 </div>
               </div>
-              <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full self-start sm:self-center ${
-                  post.status === "Draft"
-                    ? "text-yellow-600 bg-yellow-100"
-                    : "text-green-600 bg-green-100"
-                }`}
-              >
-                {post.status}
-              </span>
             </div>
           ))}
+          {!loading && recentBlogs.length === 0 && <p className="text-gray-500 text-sm">No blogs found.</p>}
         </div>
       </div>
 
-      {/* Recent Applications */}
+      {/* Recent Applications (Still Static as requested/no endpoint) */}
       <div className="w-full lg:w-1/2 border border-gray-200 shadow-sm rounded-xl p-4 bg-white">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-700">
@@ -289,6 +337,7 @@ const Dashboard = () => {
     <div className="flex flex-col gap-6 p-4">
       {/* ------- Top Section ------- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        
         {/* Total Blogs */}
         <div className={cardStyle}>
           <div>
@@ -296,10 +345,10 @@ const Dashboard = () => {
               Total Blogs
             </h2>
             <h1 className="text-2xl font-bold">
-              {highlights?.blogHighlights.totalBlogs || 0}
+              {loading ? "..." : stats.totalBlogs}
             </h1>
             <p className="text-green-600 text-sm font-medium">
-              {highlights?.blogHighlights.inWeek || 0} this week
+              +{stats.blogsThisWeek} this week
             </p>
           </div>
           {iconWrapper(
@@ -315,10 +364,10 @@ const Dashboard = () => {
               Job Openings
             </h2>
             <h1 className="text-2xl font-bold">
-              {highlights?.jobHighlights.totalJobOpenings || 0}
+              {loading ? "..." : stats.totalJobs}
             </h1>
             <p className="text-blue-600 text-sm font-medium">
-              {highlights?.jobHighlights.expiringJobs || 0} expiring soon
+              {stats.activeJobs} active
             </p>
           </div>
           {iconWrapper(
@@ -327,7 +376,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Applications */}
+        {/* Applications - Static for now */}
         <div className={cardStyle}>
           <div>
             <h2 className="text-base text-gray-600 font-semibold">
@@ -347,10 +396,10 @@ const Dashboard = () => {
           <div>
             <h2 className="text-base text-gray-600 font-semibold">Reviews</h2>
             <h1 className="text-2xl font-bold">
-              {highlights?.reviewHighlights.reviews || 0}
+              {loading ? "..." : stats.totalReviews}
             </h1>
             <p className="text-purple-600 text-sm font-medium">
-              {highlights?.reviewHighlights.avgReviewRating || 0} avg rating
+              {stats.avgRating} avg rating
             </p>
           </div>
           {iconWrapper(
@@ -364,7 +413,7 @@ const Dashboard = () => {
       {MiddleSection()}
 
       {/* ------- Bottom Section ------- */}
-      {bottomSection()}
+      {BottomSection()}
     </div>
   );
 };
@@ -373,6 +422,7 @@ export default Dashboard;
 
 // Helper function to show "time ago"
 function getTimeAgo(dateString) {
+  if (!dateString) return "";
   const date = new Date(dateString);
   const now = new Date();
   const diffMs = now - date;

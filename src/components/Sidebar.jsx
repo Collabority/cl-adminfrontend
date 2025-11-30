@@ -122,6 +122,11 @@ const Sidebar = () => {
           <FaUsers className={getIconClasses("/users")} />
           <h5 className={getTextClasses("/users")}>User Management</h5>
         </Link>
+
+        <Link to="/createCampaign" className={getItemClasses("/createCampaign")}>
+          <FaUsers className={getIconClasses("/createCampaign")} />
+          <h5 className={getTextClasses("/createCampaign")}>Create Campaign </h5>
+        </Link>
       </div>
 
       {/* Admin Section at Bottom */}

@@ -66,6 +66,9 @@ const Login = () => {
   };
 
   const handleGetOTP = async () => {
+    console.log("BASE URL:", import.meta.env.VITE_API_BASE_URL);
+    console.log("Request URL:", instance.defaults.baseURL + "/admin/sendEmail");
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);

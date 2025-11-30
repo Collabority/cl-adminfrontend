@@ -1,95 +1,124 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { z } from "zod";
-
-const mockReviews = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    title: "CEO",
-    company: "TechCorp",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    rating: 5,
-    review: "Exceptional service and outstanding results.",
-    status: "Published",
-    email: "sarah.johnson@techcorp.com",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    title: "CTO",
-    company: "StartupXYZ",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    rating: 4,
-    review: "Great collaboration and professional approach.",
-    status: "Pending",
-    email: "michael.chen@startupxyz.com",
-  },
-  {
-    id: 3,
-    name: "Emily Davis",
-    title: "Marketing Director",
-    company: "TechCorp",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    rating: 5,
-    review: "Incredible attention to detail and timely delivery.",
-    status: "Published",
-    email: "emily.davis@bigcorp.com",
-  },
-];
-
-// const editReviewSchema = z.object({
-//   name: z.string().min(1, "Reviewer name is required"),
-//   title: z.string().min(1, "Designation/Title is required"),
-//   company: z.string().min(1, "Company/Organization is required"),
-//   email: z.string().email("Valid email is required"),
-//   reviewTitle: z.string().min(1, "Review title is required"),
-//   reviewContent: z.string().min(1, "Review content is required"),
-//   category: z.string().min(1, "Category is required"),
-//   rating: z
-//     .number()
-//     .min(1, "Rating must be at least 1")
-//     .max(5, "Rating must be at most 5"),
-//   status: z.enum(["Draft", "Published", "Pending"]),
-// });
+import instance from "../lib/axios";
 
 const EditReview = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const { review } = location.state || {};
+
+  // -----------------------------------------
+  // 1. STATE MANAGEMENT
+  // -----------------------------------------
   const [name, setName] = useState("");
-  const [title, setTitle] = useState("");
-  const [email, setEmail] = useState("");
-  const [reviewTitle, setReviewTitle] = useState("");
-  const [status, setStatus] = useState("Draft");
-  const [rating, setRating] = useState(0);
-
-  const [hover, setHover] = useState(0);
+  const [title, setTitle] = useState(""); 
   const [company, setCompany] = useState("");
-  const [reviewContent, setReviewContent] = useState("");
-  const [category, setCategory] = useState("");
-  const [profilePic, setProfilePic] = useState(null);
-  const fileInputRef = useRef();
+  const [email, setEmail] = useState("");
 
-  const handleSaveReview = () => {
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewContent, setReviewContent] = useState("");
+  const [rating, setRating] = useState(0);
+  const [status, setStatus] = useState("Draft");
+  const [category, setCategory] = useState(""); 
+
+  // UI States
+  const [hover, setHover] = useState(0);
+  const [existingProfile, setExistingProfile] = useState(null); 
+  const [profilePic, setProfilePic] = useState(null); 
+  const fileInputRef = useRef();
+  const [loading, setLoading] = useState(false);
+
+  // -----------------------------------------
+  // 2. POPULATE DATA ON LOAD
+  // -----------------------------------------
+  useEffect(() => {
+    if (review) {
+      setName(review.name || "");
+      setTitle(review.designation || review.title || "");
+      setCompany(review.company || review.companyName || "");
+      setEmail(review.email || "");
+
+      setReviewTitle(review.reviewTitle || "");
+      setReviewContent(review.review || review.reviewContent || "");
+      setRating(review.rating || 0);
+      setStatus(review.status || "Draft");
+      setCategory(review.category || ""); 
+
+      setExistingProfile(review.profilePicture || null);
+    } else {
+      navigate(-1);
+    }
+  }, [review, navigate]);
+
+  // -----------------------------------------
+  // 3. SAVE / UPDATE LOGIC
+  // -----------------------------------------
+  const handleSaveReview = async (overrideStatus) => {
+    const finalStatus = overrideStatus || status;
+
+    // Validation
     if (
       !name.trim() ||
       !title.trim() ||
       !company.trim() ||
       !reviewContent.trim() ||
-      !reviewTitle.trim() ||
       !category.trim() ||
       rating === 0
     ) {
-      alert("Please fill in all required fields.");
+      alert(
+        "Please fill in all required fields (Name, Designation, Company, Content, Category, Rating)."
+      );
       return;
     }
-    alert(`Review saved with status: ${status}`);
+
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+
+      // Append Text Fields
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("designation", title); 
+      formData.append("company", company); 
+      formData.append("reviewTitle", reviewTitle);
+      formData.append("reviewContent", reviewContent);
+      formData.append("rating", rating);
+      formData.append("category", category);
+      formData.append("status", finalStatus);
+
+      // Append File ONLY if user selected a new one
+      if (profilePic) {
+        formData.append("profilePic", profilePic);
+      }
+
+      const reviewId = review._id || review.id;
+
+      // Make API Call
+      await instance.put(`/reviews/update/${reviewId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      alert(
+        `Review ${
+          finalStatus === "Published" ? "Published" : "Updated"
+        } successfully!`
+      );
+      navigate(-1); 
+    } catch (error) {
+      console.error("Error updating review:", error);
+      const msg = error.response?.data?.message || "Error updating review";
+      alert(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // -----------------------------------------
+  // 4. IMAGE HANDLERS
+  // -----------------------------------------
   const handleProfilePicClick = () => {
     fileInputRef.current.click();
   };
@@ -97,7 +126,8 @@ const EditReview = () => {
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const maxSize = 1 * 1024 * 1024;
+
+    const maxSize = 1 * 1024 * 1024; // 1MB
     if (!file.type.startsWith("image/")) {
       alert("Please select a valid image file.");
       return;
@@ -108,42 +138,14 @@ const EditReview = () => {
     }
     setProfilePic(file);
   };
-  const { id } = useParams();
-  const [reviewData, setReviewData] = useState(null);
 
-  // useEffect(() => {
-  //   const found = mockReviews.find((r) => r.id === parseInt(id));
-  //   if (found) {
-  //     setReviewData(found);
-  //   }
-  // }, [id]);
-  const [existingProfile, setExistingProfile] = useState(null);
-  useEffect(() => {
-    // if (reviewData) {
-    //   setName(reviewData.name || "");
-    //   setTitle(reviewData.title || "");
-    //   setEmail(reviewData.email || "");
-    //   setReviewContent(reviewData.review || "");
-    //   setRating(reviewData.rating || 0);
-    //   setStatus(reviewData.status || "Draft");
-    // }
-
-    if (review) {
-      // console.log(review);
-      setName(review.name || "");
-      setExistingProfile(review.profilePicture || null);
-      setTitle(review.designation || review.title || "");
-      setEmail(review.email || "");
-      setCompany(review.company || review.companyName || "");
-      setReviewContent(review.review || review.reviewContent || "");
-      setReviewTitle(review.reviewTitle || "");
-      setRating(review.rating || 0);
-      setStatus(review.status || "Draft");
-    }
-  }, [review]);
+  if (!review) return null;
 
   return (
     <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen">
+      {/* -----------------------------------------
+          HEADER SECTION
+      ----------------------------------------- */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4 px-2 sm:px-4 pt-6 pb-2">
         <div className="flex items-center text-base font-semibold text-gray-700">
           <span>Reviews &amp; Testimonials</span>
@@ -162,21 +164,28 @@ const EditReview = () => {
           </svg>
           <span className="text-black font-bold">Edit Review</span>
         </div>
+
         <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={() => navigate(-1)}
             className="border border-gray-300 rounded-lg px-4 sm:px-5 py-2 text-gray-700 font-semibold bg-white shadow-sm hover:bg-gray-50 transition text-base w-full sm:w-auto"
+            disabled={loading}
           >
             Cancel
           </button>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 sm:px-5 py-2 font-bold transition text-base shadow-sm flex items-center gap-2">
+          <button
+            onClick={() => handleSaveReview("Published")}
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 sm:px-5 py-2 font-bold transition text-base shadow-sm flex items-center gap-2"
+            disabled={loading}
+          >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.045 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z" />
             </svg>
-            Publish Review
+            {loading ? "Saving..." : "Publish Review"}
           </button>
         </div>
       </div>
+
       <div className="bg-white rounded-xl shadow p-4 sm:p-6 max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-1">
           Edit Review &amp; Testimonial
@@ -184,7 +193,10 @@ const EditReview = () => {
         <p className="text-base text-gray-500 mb-6">
           Edit customer review or testimonial to showcase on your website.
         </p>
-        {/* Basic Information */}
+
+        {/* -----------------------------------------
+            BASIC INFORMATION
+        ----------------------------------------- */}
         <div className="mb-8">
           <h2 className="font-semibold text-lg mb-4">Basic Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -238,25 +250,35 @@ const EditReview = () => {
             </div>
           </div>
         </div>
-        {/* Profile Picture */}
+
+        {/* -----------------------------------------
+            PROFILE PICTURE
+        ----------------------------------------- */}
         <div className="mb-8">
           <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-2 ">
             <h1 className="text-2xl font-semibold text-black">
               Profile Picture
             </h1>
             <div className="flex flex-col items-center gap-4 border-2 border-dashed border-gray-300 hover:border-blue-600 transition-all duration-300 p-8 sm:p-10 md:p-12 rounded-md text-center w-full">
-              <img
-                src={existingProfile}
-                alt="Profile Preview"
-                className="w-24 h-24 rounded-full object-cover"
-              />
-              {/* <FaCloudUploadAlt className="text-5xl text-gray-400" /> */}
+              {/* Show either New Upload Preview OR Existing Backend Image OR Default Icon */}
+              {profilePic || existingProfile ? (
+                <img
+                  src={
+                    profilePic
+                      ? URL.createObjectURL(profilePic)
+                      : existingProfile
+                  }
+                  alt="Profile Preview"
+                  className="w-24 h-24 rounded-full object-cover"
+                />
+              ) : (
+                <FaCloudUploadAlt className="text-5xl text-gray-400" />
+              )}
+
               <h2 className="text-black text-2xl font-semibold">
-                Upload Profile Picture
+                {existingProfile ? "Change Profile Picture" : "Upload Profile Picture"}
               </h2>
-              <h3 className="font-semibold text-gray-700 text-base">
-                Click to browse Choose File
-              </h3>
+
               <input
                 name="profilePic"
                 type="file"
@@ -265,27 +287,25 @@ const EditReview = () => {
                 className="hidden"
                 onChange={handleProfilePicChange}
               />
+
               <button
                 type="button"
                 onClick={handleProfilePicClick}
                 className="w-full sm:w-auto max-w-xs sm:max-w-none bg-blue-600 px-4 py-2 sm:px-6 sm:py-2 text-white text-base font-semibold rounded-xl cursor-pointer hover:bg-blue-700 transition duration-200"
               >
-                Choose file
+                {existingProfile ? "Change file" : "Choose file"}
               </button>
+
               <p className="font-semibold text-base text-gray-500 mt-2">
                 Recommended size: 400x400px, Max file size: 1MB
               </p>
-              {profilePic && (
-                <img
-                  src={URL.createObjectURL(profilePic)}
-                  alt="Preview"
-                  className="mt-2 max-h-20 rounded-lg"
-                />
-              )}
             </div>
           </div>
         </div>
-        {/* Rating & Review Content */}
+
+        {/* -----------------------------------------
+            RATING & REVIEW CONTENT
+        ----------------------------------------- */}
         <div className="mb-8">
           <h2 className="font-semibold text-lg mb-4">
             Rating &amp; Review Content
@@ -343,10 +363,28 @@ const EditReview = () => {
             </div>
           </div>
         </div>
-        {/* Additional Settings */}
+
+        {/* -----------------------------------------
+            ADDITIONAL SETTINGS
+        ----------------------------------------- */}
         <div className="mb-4">
           <h3 className="font-semibold text-lg mb-4">Additional Settings</h3>
           <div className="flex flex-col sm:flex-row items-center gap-4">
+            {/* Category Field */}
+            <label className="text-base font-medium">Category: *</label>
+            <select
+              className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            >
+              <option value="">Select category</option>
+              <option value="product">Product Review</option>
+              <option value="service">Service Review</option>
+              <option value="testimonial">Testimonial</option>
+            </select>
+
+            {/* Status Field */}
             <label className="text-base font-medium">Status:</label>
             <select
               className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
@@ -357,11 +395,13 @@ const EditReview = () => {
               <option>Published</option>
               <option>Pending</option>
             </select>
+
             <button
               className="ml-auto bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2 font-bold transition text-base shadow-sm w-full sm:w-auto"
-              onClick={handleSaveReview}
+              onClick={() => handleSaveReview()}
+              disabled={loading}
             >
-              Save Review
+              {loading ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </div>
@@ -370,4 +410,4 @@ const EditReview = () => {
   );
 };
 
-export default EditReview;
+export default EditReview; 

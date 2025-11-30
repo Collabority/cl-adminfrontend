@@ -3,50 +3,55 @@ import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaSave, FaTelegramPlane } from "react-icons/fa";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import QuillEditor from "../components/CreateBlogContent";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; 
 import instance from "../lib/axios";
 
 const EditService = () => {
   const { id } = useParams();
+  const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(true); 
 
   const [formData, setFormData] = useState({
-    title: "Web Development",
-    category: "Development",
-    metaTitle: "Web Development Services",
-    metaDescription: "Custom website development services for businesses.",
-    focusKeyword: "web development, IT services",
-    status: "draft",
-    publishDate: "2025-01-15",
+    title: "",
+    category: "",
+    metaTitle: "",
+    metaDescription: "",
+    focusKeyword: "",
+    status: "Draft",
+    publishDate: "",
     coverImage: "",
-    content: "We build custom websites tailored to your business needs.",
+    description: "",
+    content: "", 
   });
 
   useEffect(() => {
     async function fetchServiceData() {
       try {
+        setLoading(true);
         const response = await instance.get(`/services/${id}`);
-        const data = response.data?.data || {};
+        const data = response.data?.data || response.data; 
 
-        setFormData((prev) => ({
-          ...prev,
-          title: data.title ?? prev.title,
-          category: data.category ?? prev.category,
-          metaTitle: data.metaData?.metaTitle ?? prev.metaTitle,
-          metaDescription:
-            data.metaData?.metaDescription ?? prev.metaDescription,
-          focusKeyword: data.metaData?.focusKeyword ?? prev.focusKeyword,
-          status: data.publishStatus
-            ? String(data.publishStatus).toLowerCase()
-            : prev.status,
-          publishDate: data.publishDate
-            ? new Date(data.publishDate).toISOString().split("T")[0]
-            : prev.publishDate,
-          coverImage: data.coverImage ?? prev.coverImage,
-          // set quill editor content from response.description
-          content: data.description ?? prev.content,
-        }));
+        if (data) {
+          setFormData({
+            title: data.title || "",
+            category: data.category || "",
+            metaTitle: data.metaData?.metaTitle || "",
+            metaDescription: data.metaData?.metaDescription || "",
+            focusKeyword: data.metaData?.focusKeyword || "",
+            status: data.publishStatus || "Draft",
+            publishDate: data.publishDate
+              ? new Date(data.publishDate).toISOString().split("T")[0]
+              : "",
+            coverImage: data.coverImage || "",
+            content: data.description || "",
+            description: data.description || "",
+          });
+        }
       } catch (error) {
         console.error("Error fetching service data:", error);
+        alert("Failed to load service data");
+      } finally {
+        setLoading(false);
       }
     }
     if (id) fetchServiceData();
@@ -58,15 +63,40 @@ const EditService = () => {
     fileInputRef.current.click();
   };
 
-  const handleSubmit = (e, status = "draft") => {
+  const handleSubmit = async (e, overrideStatus) => {
     e.preventDefault();
+
     const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
-    });
-    data.set("status", status);
+    data.append("title", formData.title);
+    data.append("category", formData.category);
+    data.append("description", formData.content);
+    data.append("metaTitle", formData.metaTitle);
+    data.append("metaDescription", formData.metaDescription);
+    data.append("focusKeyword", formData.focusKeyword);
+    data.append("publishDate", formData.publishDate);
+
+    const rawStatus = overrideStatus || formData.status || "Draft";
+    const formattedStatus = String(rawStatus).charAt(0).toUpperCase() + String(rawStatus).slice(1).toLowerCase();
     
-    console.log("Submitting service form with data:", Object.fromEntries(data));
+    data.append("status", formattedStatus);
+
+    if (formData.coverImage instanceof File) {
+      data.append("coverImage", formData.coverImage);
+    }
+
+    try {
+      const response = await instance.put(`/services/update/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Update success:", response.data);
+      navigate("/services");
+      
+    } catch (error) {
+      console.error("Error updating service:", error);
+      // Show the specific backend error message
+      alert(error.response?.data?.message || "Validation failed");
+    }
   };
 
   const coverImage = () => (
@@ -126,6 +156,8 @@ const EditService = () => {
       </div>
     </div>
   );
+
+  if (loading) return <div className="p-8 text-center">Loading service data...</div>;
 
   return (
     <form className="flex flex-col gap-6 p-4">
@@ -219,8 +251,8 @@ const EditService = () => {
           value={formData.status}
           onChange={(e) => setFormData({ ...formData, status: e.target.value })}
         >
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
+          <option value="Draft">Draft</option>
+          <option value="Published">Published</option>
         </select>
         <label className="font-semibold text-gray-700 text-base">
           Publish Date
