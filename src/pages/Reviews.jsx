@@ -70,13 +70,17 @@ const Reviews = () => {
   const draftCount =
     highlights?.draft ?? reviews.filter((r) => r.status === "Draft").length;
   const avgRating =
-    highlights?.averageRating ??
-    (reviews.length > 0
-      ? (
+  reviews.length > 0
+    ? Number(
+        (
           reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) /
           reviews.length
-        ).toFixed(1)
-      : "0.0");
+        ).toFixed(2)
+      )
+    : 0.0;
+
+
+
 
   const reviewStats = [
     {
@@ -229,9 +233,13 @@ const Reviews = () => {
   if (apiError) {
     return <div className="p-4 text-center text-red-600">{apiError}</div>;
   }
+  console.log("STARS:", Math.round(avgRating), 5 - Math.round(avgRating));
+
+
 
   return (
     <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen">
+      
       {/* Topbar */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4 px-2 sm:px-4 pt-6 pb-2">
         <div className="flex items-center text-base font-semibold text-gray-700">

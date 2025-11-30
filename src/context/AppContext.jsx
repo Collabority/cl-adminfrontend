@@ -30,7 +30,7 @@ export const AppProvider = ({ children }) => {
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // 🔁 Automatically update activeTab when route changes
+  // Automatically update activeTab when route changes
   useEffect(() => {
     const tabName = getTabNameFromPath(location.pathname);
     setActiveTab(tabName);

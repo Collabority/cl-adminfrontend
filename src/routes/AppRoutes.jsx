@@ -39,6 +39,9 @@ const NewsletterManagement = lazy(() => import("../pages/NewsletterManagement"))
 const UserManagementPage = lazy(() => import("../pages/UserManagement/UserManagementPage"));
 const AddNewUser = lazy(() => import("../pages/UserManagement/AddNewUser"));
 
+// Create campaign 
+const CreateCampaign = lazy(() => import("../pages/CreateCampaign"));
+
 const AppRoutes = () => {
   return (
     <Suspense fallback={<Loader />}>
@@ -60,10 +63,11 @@ const AppRoutes = () => {
             <Route path="create" element={<CreateJob />} />
           </Route>
 
-          {/* User Routes */}
+          {/* User Routes - UPDATED HERE */}
           <Route path="/users">
             <Route index element={<UserManagementPage />} />
-            <Route path="roles" element={<AddNewUser />} />
+            {/* Changed from 'roles' to 'create' to match your Link */}
+            <Route path="create" element={<AddNewUser />} /> 
           </Route>
 
           {/* Service Routes */}
@@ -79,6 +83,8 @@ const AppRoutes = () => {
             <Route path="add" element={<AddReview />} />
             <Route path="edit/:id" element={<EditReview />} />
           </Route>
+
+          <Route path="/createCampaign" element={<CreateCampaign />} />
 
           {/* Contact */}
           <Route path="/contact" element={<ContactQueries />} />

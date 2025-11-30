@@ -12,6 +12,8 @@ const BlogManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedStatus, setSelectedStatus] = useState("All Status");
+  
+  // State for the number cards
   const [blogHighlights, setBlogHighlights] = useState({
     totalBlogs: 0,
     draftBlogs: 0,
@@ -21,13 +23,27 @@ const BlogManagement = () => {
   useEffect(() => {
     async function fetchBlogPosts() {
       try {
-        const response = await instance.get("/blogs/all");
-        const transformed = transformBlogs(response.data.data.blogs);
+        const response = await instance.get(`/blogs/all?limit=100&t=${Date.now()}`);
+        const rawData = response.data?.data?.blogs || [];
+        const transformed = transformBlogs(rawData);
+        
         setBlogPosts(transformed);
-        const highlightsRes = await instance.get("/blogs/highlights");
-        if (highlightsRes.data && highlightsRes.data.data) {
-          setBlogHighlights(highlightsRes.data.data);
-        }
+        const totalCount = response.data?.data?.pagination?.total || transformed.length;
+        
+        const draftCount = transformed.filter((b) => 
+          (b.status || "").toLowerCase() === "draft"
+        ).length;
+
+        const publishedCount = transformed.filter((b) => 
+          (b.status || "").toLowerCase() === "published"
+        ).length;
+
+        setBlogHighlights({
+          totalBlogs: totalCount,
+          draftBlogs: draftCount,
+          publishedBlogs: publishedCount,
+        });
+
       } catch (error) {
         console.error("Error fetching blog posts:", error);
       }
@@ -37,15 +53,20 @@ const BlogManagement = () => {
   }, []);
 
   const filteredPosts = blogPosts.filter((post) => {
-    const matchesSearch = post.title
+    // Search Filter
+    const matchesSearch = (post.title || "")
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-      
+
+    // Category Filter
     const matchesCategory =
       selectedCategory === "All Categories" ||
       post.category === selectedCategory;
+
+    // Status Filter
     const matchesStatus =
-      selectedStatus === "All Status" || post.status === selectedStatus;
+      selectedStatus === "All Status" || 
+      (post.status || "").toLowerCase() === selectedStatus.toLowerCase();
 
     return matchesSearch && matchesCategory && matchesStatus;
   });

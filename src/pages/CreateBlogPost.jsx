@@ -172,7 +172,7 @@ const CreateBlogPost = () => {
           <FaTelegramPlane className="text-sm" />
           Publish Post
         </button>
-      </div>
+      </div> 
     </form>
   );
 };

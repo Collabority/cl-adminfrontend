@@ -1,69 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { PiNotePencilBold } from "react-icons/pi";
 import { MdDelete } from "react-icons/md";
 import useGetAllServices from "../hooks/servicesHooks/useGetAllServices";
+import useServiceStats from "../hooks/servicesHooks/useServiceStats";
 import instance from "../lib/axios";
 
-
-
-// const services = [
-//   // Example data
-//   {
-//     id: 1,
-//     title: "Web Development",
-//     description: "Custom website development services",
-//     category: "Development",
-//     status: "Published",
-//     date: "Jan 15, 2025",
-//     coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
-//   },
-//   {
-//     id: 2,
-//     title: "Mobile App Development",
-//     description: "iOS and Android app development",
-//     category: "Development",
-//     status: "Published",
-//     date: "Jan 12, 2025",
-//     coverImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
-//   },
-//   {
-//     id: 3,
-//     title: "Business Consulting",
-//     description: "Strategic business consultation",
-//     category: "Consulting",
-//     status: "Draft",
-//     date: "Jan 10, 2025",
-//     coverImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-//   },
-//   {
-//     id: 4,
-//     title: "UI/UX Design",
-//     description: "User interface and experience design",
-//     category: "Design",
-//     status: "Published",
-//     date: "Jan 8, 2025",
-//     coverImage: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
-//   },
-// ];
-
 const ServicesManagement = () => {
+  // 1. Fetch Data
+  const { services, loading: listLoading, refetch: refetchServices } = useGetAllServices();
+  const { stats, loading: statsLoading, refetchStats } = useServiceStats();
+
+  // 2. Add State for Filters
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All Categories");
+  const [filterStatus, setFilterStatus] = useState("All Status");
+
+  // 3. Filter Logic (The Magic Part)
+  const filteredServices = services.filter((service) => {
+    // A. Search Filter (Title or Description)
+    const matchesSearch = 
+      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (service.description || "").toLowerCase().includes(searchTerm.toLowerCase());
+
+    // B. Category Filter
+    const matchesCategory = 
+      filterCategory === "All Categories" || 
+      service.category === filterCategory;
+
+    // C. Status Filter (Robust check for publishStatus)
+    const currentStatus = service.publishStatus || service.status || "Draft";
+    const matchesStatus = 
+      filterStatus === "All Status" || 
+      currentStatus.toLowerCase() === filterStatus.toLowerCase();
+
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   const handleDeleteService = async (serviceId) => {
+    if(!window.confirm("Are you sure you want to delete this service?")) return;
+
     try {
       await instance.delete(`/services/delete/${serviceId}`);
-
-      console.log("Service deleted successfully");
+      await Promise.all([refetchServices(), refetchStats()]);
     } catch (error) {
       console.error("Error deleting service:", error);
+      alert("Failed to delete service");
     }
   };
 
-  const { services, loading } = useGetAllServices();
-
-  if (loading) {
-    return <div>Loading...</div>;
+  if (listLoading) {
+    return <div className="p-8">Loading services...</div>;
   }
+
   return (
     <div className="flex flex-col gap-6 p-4">
       <div className="flex justify-end">
@@ -74,100 +63,112 @@ const ServicesManagement = () => {
           + Create New Service
         </Link>
       </div>
-      {/* Top stats section (like blog) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+      {/* Stats Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
-            <h2 className="text-base text-gray-600 font-semibold">
-              Total Services
-            </h2>
-            <h1 className="text-2xl font-bold">{services.length}</h1>
+            <h2 className="text-base text-gray-600 font-semibold">Total Services</h2>
+            <h1 className="text-2xl font-bold">{statsLoading ? "..." : stats.total}</h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
             <h2 className="text-base text-gray-600 font-semibold">Published</h2>
-            <h1 className="text-2xl font-bold text-green-600">
-              {services.filter((s) => s.status === "Published").length}
-            </h1>
+            <h1 className="text-2xl font-bold text-green-600">{statsLoading ? "..." : stats.published}</h1>
           </div>
         </div>
         <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
           <div>
             <h2 className="text-base text-gray-600 font-semibold">Drafts</h2>
-            <h1 className="text-2xl font-bold text-red-600">
-              {services.filter((s) => s.status === "Draft").length}
-            </h1>
-          </div>
-        </div>
-        <div className="flex justify-between items-center border border-gray-200 rounded-xl p-4 shadow-sm bg-white">
-          <div>
-            <h2 className="text-base text-gray-600 font-semibold">
-              Categories
-            </h2>
-            <h1 className="text-2xl font-bold text-purple-500">
-              {[...new Set(services.map((s) => s.category))].length}
-            </h1>
+            <h1 className="text-2xl font-bold text-red-600">{statsLoading ? "..." : stats.draft}</h1>
           </div>
         </div>
       </div>
-      {/* Filters/search section (like blog) */}
+
+      {/* --- FILTERS SECTION --- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 border border-gray-300 rounded-xl bg-white shadow-sm w-full">
         <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center w-full">
+          
+          {/* Search Input */}
           <input
             type="text"
             placeholder="Search services..."
             className="outline-none bg-transparent w-full sm:w-60 font-semibold border border-gray-300 rounded-lg px-3 py-2"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <select className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold">
+
+          {/* Category Dropdown */}
+          <select 
+            className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
             <option>All Categories</option>
             <option>Development</option>
             <option>Design</option>
             <option>Consulting</option>
           </select>
-          <select className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold">
+
+          {/* Status Dropdown */}
+          <select 
+            className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto text-sm text-gray-700 font-semibold"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
             <option>All Status</option>
-            <option>Published</option>
-            <option>Draft</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
           </select>
+
+        </div>
+        
+        {/* Results Count Helper */}
+        <div className="text-sm text-gray-500 font-semibold whitespace-nowrap">
+          Showing {filteredServices.length} result(s)
         </div>
       </div>
-      {/* Service cards grid (like blog cards) */}
+
+      {/* --- SERVICES GRID --- */}
+      {/* 4. Map over filteredServices instead of services */}
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {services.map((service, index) => (
+        {filteredServices.map((service) => (
           <div
             key={service._id}
             className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
           >
-            {/* Cover Image */}
             <div className="relative">
               <img
-                src={service.coverImage}
+                src={service.coverImage || "https://via.placeholder.com/400x200?text=No+Image"}
                 alt={service.title}
                 className="w-full h-48 object-cover"
               />
               <span
-                className={`absolute top-2 left-2 text-xs px-2 py-1 rounded-full ${
-                  service.status === "Published"
+                className={`absolute top-2 left-2 text-xs px-2 py-1 rounded-full font-bold ${
+                  (service.publishStatus || service.status) === "Published"
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
                 }`}
               >
-                {service.publishStatus}
+                {service.publishStatus || service.status}
               </span>
             </div>
-            {/* Content */}
             <div className="p-4 flex flex-col gap-2">
               <div className="flex justify-between text-sm text-gray-500 font-medium">
                 <span>{service.category}</span>
-                <span>{service.date}</span>
+                <span>
+                  {service.publishDate 
+                    ? new Date(service.publishDate).toLocaleDateString() 
+                    : "No Date"}
+                </span>
               </div>
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-gray-800 line-clamp-1">
                 {service.title}
               </h2>
               <div
-                className="text-base font-semibold text-gray-600 line-clamp-3"
-                dangerouslySetInnerHTML={{ __html: service.description }}
+                className="text-sm font-medium text-gray-600 line-clamp-3 min-h-[4.5em]"
+                dangerouslySetInnerHTML={{ __html: service.description || "" }}
               />
               <div className="flex justify-end items-center gap-3 text-xl text-gray-500 mt-2">
                 <Link to={`/services/edit/${service._id}`}>
@@ -180,6 +181,12 @@ const ServicesManagement = () => {
             </div>
           </div>
         ))}
+
+        {filteredServices.length === 0 && (
+          <div className="col-span-full text-center py-10 text-gray-500 font-semibold">
+            No services match your filters.
+          </div>
+        )}
       </div>
     </div>
   );

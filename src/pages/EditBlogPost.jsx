@@ -1,27 +1,74 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaSave, FaTelegramPlane, FaCloudUploadAlt } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"; 
 import instance from "../lib/axios";
 
 const EditBlogPost = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  
   const { post } = location.state || {};
 
   const fileInputRef = useRef(null);
 
+  // 2. Redirect if no post data found (prevents white screen/crash)
+  useEffect(() => {
+    if (!post) {
+      alert("No post data found. Redirecting to dashboard.");
+      navigate("/blog"); 
+    }
+  }, [post, navigate]);
+
+  // 3. Initialize state safely
   const [formData, setFormData] = useState({
-    title: post.title || "",
-    category: post.category || "",
-    status: post.status || "",
-    publishDate: post.date || "",
-    img:
-      post.img ||
-      "https://www.kidpid.com/wp-content/uploads/2018/04/pexels-photo-546819.jpeg",
-    desc: post.desc || "",
+    title: post?.title || "",
+    category: post?.category || "",
+    status: post?.status || "draft",
+    publishedDate: post?.publishedDate ? post.publishedDate.split("T")[0] : "",
+    coverImage: post?.coverImage || "",
+    content: post?.content || "",
+    metaTitle: post?.metaTitle || "",
+    metaDescription: post?.metaDescription || "",
+    focusKeyword: post?.focusKeyword || "",
   });
 
+  useEffect(() => {
+    const fetchFullBlogDetails = async () => {
+      // Safety check: ensure we have an ID
+      const blogId = post?._id || post?.id;
+      if (!blogId) return;
+
+      try {
+        // Call the backend to get the SPECIFIC blog (which includes SEO tags)
+        const response = await instance.get(`/blogs/blog/${blogId}`);
+        const fullData = response.data.data; // Access the data from ApiResponse
+
+        // Update the form with the real data from the database
+        setFormData((prev) => ({
+          ...prev,
+          title: fullData.title,
+          category: fullData.category,
+          status: fullData.status,
+          content: fullData.content,
+          publishedDate: fullData.publishedDate ? fullData.publishedDate.split("T")[0] : "",
+          metaTitle: fullData.metaTitle || "",
+          metaDescription: fullData.metaDescription || "",
+          focusKeyword: fullData.focusKeyword || "",
+          coverImage: fullData.coverImage || prev.coverImage,
+        }));
+      } catch (error) {
+        console.error("Failed to fetch full blog details", error);
+      }
+    };
+
+    fetchFullBlogDetails();
+  }, [post]);
+
   const [loading, setLoading] = useState(false);
+
+  // If no post, return null while redirecting
+  if (!post) return null;
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -30,18 +77,62 @@ const EditBlogPost = () => {
   const handleSubmit = async (e, status = "draft") => {
     e.preventDefault();
     setLoading(true);
+
+    // ---------------------------------------------------------
+    // 1. NEW VALIDATION BLOCK
+    // If trying to PUBLISH, check if SEO fields are filled.
+    // The backend WILL throw a 500 error if these are missing.
+    // ---------------------------------------------------------
+    if (status === "published") {
+      if (
+        !formData.metaTitle?.trim() ||
+        !formData.metaDescription?.trim() ||
+        !formData.focusKeyword?.trim()
+      ) {
+        alert(
+          "Validation Failed: To Publish, you MUST fill in the SEO Settings (Meta Title, Description, and Focus Keyword)."
+        );
+        setLoading(false);
+        return; // STOP execution here
+      }
+    }
+
     try {
       const data = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        data.append(key, value);
-      });
-      data.set("status", status);
 
-      await instance.put(`/blogs/update/${post.id}`, data);
-      // Optionally show a success message or redirect here
+      // Append standard text fields
+      data.append("title", formData.title);
+      data.append("category", formData.category);
+      data.append("status", status);
+      data.append("content", formData.content);
+      
+      // Ensure we send strings, even if empty (though validation above catches published case)
+      data.append("metaTitle", formData.metaTitle || "");
+      data.append("metaDescription", formData.metaDescription || "");
+      data.append("focusKeyword", formData.focusKeyword || "");
+      data.append("publishedDate", formData.publishedDate);
+
+      // Only append coverImage if it is a NEW file
+      if (formData.coverImage instanceof File) {
+        data.append("coverImage", formData.coverImage);
+      }
+
+      // Explicitly set headers for FormData
+      const blogId = post._id || post.id;
+      
+      await instance.put(`/blogs/update/${blogId}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }, 
+      });
+
+      alert(`Blog post ${status === 'published' ? 'published' : 'saved'} successfully!`);
+      navigate("/blog"); 
+      
     } catch (error) {
-      alert("Error submitting the form, check console for details");
       console.error("Error submitting the form:", error);
+      const backendMessage = error.response?.data?.message || error.message;
+      alert(`Error: ${backendMessage}`);
     } finally {
       setLoading(false);
     }
@@ -76,7 +167,7 @@ const EditBlogPost = () => {
             }
             setFormData((prevData) => ({
               ...prevData,
-              img: file,
+              coverImage: file,
             }));
           }}
         />
@@ -90,12 +181,12 @@ const EditBlogPost = () => {
         <p className="font-semibold text-base text-gray-500 mt-2">
           Recommended size: 1200x630px, Max file size: 5MB
         </p>
-        {formData.img && (
+        {formData.coverImage && (
           <img
             src={
-              typeof formData.img === "string"
-                ? formData.img
-                : URL.createObjectURL(formData.img)
+              typeof formData.coverImage === "string"
+                ? formData.coverImage
+                : URL.createObjectURL(formData.coverImage)
             }
             alt="Preview"
             className="mt-2 max-h-20 rounded-lg"
@@ -108,7 +199,7 @@ const EditBlogPost = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-b-4  mb-4"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-b-4 mb-4"></div>
         <span className="text-lg font-semibold text-blue-700">Saving...</span>
       </div>
     );
@@ -116,7 +207,7 @@ const EditBlogPost = () => {
 
   return (
     <form className="flex flex-col gap-6 p-4">
-      {/* Top Header */}
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <h3 className="text-gray-700 font-semibold flex items-center text-lg">
           <MdOutlineKeyboardArrowRight className="text-xl sm:text-2xl" />
@@ -124,13 +215,9 @@ const EditBlogPost = () => {
         </h3>
       </div>
 
-      {/* Page Title */}
       <h1 className="text-2xl font-semibold">Edit Blog Post</h1>
-      <p className="text-gray-600 font-semibold text-base">
-        Update the details below to edit and publish your service.
-      </p>
-
-      {/* Title and Category */}
+      
+      {/* TITLE & CATEGORY */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
         <label className="font-semibold text-gray-700 text-base">Title</label>
         <input
@@ -140,15 +227,12 @@ const EditBlogPost = () => {
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
         />
-        <label className="font-semibold text-gray-700 text-base">
-          Category
-        </label>
+
+        <label className="font-semibold text-gray-700 text-base">Category</label>
         <select
           className="border border-gray-400 font-semibold text-gray-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.category}
-          onChange={(e) =>
-            setFormData({ ...formData, category: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
           required
         >
           <option value="">Select Category</option>
@@ -156,70 +240,92 @@ const EditBlogPost = () => {
           <option value="Design">Design</option>
           <option value="Business">Business</option>
           <option value="Marketing">Marketing</option>
+          <option value="Tutorials">Tutorials</option>
         </select>
       </div>
 
       {coverImage()}
 
-      {/* Description Field */}
+      {/* CONTENT */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
         <h2 className="text-xl font-semibold text-black mb-2">Description</h2>
         <textarea
           rows={6}
-          className="rounded-lg  min-h-[120px] w-full border px-3 py-2  border-gray-400 font-semibold text-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
-          value={formData.desc}
-          onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
+          className="rounded-lg min-h-[120px] w-full border px-3 py-2 border-gray-400 font-semibold text-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
+          value={formData.content}
+          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
         />
       </div>
 
-      {/* Publishing Options */}
+      {/* SEO SETTINGS */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <label className="font-semibold text-gray-700 text-base">
-          Publishing Status
-        </label>
+        <h2 className="text-xl font-semibold text-black mb-2">SEO Settings</h2>
+
+        <label className="font-semibold text-gray-700 text-base">Meta Title</label>
+        <input
+          type="text"
+          className="w-full border px-3 py-2 rounded border-gray-400 font-semibold text-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
+          value={formData.metaTitle}
+          onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+        />
+
+        <label className="font-semibold text-gray-700 text-base">Meta Description</label>
+        <textarea
+          rows={4}
+          className="rounded-lg w-full border px-3 py-2 border-gray-400 font-semibold text-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
+          value={formData.metaDescription}
+          onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+        />
+
+        <label className="font-semibold text-gray-700 text-base">Focus Keyword</label>
+        <input
+          type="text"
+          className="w-full border px-3 py-2 rounded border-gray-400 font-semibold text-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
+          value={formData.focusKeyword}
+          onChange={(e) => setFormData({ ...formData, focusKeyword: e.target.value })}
+        />
+      </div>
+
+      {/* STATUS & DATE */}
+      <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
+        <label className="font-semibold text-gray-700 text-base">Publishing Status</label>
         <select
           className="border border-gray-400 rounded-lg px-3 py-2 font-semibold text-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.status}
           onChange={(e) => setFormData({ ...formData, status: e.target.value })}
         >
-          <option value="Draft">Draft</option>
-          <option value="Published">Published</option>
-          <option value="Scheduled">Scheduled</option>
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+          <option value="scheduled">Scheduled</option>
         </select>
-        <label className="font-semibold text-gray-700 text-base">
-          Publish Date
-        </label>
+
+        <label className="font-semibold text-gray-700 text-base">Publish Date</label>
         <input
           type="date"
           className="border border-gray-400 font-semibold text-gray-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-          value={formData.publishDate}
-          onChange={(e) =>
-            setFormData({ ...formData, publishDate: e.target.value })
-          }
+          value={formData.publishedDate}
+          onChange={(e) => setFormData({ ...formData, publishedDate: e.target.value })}
         />
       </div>
 
-      {/* Buttons */}
+      {/* BUTTONS */}
       <div className="flex justify-end gap-3 mt-4">
         <button
           type="button"
           onClick={(e) => handleSubmit(e, "draft")}
-          name="draft"
-          className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-white font-semibold text-base text-gray-600 cursor-pointer"
+          className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-white font-semibold text-base text-gray-600"
           disabled={loading}
         >
-          <FaSave className="text-sm text-gray-600" />
-          Save Draft
+          <FaSave className="text-sm text-gray-600" /> Save Draft
         </button>
+
         <button
           type="button"
           onClick={(e) => handleSubmit(e, "published")}
-          name="publish"
-          className="flex items-center gap-2 border rounded-xl py-2 px-4  border-gray-300 bg-[#1447E6] font-semibold text-white text-base cursor-pointer hover:bg-[#0f36a8]"
+          className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-[#1447E6] font-semibold text-white text-base hover:bg-[#0f36a8]"
           disabled={loading}
         >
-          <FaTelegramPlane className="text-sm" />
-          Publish Service
+          <FaTelegramPlane className="text-sm" /> Publish Service
         </button>
       </div>
     </form>

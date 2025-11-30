@@ -1,15 +1,15 @@
 import React, { useRef, useState } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { FaSave, FaTelegramPlane } from "react-icons/fa";
-import { FaCloudUploadAlt } from "react-icons/fa";
-// Removed QuillEditor import
-// import QuillEditor from "../components/CreateBlogContent";
+import { FaSave, FaTelegramPlane, FaCloudUploadAlt } from "react-icons/fa";
 import { useCreateService } from "../hooks/servicesHooks/useCreateService";
-
-// TODO: Import or create ServiceBasicInfoSection, ServiceContentSection, SEOSettingsSection, PublishingOptionsSection
+import { useNavigate } from "react-router-dom";
 
 const CreateService = () => {
-  const { createService, loading, error, success } = useCreateService();
+  const { createService, loading } = useCreateService(); // Removed 'success' and 'error' as we handle them locally
+  const navigate = useNavigate();
+
+  // --- REMOVED THE useEffect HERE ---
+  // We will handle navigation directly in the submit function for better reliability
 
   const [formData, setFormData] = useState({
     title: "",
@@ -40,28 +40,30 @@ const CreateService = () => {
         if (value instanceof File) {
           data.append(key, value);
         } else if (key === "status") {
-          // Use the status argument from the button, not the dropdown value
-          data.append(
-            "status",
-            status.charAt(0).toUpperCase() + status.slice(1)
-          );
+          // Skip status here, let the hook handle it or the backend handle it
+           data.append("publishStatus", status.toLowerCase());
         } else {
           data.append(key, value);
         }
       });
 
-      await createService(data);
-      // Optional: success message or redirect
-      console.log("Service submitted successfully");
+      // 1. Call the hook and WAIT for the result
+      const result = await createService(data, status === "draft");
+
+      // 2. Check if result is truthy (meaning success)
+      if (result) {
+        console.log("Service created, redirecting...");
+        // 3. Navigate immediately
+        navigate("/services"); // Make sure this route exists in your App.js!
+      } 
+
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("An error occurred while submitting the form. Please try again.");
+      alert("An error occurred. Please try again.");
     }
   };
 
-  // Replace this with your actual API call
-  // console.log("Submitting service form with data:", Object.fromEntries(data));
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="p-10 text-center">Creating Service...</div>;
 
   const coverImage = () => (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4 ">
@@ -105,9 +107,6 @@ const CreateService = () => {
         >
           Choose file
         </button>
-        <p className="font-semibold text-base text-gray-500 mt-2">
-          Recommended size: 1200x630px, Max file size: 5MB
-        </p>
         {formData.coverImage && (
           <img
             src={URL.createObjectURL(formData.coverImage)}
@@ -121,18 +120,14 @@ const CreateService = () => {
 
   return (
     <form className="flex flex-col gap-6 p-4">
-      {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <h3 className="text-base text-gray-700 font-semibold flex items-center">
           <MdOutlineKeyboardArrowRight className="text-xl sm:text-2xl" />
           <span className="ml-1">Create New Service</span>
         </h3>
       </div>
-      {/* Page Title */}
       <h1 className="text-2xl font-semibold">Create New Service</h1>
-      <p className="text-base text-gray-600 font-semibold">
-        Fill in the details below to create and publish your service.
-      </p>
+      
       {/* Basic Info */}
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
         <h2 className="text-xl font-semibold text-black mb-2">Basic Info</h2>
@@ -159,9 +154,9 @@ const CreateService = () => {
           <option value="Consulting">Consulting</option>
         </select>
       </div>
-      {/* Cover Image */}
+
       {coverImage()}
-      {/* Description/Content */}
+
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
           <h2 className="text-lg font-semibold text-black mb-2">Description</h2>
           <textarea
@@ -174,50 +169,34 @@ const CreateService = () => {
           required
         />
       </div>
-      {/* SEO Settings */}
+
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
         <h2 className="text-lg font-semibold text-black mb-2">SEO Settings</h2>
-        <label className="text-base font-semibold text-gray-700">
-          Meta Title
-        </label>
+        <label className="text-base font-semibold text-gray-700">Meta Title</label>
         <input
           type="text"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.metaTitle}
-          onChange={(e) =>
-            setFormData({ ...formData, metaTitle: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
         />
-        <label className="text-base font-semibold text-gray-700">
-          Meta Description
-        </label>
+        <label className="text-base font-semibold text-gray-700">Meta Description</label>
         <textarea
           className="border border-gray-300 rounded-lg px-3 py-2 min-h-[80px]"
           value={formData.metaDescription}
-          onChange={(e) =>
-            setFormData({ ...formData, metaDescription: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
         />
-        <label className="text-base font-semibold text-gray-700">
-          Focus Keyword
-        </label>
+        <label className="text-base font-semibold text-gray-700">Focus Keyword</label>
         <input
           type="text"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.focusKeyword}
-          onChange={(e) =>
-            setFormData({ ...formData, focusKeyword: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, focusKeyword: e.target.value })}
         />
       </div>
-      {/* Publishing Options */}
+
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <h2 className="text-lg font-semibold text-black mb-2">
-          Publishing Options
-        </h2>
-        <label className="text-base font-semibold text-gray-700">
-          Publishing Status
-        </label>
+        <h2 className="text-lg font-semibold text-black mb-2">Publishing Options</h2>
+        <label className="text-base font-semibold text-gray-700">Publishing Status</label>
         <select
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.status}
@@ -226,25 +205,20 @@ const CreateService = () => {
           <option value="Draft">Draft</option>
           <option value="Published">Published</option>
         </select>
-        <label className="text-base font-semibold text-gray-700">
-          Publish Date
-        </label>
+        <label className="text-base font-semibold text-gray-700">Publish Date</label>
         <input
           type="date"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.publishDate}
-          onChange={(e) =>
-            setFormData({ ...formData, publishDate: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, publishDate: e.target.value })}
         />
       </div>
-      {/* Buttons aligned right */}
+
       <div className="flex justify-end gap-3 mt-4">
         <button
           type="button"
           onClick={(e) => handleSubmit(e, "draft")}
-          name="draft"
-          className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-white font-semibold text-sm text-gray-600 sm:text-base cursor-pointer"
+          className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-white font-semibold text-sm text-gray-600 sm:text-base cursor-pointer hover:bg-gray-50"
         >
           <FaSave className="text-sm text-gray-600" />
           Save Draft
@@ -252,7 +226,6 @@ const CreateService = () => {
         <button
           type="button"
           onClick={(e) => handleSubmit(e, "published")}
-          name="publish"
           className="flex items-center gap-2 border rounded-xl py-2 px-4 border-gray-300 bg-[#1447E6] font-semibold text-white text-sm sm:text-base cursor-pointer hover:bg-[#0f36a8]"
         >
           <FaTelegramPlane className="text-sm" />
