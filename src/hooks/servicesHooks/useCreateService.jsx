@@ -1,37 +1,34 @@
 import { useState } from "react";
 import instance from "../../lib/axios";
 
-const useCreateService = () => {
+export const useCreateService = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
-  const createService = async (formData, isDraft = false) => {
+  // We removed 'isDraft' param. The hook just sends whatever data it gets.
+  const createService = async (serviceData) => {
+    setLoading(true);
+    setSuccess(false);
+    setError(null);
+
     try {
-      setLoading(true);
-      setSuccess(false);
-      setError(null);
-
-      // Ensure status is set
-      formData.set("status", isDraft ? "Draft" : "Published");
-
-      const response = await instance.post("/services/create", formData, {
+      // ✅ Send the FormData directly
+      const response = await instance.post("/services/create", serviceData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.status >= 200 && response.status < 300) {
         setSuccess(true);
-        // RETURN DATA ON SUCCESS
-        return response.data;
-      } else {
-        throw new Error("Service creation failed");
+        // Return data so the Component knows to navigate
+        return response.data; 
       }
     } catch (err) {
-      console.error("Error creating service:", err);
-      setError(err.response?.data?.message || "Something went wrong");
-      setSuccess(false);
-      // RETURN NULL ON FAILURE
-      return null;
+      console.error("Create Service Error:", err);
+      const errorMsg = err.response?.data?.message || "Something went wrong";
+      setError(errorMsg);
+      // Return null so the Component knows it failed
+      return null; 
     } finally {
       setLoading(false);
     }
@@ -39,5 +36,3 @@ const useCreateService = () => {
 
   return { createService, loading, error, success };
 };
-
-export { useCreateService };

@@ -69,15 +69,19 @@ const EditService = () => {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("category", formData.category);
-    data.append("description", formData.content);
+    // Send description matching backend expectations
+    data.append("description", formData.content); 
+    
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDescription", formData.metaDescription);
     data.append("focusKeyword", formData.focusKeyword);
     data.append("publishDate", formData.publishDate);
 
     const rawStatus = overrideStatus || formData.status || "Draft";
+    // Ensure standard formatting for status
     const formattedStatus = String(rawStatus).charAt(0).toUpperCase() + String(rawStatus).slice(1).toLowerCase();
     
+    // Send key as "status" (or "publishStatus" if backend update expects that specifically, but "status" is safer usually)
     data.append("status", formattedStatus);
 
     if (formData.coverImage instanceof File) {
@@ -85,20 +89,22 @@ const EditService = () => {
     }
 
     try {
-      const response = await instance.put(`/services/update/${id}`, data, {
+      await instance.put(`/services/update/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Update success:", response.data);
+      console.log("Update success");
+      // Navigate back to Services list
       navigate("/services");
       
     } catch (error) {
       console.error("Error updating service:", error);
-      // Show the specific backend error message
       alert(error.response?.data?.message || "Validation failed");
     }
   };
 
+  // ... (Keep existing coverImage function and JSX rendering same as your code) ...
+  // (Assuming no changes needed in UI, just logic)
   const coverImage = () => (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4 ">
       <h1 className="text-xl font-semibold text-black">Cover Image</h1>
@@ -161,19 +167,17 @@ const EditService = () => {
 
   return (
     <form className="flex flex-col gap-6 p-4">
-      {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <h3 className="text-gray-700 font-semibold flex items-center text-lg">
           <MdOutlineKeyboardArrowRight className="text-xl sm:text-2xl" />
           <span className="ml-1">Edit Service</span>
         </h3>
       </div>
-      {/* Page Title */}
       <h1 className="text-2xl font-semibold">Edit Service</h1>
       <p className="text-gray-600 font-semibold text-base">
         Update the details below to edit and publish your service.
       </p>
-      {/* Title and Category */}
+      
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
         <label className="font-semibold text-gray-700 text-base">Title</label>
         <input
@@ -200,52 +204,39 @@ const EditService = () => {
           <option value="Consulting">Consulting</option>
         </select>
       </div>
+      
       {coverImage()}
-      {/* Content/Description */}
+      
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
         <h2 className="text-lg font-semibold text-black mb-2">Description</h2>
         <QuillEditor formData={formData} setFormData={setFormData} />
       </div>
-      {/* SEO Settings */}
+      
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <label className="font-semibold text-gray-700 text-base">
-          Meta Title
-        </label>
+        <label className="font-semibold text-gray-700 text-base">Meta Title</label>
         <input
           type="text"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.metaTitle}
-          onChange={(e) =>
-            setFormData({ ...formData, metaTitle: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
         />
-        <label className="font-semibold text-gray-700 text-base">
-          Meta Description
-        </label>
+        <label className="font-semibold text-gray-700 text-base">Meta Description</label>
         <textarea
           className="border border-gray-300 rounded-lg px-3 py-2 min-h-[80px]"
           value={formData.metaDescription}
-          onChange={(e) =>
-            setFormData({ ...formData, metaDescription: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
         />
-        <label className="font-semibold text-gray-700 text-base">
-          Focus Keyword
-        </label>
+        <label className="font-semibold text-gray-700 text-base">Focus Keyword</label>
         <input
           type="text"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.focusKeyword}
-          onChange={(e) =>
-            setFormData({ ...formData, focusKeyword: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, focusKeyword: e.target.value })}
         />
       </div>
-      {/* Publishing Options */}
+      
       <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4">
-        <label className="font-semibold text-gray-700 text-base">
-          Publishing Status
-        </label>
+        <label className="font-semibold text-gray-700 text-base">Publishing Status</label>
         <select
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.status}
@@ -254,19 +245,15 @@ const EditService = () => {
           <option value="Draft">Draft</option>
           <option value="Published">Published</option>
         </select>
-        <label className="font-semibold text-gray-700 text-base">
-          Publish Date
-        </label>
+        <label className="font-semibold text-gray-700 text-base">Publish Date</label>
         <input
           type="date"
           className="border border-gray-300 rounded-lg px-3 py-2"
           value={formData.publishDate}
-          onChange={(e) =>
-            setFormData({ ...formData, publishDate: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, publishDate: e.target.value })}
         />
       </div>
-      {/* Buttons aligned right */}
+      
       <div className="flex justify-end gap-3 mt-4">
         <button
           type="button"

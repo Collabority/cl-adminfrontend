@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect, useContext, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { BsGraphUp } from "react-icons/bs";
-import { FaBlog, FaUsers } from "react-icons/fa";
+import { FaBlog, FaUsers, FaLock } from "react-icons/fa"; // Added Lock icon
 import { PiSuitcaseSimpleBold } from "react-icons/pi";
 import { MdOutlineMiscellaneousServices } from "react-icons/md";
 import { FaStar, FaNewspaper } from "react-icons/fa6";
@@ -15,9 +15,20 @@ const Sidebar = () => {
   const logout = useLogout();
   const location = useLocation();
   const path = location.pathname;
-  // Fix: safely get admin from Redux
+
+  // 1. Get User Data
   const user = useSelector((state) => state.auth.user);
-  const admin = user?.admin || user || null;
+  const currentUser = user?.admin || user || {};
+
+  // 2. Extract Permissions & Role
+  const contentPerms = currentUser.contentPermissions || [];
+  const adminPerms = currentUser.adminPermission || [];
+  const userRole = currentUser.role || "";
+  const userEmail = currentUser.email || "";
+
+  // --- ⭐ MASTER KEY LOGIC ---
+  // Access is granted if Role is 'Admin' OR Email is the main collabority email
+  const isMainAdmin = userRole === "Admin" || userEmail.includes("collabority@gmail.com");
 
   const { isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
   const sidebarRef = useRef(null);
@@ -38,121 +49,162 @@ const Sidebar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isSidebarOpen, setIsSidebarOpen]);
 
+  // Helper for active state styles
   const isActive = (tabPath) => {
-    if (tabPath === "/") {
-      return path === "/";
-    }
+    if (tabPath === "/") return path === "/";
     return path.startsWith(tabPath);
   };
 
-  const getItemClasses = (tabPath) =>
-    `flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-blue-100 group ${
-      isActive(tabPath) ? "bg-blue-100" : ""
-    }`;
-
-  const getIconClasses = (tabPath) =>
-    `text-2xl group-hover:text-blue-500 ${
-      isActive(tabPath) ? "text-blue-500" : "text-black"
-    }`;
-
-  const getTextClasses = (tabPath) =>
-    `font-bold group-hover:text-blue-500 ${
-      isActive(tabPath) ? "text-blue-500" : "text-gray-500"
-    }`;
-
-  // Fix: Use <button> for logout, not <Link>
-  // Fix: Use admin image if available, fallback to default
+  // 3. Admin Image Logic
   const adminImage =
-    admin && admin.image
-      ? admin.image
-      : "https://res.cloudinary.com/dxo7rbhrl/image/upload/v1756140314/UnknownPerson_ybjokv.jpg";
+    currentUser.profilePicture || currentUser.image ||
+    "https://res.cloudinary.com/dxo7rbhrl/image/upload/v1756140314/UnknownPerson_ybjokv.jpg";
+
+  const adminName = currentUser?.firstname 
+    ? `${currentUser.firstname} ${currentUser.lastname || ""}` 
+    : (currentUser?.name || "Guest");
+
+  const adminEmail = currentUser?.email || "No Account";
+
+  // 4. Menu Configuration
+  const menuItems = useMemo(() => [
+    {
+      path: "/",
+      label: "Dashboard",
+      icon: BsGraphUp,
+      hasAccess: true // Everyone sees Dashboard
+    },
+    {
+      path: "/blog",
+      label: "Blog Management",
+      icon: FaBlog,
+      hasAccess: isMainAdmin || contentPerms.includes("blogmgmt")
+    },
+    {
+      path: "/careers",
+      label: "Careers",
+      icon: PiSuitcaseSimpleBold,
+      hasAccess: isMainAdmin || adminPerms.includes("careermgmt")
+    },
+    {
+      path: "/services",
+      label: "Services",
+      icon: MdOutlineMiscellaneousServices,
+      hasAccess: isMainAdmin || contentPerms.includes("servicesmgmt")
+    },
+    {
+      path: "/reviews",
+      label: "Reviews",
+      icon: FaStar,
+      hasAccess: isMainAdmin || contentPerms.includes("reviewmgmt")
+    },
+    {
+      path: "/contact",
+      label: "Contact Queries",
+      icon: IoMdMail,
+      hasAccess: isMainAdmin || adminPerms.includes("contactmgmt")
+    },
+    {
+      path: "/newsletter",
+      label: "Newsletter",
+      icon: FaNewspaper,
+      hasAccess: isMainAdmin || adminPerms.includes("newslettermgmt")
+    },
+    {
+      path: "/createCampaign",
+      label: "Create Campaign",
+      icon: IoMdMail,
+      hasAccess: isMainAdmin || adminPerms.includes("newslettermgmt")
+    },
+    {
+      path: "/users",
+      label: "User Management",
+      icon: FaUsers,
+      hasAccess: isMainAdmin || adminPerms.includes("usermgmt")
+    },
+  ], [isMainAdmin, contentPerms, adminPerms]);
 
   return (
     <div
       ref={sidebarRef}
       className={`
-        fixed top-20 left-0 z-50 h-full bg-white border-r border-gray-300 p-5 flex flex-col md:justify-between
-        w-3/4 sm:w-1/4
-        transform transition-transform duration-300
+        fixed top-20 left-0 z-50 h-[calc(100vh-80px)] bg-white border-r border-gray-300 p-5 flex flex-col justify-between
+        w-3/4 sm:w-64
+        transform transition-transform duration-300 ease-in-out
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        sm:translate-x-0 sm:static
+        sm:translate-x-0 sm:static sm:h-auto
       `}
       aria-label="Sidebar"
     >
       {/* Navigation Links */}
-      <div className="flex flex-col gap-5">
-        <Link to="/" className={getItemClasses("/")}>
-          <BsGraphUp className={getIconClasses("/")} />
-          <h5 className={getTextClasses("/")}>Dashboard</h5>
-        </Link>
+      <div className="flex flex-col gap-3 overflow-y-auto">
+        {menuItems.map((item) => {
+          const IconComponent = item.icon;
+          const active = isActive(item.path);
 
-        <Link to="/blog" className={getItemClasses("/blog")}>
-          <FaBlog className={getIconClasses("/blog")} />
-          <h5 className={getTextClasses("/blog")}>Blog Management</h5>
-        </Link>
+          // --- LOGIC FOR DISABLED ITEMS ---
+          if (!item.hasAccess) {
+            return (
+              <div 
+                key={item.path}
+                className="flex items-center gap-3 p-2 rounded cursor-not-allowed opacity-50 bg-gray-50 text-gray-400 group relative"
+                title="You do not have permission to access this module"
+              >
+                <IconComponent className="text-xl" />
+                <h5 className="font-semibold text-sm flex-1">{item.label}</h5>
+                <FaLock className="text-xs" /> {/* Lock Icon */}
+              </div>
+            );
+          }
 
-        <Link to="/careers" className={getItemClasses("/careers")}>
-          <PiSuitcaseSimpleBold className={getIconClasses("/careers")} />
-          <h5 className={getTextClasses("/careers")}>Careers</h5>
-        </Link>
-
-        <Link to="/services" className={getItemClasses("/services")}>
-          <MdOutlineMiscellaneousServices
-            className={getIconClasses("/services")}
-          />
-          <h5 className={getTextClasses("/services")}>Services</h5>
-        </Link>
-
-        <Link to="/reviews" className={getItemClasses("/reviews")}>
-          <FaStar className={getIconClasses("/reviews")} />
-          <h5 className={getTextClasses("/reviews")}>Reviews</h5>
-        </Link>
-
-        <Link to="/contact" className={getItemClasses("/contact")}>
-          <IoMdMail className={getIconClasses("/contact")} />
-          <h5 className={getTextClasses("/contact")}>Contact Queries</h5>
-        </Link>
-
-        <Link to="/newsletter" className={getItemClasses("/newsletter")}>
-          <FaNewspaper className={getIconClasses("/newsletter")} />
-          <h5 className={getTextClasses("/newsletter")}>Newsletter</h5>
-        </Link>
-
-        <Link to="/users" className={getItemClasses("/users")}>
-          <FaUsers className={getIconClasses("/users")} />
-          <h5 className={getTextClasses("/users")}>User Management</h5>
-        </Link>
-
-        <Link to="/createCampaign" className={getItemClasses("/createCampaign")}>
-          <FaUsers className={getIconClasses("/createCampaign")} />
-          <h5 className={getTextClasses("/createCampaign")}>Create Campaign </h5>
-        </Link>
+          // --- LOGIC FOR ACTIVE ITEMS ---
+          return (
+            <Link 
+              key={item.path} 
+              to={item.path} 
+              className={`flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-blue-100 group transition-colors duration-200 ${
+                active ? "bg-blue-100" : ""
+              }`}
+              onClick={() => {
+                 if(window.innerWidth < 640) setIsSidebarOpen(false);
+              }}
+            >
+              <IconComponent className={`text-xl group-hover:text-blue-500 ${active ? "text-blue-500" : "text-black"}`} />
+              <h5 className={`font-semibold text-sm group-hover:text-blue-500 ${active ? "text-blue-500" : "text-gray-600"}`}>
+                {item.label}
+              </h5>
+            </Link>
+          );
+        })}
       </div>
 
       {/* Admin Section at Bottom */}
-      <div className="pt-4 border-t border-gray-300 flex items-center justify-evenly gap-3">
-        <img
-          src={adminImage}
-          alt={admin && admin.name ? admin.name : "Admin"}
-          className="w-10 h-10 rounded-full object-cover"
-        />
+      <div className="pt-4 mt-4 border-t border-gray-300 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 overflow-hidden">
+          <img
+            src={adminImage}
+            alt={adminName}
+            className="w-10 h-10 rounded-full object-cover border border-gray-200"
+          />
 
-        <div className="flex flex-col text-center">
-          <p className="text-sm font-semibold text-gray-700">
-            {admin && admin.name ? admin.name : "Admin"}
-          </p>
-          <p className="text-xs text-gray-500">
-            {admin && admin.email ? admin.email : "admin@company.com"}
-          </p>
+
+          <div className="flex flex-col text-left overflow-hidden">
+            <p className="text-sm font-semibold text-gray-800 truncate" title={adminName}>
+              {adminName}
+            </p>
+            <p className="text-xs text-gray-500 truncate" title={adminEmail}>
+              {adminEmail}
+            </p>
+          </div>
         </div>
 
         <button
           onClick={logout}
           aria-label="Logout"
-          className="bg-transparent border-none p-0 m-0"
+          className="bg-gray-100 hover:bg-red-100 p-2 rounded-full transition-colors"
           title="Logout"
         >
-          <RxExit className="text-xl text-gray-600 hover:text-red-500 cursor-pointer" />
+          <RxExit className="text-xl text-gray-600 hover:text-red-500" />
         </button>
       </div>
     </div>

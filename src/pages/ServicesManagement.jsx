@@ -18,17 +18,20 @@ const ServicesManagement = () => {
 
   // 3. Filter Logic (The Magic Part)
   const filteredServices = services.filter((service) => {
-    // A. Search Filter (Title or Description)
+    const safeTitle = (service.title || "").toLowerCase();
+    const safeDesc = (service.description || "").toLowerCase();
+    const searchLower = searchTerm.toLowerCase();
+
     const matchesSearch = 
-      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (service.description || "").toLowerCase().includes(searchTerm.toLowerCase());
+      safeTitle.includes(searchLower) ||
+      safeDesc.includes(searchLower);
 
     // B. Category Filter
     const matchesCategory = 
       filterCategory === "All Categories" || 
       service.category === filterCategory;
 
-    // C. Status Filter (Robust check for publishStatus)
+    // C. Status Filter
     const currentStatus = service.publishStatus || service.status || "Draft";
     const matchesStatus = 
       filterStatus === "All Status" || 
