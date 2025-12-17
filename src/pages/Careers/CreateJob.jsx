@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useJobPost } from "../../hooks/JobHooks/useJobPost";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom"; // Add this import
+import {useJobPost} from "../../hooks/JobHooks/useJobPost";
 
 const jobSchema = z.object({
   title: z.string().min(1, "Job Title is required"),
@@ -19,7 +20,7 @@ const jobSchema = z.object({
   }),
   jobPeriod: z.string().optional(),
   description: z.string().min(1, "Job Summary is required"),
-  keyResponsibities: z.string().min(1, "Key Responsibilities are required"), // Revert to typo
+  keyResponsibities: z.string().min(1, "Key Responsibilities are required"),
   jobRequirements: z.string().min(1, "Requirements are required"),
   perks: z.string().optional(),
   hiringManager: z.string().min(1, "Hiring Manager is required"),
@@ -47,7 +48,7 @@ const initialForm = {
   maxSalary: "",
   jobPeriod: "",
   description: "",
-  keyResponsibities: "", // Revert to typo
+  keyResponsibities: "",
   jobRequirements: "",
   perks: "",
   hiringManager: "",
@@ -59,24 +60,64 @@ const initialForm = {
 const CreateJob = () => {
   const { postJob, loading } = useJobPost();
   const { admin } = useSelector((state) => state.auth.user);
+  const navigate = useNavigate(); // Add navigation
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [showPreview, setShowPreview] = useState(false); // Add preview state
 
-  const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, clearErrors,getValues, reset, formState: { errors } } = useForm({
     resolver: zodResolver(jobSchema),
-    defaultValues: initialForm,
+    defaultValues:{resume: "",experience: 0,name: "",email: "",phone: "",
+    },
   });
 
   useEffect(() => {
-    console.log("Admin ID:", admin?._id); // Log for debugging
+    console.log("Admin ID:", admin?._id);
     if (admin && admin._id) {
       setValue("hiringManager", admin._id);
     }
   }, [admin, setValue]);
 
+  // Handle Save Draft
+  const handleSaveDraft = async () => {
+    const formData = getValues();
+    const payload = {
+      ...formData,
+      status: "Draft", // Set status as Draft
+      minSalary: formData.minSalary ? Number(formData.minSalary) : undefined,
+      maxSalary: formData.maxSalary ? Number(formData.maxSalary) : undefined,
+      expiresAt: formData.expiresAt ? new Date(formData.expiresAt).toISOString() : undefined,
+    };
+    
+    try {
+      await postJob(payload);
+      setSuccessMessage("Job saved as draft successfully!");
+      setErrorMessage(null);
+      // Redirect to jobs list after 2 seconds
+      setTimeout(() => {
+        navigate("/careers"); // Change this to your jobs list route
+      }, 2000);
+    } catch (error) {
+      console.error("Error saving draft:", error);
+      const errorMsg = error.response?.data?.message || "Failed to save draft.";
+      setErrorMessage(errorMsg);
+      setSuccessMessage(null);
+    }
+  };
+
+  // Handle Preview
+  const handlePreview = () => {
+    const formData = getValues();
+    console.log("Preview Data:", formData);
+    setShowPreview(true);
+    // Scroll to top to show preview
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const onSubmit = async (data) => {
     const payload = {
       ...data,
+      status: data.status || "Active", // Default to Active if not set
       minSalary: data.minSalary ? Number(data.minSalary) : undefined,
       maxSalary: data.maxSalary ? Number(data.maxSalary) : undefined,
       expiresAt: data.expiresAt ? new Date(data.expiresAt).toISOString() : undefined,
@@ -86,6 +127,10 @@ const CreateJob = () => {
       setSuccessMessage("Job created successfully!");
       setErrorMessage(null);
       reset(initialForm);
+      // Redirect to jobs list after 2 seconds
+      setTimeout(() => {
+        navigate("/careers"); // Change this to your jobs list route
+      }, 2000);
     } catch (error) {
       console.error("Error posting job:", error);
       const errorMsg = error.response?.data?.message ||
@@ -112,17 +157,81 @@ const CreateJob = () => {
           {errorMessage}
         </div>
       )}
+      
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Job Preview</h2>
+              <button
+                onClick={() => setShowPreview(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-semibold">{getValues("title") || "Job Title"}</h3>
+                <p className="text-gray-600">{getValues("department")} • {getValues("jobType")} • {getValues("jobLocation")}</p>
+              </div>
+              <div>
+                <p className="font-medium">Salary Range:</p>
+                <p>${getValues("minSalary")} - ${getValues("maxSalary")} {getValues("jobPeriod")}</p>
+              </div>
+              <div>
+                <p className="font-medium">Description:</p>
+                <p className="whitespace-pre-line">{getValues("description")}</p>
+              </div>
+              <div>
+                <p className="font-medium">Key Responsibilities:</p>
+                <p className="whitespace-pre-line">{getValues("keyResponsibities")}</p>
+              </div>
+              <div>
+                <p className="font-medium">Requirements:</p>
+                <p className="whitespace-pre-line">{getValues("jobRequirements")}</p>
+              </div>
+              {getValues("perks") && (
+                <div>
+                  <p className="font-medium">Perks:</p>
+                  <p className="whitespace-pre-line">{getValues("perks")}</p>
+                </div>
+              )}
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowPreview(false)}
+                className="bg-gray-800 text-white px-6 py-2 rounded"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="text-2xl font-semibold">Create New Job Opening</h1>
         <div className="flex gap-2 w-full sm:w-auto justify-end">
-          <button className="border px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 w-1/2 sm:w-auto">
+          <button 
+            type="button"
+            onClick={handleSaveDraft}
+            disabled={loading}
+            className="border px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 w-1/2 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             Save Draft
           </button>
-          <button className="bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium w-1/2 sm:w-auto">
+          <button 
+            type="button"
+            onClick={handlePreview}
+            className="bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium w-1/2 sm:w-auto hover:bg-gray-700"
+          >
             Preview
           </button>
         </div>
       </div>
+      
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Job Information</h2>
@@ -148,12 +257,12 @@ const CreateJob = () => {
                 className={`border rounded px-3 py-2 text-sm w-full ${errors.department ? 'border-red-500' : 'border-gray-300'}`}
               >
                 <option value="">Select Department</option>
-                <option value="cloud">Cloud & DevOps</option>
-                <option value="dev">Software Development</option>
-                <option value="data">Data & Analytics</option>
-                <option value="cyber">Cybersecurity</option>
-                <option value="consult">Consulting & Strategy</option>
-                <option value="infra">Infrastructure & Ops</option>
+                <option value="Cloud & DevOps">Cloud & DevOps</option>
+                <option value="Software Development">Software Development</option>
+                <option value="Data & Analytics">Data & Analytics</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="Consulting & Strategy">Consulting & Strategy</option>
+                <option value="Infrastructure & Ops">Infrastructure & Ops</option>
               </select>
               {errors.department && <p className="mt-1 text-sm text-red-600">{errors.department.message}</p>}
             </div>
@@ -307,7 +416,7 @@ const CreateJob = () => {
               <input
                 type="date"
                 {...register("expiresAt")}
-                min={new Date().toISOString().split("T")[0]} // Prevent past dates
+                min={new Date().toISOString().split("T")[0]}
                 className={`w-full border rounded-lg px-4 py-2 text-sm text-gray-900 ${errors.expiresAt ? 'border-red-500' : 'border-gray-300'}`}
                 placeholder="dd/mm/yyyy"
               />
@@ -374,9 +483,10 @@ const CreateJob = () => {
         <div className="flex justify-end mt-6">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg text-base font-medium hover:bg-blue-700 w-full sm:w-auto"
+            disabled={loading}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg text-base font-medium hover:bg-blue-700 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create Job Opening
+            {loading ? "Creating..." : "Create Job Opening"}
           </button>
         </div>
       </form>
