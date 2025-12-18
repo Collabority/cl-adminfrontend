@@ -2,14 +2,13 @@ import React, { useRef, useState } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaSave, FaTelegramPlane, FaCloudUploadAlt } from "react-icons/fa";
 import { useCreateService } from "../hooks/servicesHooks/useCreateService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // 1. Import useNavigate
 
 const CreateService = () => {
-  const { createService, loading } = useCreateService(); // Removed 'success' and 'error' as we handle them locally
-  const navigate = useNavigate();
+  const { createService, loading } = useCreateService();
+  const navigate = useNavigate(); // 2. Initialize
 
-  // --- REMOVED THE useEffect HERE ---
-  // We will handle navigation directly in the submit function for better reliability
+  //console.log("👉 Body Received:", req.body);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -35,31 +34,42 @@ const CreateService = () => {
     try {
       const data = new FormData();
 
-      // Append form fields
+      // 1. Append fields
       Object.entries(formData).forEach(([key, value]) => {
         if (value instanceof File) {
           data.append(key, value);
         } else if (key === "status") {
-          // Skip status here, let the hook handle it or the backend handle it
-           data.append("publishStatus", status.toLowerCase());
+           // Skip default status logic, we handle it below
         } else {
-          data.append(key, value);
+          // Only append if value exists to avoid "undefined" strings
+          if (value !== null && value !== undefined) {
+            data.append(key, value);
+          }
         }
       });
 
-      // 1. Call the hook and WAIT for the result
-      const result = await createService(data, status === "draft");
+      // 2. Explicitly append status (This is the critical fix from before)
+      data.append("status", status.toLowerCase());
 
-      // 2. Check if result is truthy (meaning success)
+      // --- 🔍 DEBUG: PRINT FORM DATA ---
+      // Copy-paste this block to see exactly what you are sending
+      console.log("📦 FORM DATA CONTENTS:");
+      for (let [key, value] of data.entries()) {
+        console.log(`${key}:`, value);
+      }
+      // --------------------------------
+
+      // 3. Send
+      const result = await createService(data);
+
       if (result) {
-        console.log("Service created, redirecting...");
-        // 3. Navigate immediately
-        navigate("/services"); // Make sure this route exists in your App.js!
+        console.log("✅ Success! Redirecting...");
+        navigate("/services"); 
       } 
 
     } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("An error occurred. Please try again.");
+      console.error("❌ Component Error:", error);
+      alert("Something went wrong on the page.");
     }
   };
 
@@ -85,7 +95,7 @@ const CreateService = () => {
           onChange={(e) => {
             const file = e.target.files[0];
             if (!file) return;
-            const maxSize = 5 * 1024 * 1024;
+            const maxSize = 5 * 1024 * 1024; // 5MB
             if (!file.type.startsWith("image/")) {
               alert("Please select a valid image file.");
               return;

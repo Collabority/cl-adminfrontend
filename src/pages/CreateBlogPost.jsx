@@ -8,9 +8,11 @@ import SEOSettingsSection from "../components/SEOSettingsSection";
 import PublishingOptionsSection from "../components/PublishingOptionsSection";
 import { useCreateBlog } from "../hooks/FormHooks/useCreateBlog";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const CreateBlogPost = () => {
   const { createBlog, loading } = useCreateBlog();
+  const navigate = useNavigate();
 
   // console.log(admin);
   const [formData, setFormData] = useState({
@@ -54,7 +56,7 @@ const CreateBlogPost = () => {
     try {
       await createBlog(data); // ← call your hook's function
       console.log("Blog submitted successfully");
-      // Optionally: navigate or show success toast
+      navigate("/blog")
     } catch (err) {
       console.error("Error submitting blog:", err);
     }

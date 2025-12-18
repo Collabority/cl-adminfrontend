@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import instance from "../lib/axios";
-import { login, logout } from "../redux/authSlice";
+import { logout, setCredentials } from "../redux/authSlice"; // Ensure correct import path
 
 export const useAuthCheck = () => {
   const [loading, setLoading] = useState(true);
@@ -12,19 +12,33 @@ export const useAuthCheck = () => {
     async function getAuthStatus() {
       try {
         setError(null);
+        // 1. Get Token from storage to pass back to Redux
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+           throw new Error("No token found");
+        }
+
         const response = await instance.get("/admin/get-admin-data");
 
-        // Better response validation
-        if (response?.data?.success && response?.data?.data) {
-          dispatch(login({ admin: response.data.data }));
+        // 2. Validate and Dispatch
+        // Your API response structure is { data: { ...user }, message: "..." }
+        if (response?.data?.data) {
+          
+          // ✅ FIX: Structure the payload correctly for authSlice
+          dispatch(setCredentials({ 
+            user: response.data.data, // Map 'data' to 'user'
+            token: token              // Pass the token explicitly
+          }));
+          
         } else {
-          dispatch(logout());
-          setError("Invalid response from server");
+          throw new Error("Invalid response data");
         }
+
       } catch (error) {
-        console.log("Failed to maintain auth:", error.message);
+        console.log("Auth Check Failed:", error.message);
         dispatch(logout());
-        setError(error.message || "Authentication failed");
+        setError(error.message);
       } finally {
         setLoading(false);
       }
