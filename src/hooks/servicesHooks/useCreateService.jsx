@@ -6,14 +6,13 @@ export const useCreateService = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
-  // We removed 'isDraft' param. The hook just sends whatever data it gets.
   const createService = async (serviceData) => {
     setLoading(true);
     setSuccess(false);
     setError(null);
 
     try {
-      // ✅ Send the FormData directly
+      // Send the FormData directly
       const response = await instance.post("/services/create", serviceData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -27,7 +26,6 @@ export const useCreateService = () => {
       console.error("Create Service Error:", err);
       const errorMsg = err.response?.data?.message || "Something went wrong";
       setError(errorMsg);
-      // Return null so the Component knows it failed
       return null; 
     } finally {
       setLoading(false);

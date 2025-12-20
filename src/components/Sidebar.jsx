@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useContext, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { BsGraphUp } from "react-icons/bs";
-import { FaBlog, FaUsers, FaLock } from "react-icons/fa"; // Added Lock icon
+import { FaBlog, FaUsers, FaLock } from "react-icons/fa"; 
 import { PiSuitcaseSimpleBold } from "react-icons/pi";
 import { MdOutlineMiscellaneousServices } from "react-icons/md";
 import { FaStar, FaNewspaper } from "react-icons/fa6";
@@ -20,15 +20,18 @@ const Sidebar = () => {
   const user = useSelector((state) => state.auth.user);
   const currentUser = user?.admin || user || {};
 
-  // 2. Extract Permissions & Role
-  const contentPerms = currentUser.contentPermissions || [];
-  const adminPerms = currentUser.adminPermission || [];
-  const userRole = currentUser.role || "";
-  const userEmail = currentUser.email || "";
+  // 2. Extract Permissions (Unified Logic)
+  // We merge all permission locations into one array so we find them wherever they are
+  const allPerms = [
+    ...(currentUser.contentPermissions || []),
+    ...(currentUser.adminPermission || []),
+    ...(currentUser.AdminPermissions || []) 
+  ];
 
-  // --- ⭐ MASTER KEY LOGIC ---
-  // Access is granted if Role is 'Admin' OR Email is the main collabority email
-  const isMainAdmin = userRole === "Admin" || userEmail.includes("collabority@gmail.com");
+  // Access is granted if Role is 'Admin' OR Email contains 'collabority' 
+  const isMainAdmin = 
+    (currentUser.role === "Admin") || 
+    (currentUser.email && currentUser.email.toLowerCase().includes("collabority"));
 
   const { isSidebarOpen, setIsSidebarOpen } = useContext(AppContext);
   const sidebarRef = useRef(null);
@@ -78,51 +81,52 @@ const Sidebar = () => {
       path: "/blog",
       label: "Blog Management",
       icon: FaBlog,
-      hasAccess: isMainAdmin || contentPerms.includes("blogmgmt")
+      hasAccess: isMainAdmin || allPerms.includes("blogmgmt")
     },
     {
       path: "/careers",
       label: "Careers",
       icon: PiSuitcaseSimpleBold,
-      hasAccess: isMainAdmin || adminPerms.includes("careermgmt")
+      hasAccess: isMainAdmin || allPerms.includes("careermgmt")
     },
     {
       path: "/services",
       label: "Services",
       icon: MdOutlineMiscellaneousServices,
-      hasAccess: isMainAdmin || contentPerms.includes("servicesmgmt")
+      // Checks both spellings to be safe
+      hasAccess: isMainAdmin || allPerms.includes("servicemgmt") || allPerms.includes("servicesmgmt")
     },
     {
       path: "/reviews",
       label: "Reviews",
       icon: FaStar,
-      hasAccess: isMainAdmin || contentPerms.includes("reviewmgmt")
+      hasAccess: isMainAdmin || allPerms.includes("reviewmgmt")
     },
     {
       path: "/contact",
       label: "Contact Queries",
       icon: IoMdMail,
-      hasAccess: isMainAdmin || adminPerms.includes("contactmgmt")
+      hasAccess: isMainAdmin || allPerms.includes("contactmgmt") || allPerms.includes("adminmgmt")
     },
     {
       path: "/newsletter",
       label: "Newsletter",
       icon: FaNewspaper,
-      hasAccess: isMainAdmin || adminPerms.includes("newslettermgmt")
+      hasAccess: isMainAdmin || allPerms.includes("newslettermgmt")
     },
     {
       path: "/createCampaign",
       label: "Create Campaign",
       icon: IoMdMail,
-      hasAccess: isMainAdmin || adminPerms.includes("newslettermgmt")
+      hasAccess: isMainAdmin || allPerms.includes("newslettermgmt")
     },
     {
       path: "/users",
       label: "User Management",
       icon: FaUsers,
-      hasAccess: isMainAdmin || adminPerms.includes("usermgmt")
+      hasAccess: isMainAdmin || allPerms.includes("usermgmt")
     },
-  ], [isMainAdmin, contentPerms, adminPerms]);
+  ], [isMainAdmin, allPerms]);
 
   return (
     <div

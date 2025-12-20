@@ -4,8 +4,6 @@ const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
-
-// --- THE FIX: REQUEST INTERCEPTOR ---
 instance.interceptors.request.use(
   (config) => {
     // 1. Get token from storage
