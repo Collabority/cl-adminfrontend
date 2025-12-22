@@ -38,9 +38,6 @@ const AddReview = () => {
 
   const { createReview } = useReviewService();
 
-  // -----------------------------
-  // MAIN SAVE FUNCTION (clean)
-  // -----------------------------
   const handleSaveReview = (overrideStatus) => {
     const finalStatus = overrideStatus || status;
 

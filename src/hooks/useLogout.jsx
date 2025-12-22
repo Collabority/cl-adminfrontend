@@ -24,7 +24,7 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import instance from "../lib/axios";
-import { logout as logoutAction } from "../redux/authSlice"; // Rename to avoid conflict
+import { logout as logoutAction } from "../redux/authSlice"; 
 
 export const useLogout = () => {
   const dispatch = useDispatch();
@@ -32,14 +32,10 @@ export const useLogout = () => {
 
   const logout = async () => {
     try {
-      // 1. Call Backend to clear cookies
-      // We use the new /auth/logout route
       await instance.post("/auth/logout");
     } catch (error) {
       console.error("Logout Error:", error);
-      // We ignore the error and force logout on frontend anyway
     } finally {
-      // 2. Clear Frontend State (Redux + LocalStorage)
       dispatch(logoutAction()); 
       localStorage.removeItem("userInfo");
       localStorage.removeItem("token");

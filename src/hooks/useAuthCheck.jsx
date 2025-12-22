@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import instance from "../lib/axios";
-import { logout, setCredentials } from "../redux/authSlice"; // Ensure correct import path
+import { logout, setCredentials } from "../redux/authSlice"; 
 
 export const useAuthCheck = () => {
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,6 @@ export const useAuthCheck = () => {
         // Your API response structure is { data: { ...user }, message: "..." }
         if (response?.data?.data) {
           
-          // ✅ FIX: Structure the payload correctly for authSlice
           dispatch(setCredentials({ 
             user: response.data.data, // Map 'data' to 'user'
             token: token              // Pass the token explicitly

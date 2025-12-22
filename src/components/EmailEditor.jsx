@@ -1,8 +1,8 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link"; // <--- CHANGE 1: Import Link
-import { CloudUpload, Link as LinkIcon } from "lucide-react"; // Import Link Icon
-import { useState, useCallback } from "react"; // Import useCallback
+import Link from "@tiptap/extension-link"; 
+import { CloudUpload, Link as LinkIcon } from "lucide-react";
+import { useState, useCallback } from "react"; 
 
 const TiptapEditor = ({ onContentChange }) => {
   const [template, setTemplate] = useState("");
@@ -13,11 +13,11 @@ const TiptapEditor = ({ onContentChange }) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      // <--- CHANGE 2: Add Link Extension Configuration
+      
       Link.configure({
         openOnClick: false, // Prevents opening link while editing
         HTMLAttributes: {
-          class: 'text-blue-600 underline cursor-pointer', // Makes it look like a link
+          class: 'text-blue-600 underline cursor-pointer', 
         },
       }),
     ],
@@ -30,7 +30,7 @@ const TiptapEditor = ({ onContentChange }) => {
     },
   });
 
-  // <--- CHANGE 3: Add the Link Logic Function
+  
   const setLink = useCallback(() => {
     if (!editor) return;
 
@@ -104,7 +104,7 @@ const TiptapEditor = ({ onContentChange }) => {
           Bullet List
         </button>
 
-        {/* <--- CHANGE 4: Add the Link Button here */}
+        {/* Add the Link Button here */}
         <button
           onClick={setLink}
           className={`px-3 py-1 border rounded hover:bg-gray-100 flex items-center gap-1 ${editor.isActive('link') ? 'bg-blue-100 text-blue-600 border-blue-300' : ''}`}

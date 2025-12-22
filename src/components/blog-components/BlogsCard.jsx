@@ -22,7 +22,7 @@ const BlogsCard = ({ filteredPosts }) => {
   };
 
   const getAuthorName = (post) => {
-    // 1. If parent provided a pre-calculated display name (from previous fix)
+    // 1. Check for direct authorDisplay field
     if (post.authorDisplay) return post.authorDisplay;
 
     // 2. If author is an object (Direct from Backend Populate)

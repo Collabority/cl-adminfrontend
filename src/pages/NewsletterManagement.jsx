@@ -242,30 +242,101 @@ export default function NewsletterManagement() {
   };
 
   const stats = React.useMemo(() => {
+    // 1. Calculate General Stats (Existing Logic)
     let totalSent = 0;
     let totalOpens = 0;
     let totalClicks = 0;
 
-    campaigns.forEach(camp => {
-      if (camp.status === 'Sent') {
-        totalSent += (camp.recipientCount || 0);
-        totalOpens += (camp.stats?.opens || 0);
-        totalClicks += (camp.stats?.clicks || 0);
-      }
+    // Filter sent campaigns and sort by date (Newest first) 
+    // Assuming campaigns have a 'createdAt' or 'sentAt' field
+    const sentCampaigns = campaigns
+      .filter(c => c.status === 'Sent')
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    sentCampaigns.forEach(camp => {
+      totalSent += (camp.recipientCount || 0);
+      totalOpens += (camp.stats?.opens || 0);
+      totalClicks += (camp.stats?.clicks || 0);
     });
 
-    const openRate = totalSent > 0 ? ((totalOpens / totalSent) * 100).toFixed(1) : 0;
-    const clickRate = totalSent > 0 ? ((totalClicks / totalSent) * 100).toFixed(1) : 0;
+    const avgOpenRate = totalSent > 0 ? ((totalOpens / totalSent) * 100) : 0;
+    const avgClickRate = totalSent > 0 ? ((totalClicks / totalSent) * 100) : 0;
 
-    const totalSubs = subscribers.length;
+    // 2. Calculate Subscriber Growth (vs Last 30 Days)
+    const now = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(now.getDate() - 30);
+
+    const currentSubsCount = subscribers.length;
+    const oldSubsCount = subscribers.filter(s => new Date(s.createdAt) < thirtyDaysAgo).length;
+    
+    // Formula: ((New - Old) / Old) * 100
+    let subGrowth = 0;
+    if (oldSubsCount > 0) {
+      subGrowth = ((currentSubsCount - oldSubsCount) / oldSubsCount) * 100;
+    } else if (currentSubsCount > 0) {
+      subGrowth = 100; // 100% growth if we started from 0 this month
+    }
+
+    // 3. Calculate Campaign Deltas (Latest vs Previous)
+    let openRateDelta = 0;
+    let clickRateDelta = 0;
+
+    if (sentCampaigns.length >= 2) {
+      const latest = sentCampaigns[0];
+      const previous = sentCampaigns[1];
+
+      // Latest Rates
+      const latestOpenRate = latest.recipientCount ? (latest.stats.opens / latest.recipientCount) * 100 : 0;
+      const latestClickRate = latest.recipientCount ? (latest.stats.clicks / latest.recipientCount) * 100 : 0;
+
+      // Previous Rates
+      const prevOpenRate = previous.recipientCount ? (previous.stats.opens / previous.recipientCount) * 100 : 0;
+      const prevClickRate = previous.recipientCount ? (previous.stats.clicks / previous.recipientCount) * 100 : 0;
+
+      openRateDelta = latestOpenRate - prevOpenRate;
+      clickRateDelta = latestClickRate - prevClickRate;
+    } else if (sentCampaigns.length === 1) {
+      // If only 1 campaign exists, the delta is just its performance (starting from 0)
+      const latest = sentCampaigns[0];
+      openRateDelta = latest.recipientCount ? (latest.stats.opens / latest.recipientCount) * 100 : 0;
+      clickRateDelta = latest.recipientCount ? (latest.stats.clicks / latest.recipientCount) * 100 : 0;
+    }
+
+    // 4. Unsubscribe Rate
     const unsubscribed = subscribers.filter(s => s.status === 'Unsubscribed').length;
-    const unsubRate = totalSubs > 0 ? ((unsubscribed / totalSubs) * 100).toFixed(1) : 0;
+    const unsubRate = currentSubsCount > 0 ? ((unsubscribed / currentSubsCount) * 100) : 0;
+
+    // Helper to format delta string
+    const formatDelta = (val) => `${val > 0 ? "+" : ""}${val.toFixed(1)}%`;
+    const getColor = (val, inverse = false) => {
+      if (val === 0) return "text-gray-500";
+      // For unsubs, "Positive" growth is Bad (Red), so we invert color
+      if (inverse) return val > 0 ? "text-red-500" : "text-green-500"; 
+      return val > 0 ? "text-green-500" : "text-red-500";
+    };
 
     return {
-      totalSubscribers: totalSubs,
-      openRate,
-      clickRate,
-      unsubRate
+      subscribers: {
+        value: currentSubsCount.toLocaleString(),
+        delta: `${formatDelta(subGrowth)} from last month`,
+        color: getColor(subGrowth)
+      },
+      openRate: {
+        value: `${avgOpenRate.toFixed(1)}%`,
+        delta: `${formatDelta(openRateDelta)} from last campaign`,
+        color: getColor(openRateDelta)
+      },
+      clickRate: {
+        value: `${avgClickRate.toFixed(1)}%`,
+        delta: `${formatDelta(clickRateDelta)} from last campaign`,
+        color: getColor(clickRateDelta)
+      },
+      unsubRate: {
+        value: `${unsubRate.toFixed(1)}%`,
+        delta: "Stability metric", // Hard to calc without unsub date
+        color: "text-gray-400"
+      }
     };
   }, [campaigns, subscribers]);
 
@@ -315,34 +386,34 @@ export default function NewsletterManagement() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card 
           title="Total Subscribers" 
-          value={stats.totalSubscribers.toLocaleString()} 
+          value={stats.subscribers.value} 
           icon="👥" 
-          delta="+12.5%" 
-          deltaColor="text-green-500" 
+          delta={stats.subscribers.delta} 
+          deltaColor={stats.subscribers.color} 
         />
         <Card 
-          title="Open Rate" 
-          value={`${stats.openRate}%`} 
+          title="Avg Open Rate" 
+          value={stats.openRate.value} 
           icon="📨" 
-          delta="+2.1%" 
-          deltaColor="text-blue-500" 
+          delta={stats.openRate.delta} 
+          deltaColor={stats.openRate.color} 
         />
         <Card 
-          title="Click Rate" 
-          value={`${stats.clickRate}%`} 
+          title="Avg Click Rate" 
+          value={stats.clickRate.value} 
           icon="🖱️" 
-          delta="-0.5%" 
-          deltaColor="text-red-500" 
+          delta={stats.clickRate.delta} 
+          deltaColor={stats.clickRate.color} 
         />
         <Card 
           title="Unsubscribe Rate" 
-          value={`${stats.unsubRate}%`} 
+          value={stats.unsubRate.value} 
           icon="👤" 
-          delta="-0.2%" 
-          deltaColor="text-green-500" 
+          delta={stats.unsubRate.delta} 
+          deltaColor={stats.unsubRate.color} 
         />
       </div>
-
+      
       {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-6">
         <button
