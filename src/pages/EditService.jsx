@@ -103,7 +103,6 @@ const EditService = () => {
     }
   };
 
-  // ... (Keep existing coverImage function and JSX rendering same as your code) ...
   // (Assuming no changes needed in UI, just logic)
   const coverImage = () => (
     <div className="bg-white rounded-lg shadow flex flex-col gap-6 p-4 ">

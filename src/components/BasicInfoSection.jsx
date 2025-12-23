@@ -5,7 +5,6 @@ const BasicInfoSection = ({ formData, setFormData }) => {
   const [tagInput, setTagInput] = useState("");
   const { admin } = useSelector((state) => state.auth.user);
 
-  // Ensure author _id is always set in formData when admin is available
   useEffect(() => {
     if (admin && admin._id && formData.author !== admin._id) {
       setFormData((prev) => ({

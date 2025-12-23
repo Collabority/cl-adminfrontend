@@ -46,7 +46,7 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<Loader />}>
       <Routes>
-        {/* 🔐 Protected Routes */}
+        {/* Protected Routes */}
         <Route element={<AuthLayout authenticationReq={true} />}>
           <Route path="/" element={<Dashboard />} />
 
