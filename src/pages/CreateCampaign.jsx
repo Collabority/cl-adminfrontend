@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Send, Save, ArrowRight, Loader2, Users, Clock, Calendar } from "lucide-react"; 
-import TiptapEditor from "../components/EmailEditor";
+import TiptapEditor from "../components/EmailEditor"; 
 import instance from "../lib/axios";
 
 const CreateCampaign = () => {
@@ -37,6 +37,8 @@ const CreateCampaign = () => {
   const handleEditorChange = (html) => {
     setEditorContent(html);
   };
+
+  // --- SAVE LOGIC (Fixed) ---
   const handleSave = async (actionType) => {
     // 1. Basic Validation
     if (!formData.campaignName || !formData.subjectLine) {
@@ -60,8 +62,15 @@ const CreateCampaign = () => {
          status = formData.scheduleType === "now" ? "Sent" : "Scheduled"; 
       }
 
+      // Convert Local Date to UTC for the Backend
+      let finalScheduledDate = formData.scheduledDate;
+      if (formData.scheduleType === "later" && formData.scheduledDate) {
+          finalScheduledDate = new Date(formData.scheduledDate).toISOString();
+      }
+
       const payload = {
         ...formData,
+        scheduledDate: finalScheduledDate, 
         content: editorContent, 
         status: status,
       };
@@ -69,10 +78,21 @@ const CreateCampaign = () => {
       // 3. Create Campaign
       const response = await instance.post("/campaigns/create", payload);
 
-      // 4. Handle "Send Now" immediate trigger
+      // ✅ CRITICAL FIX: Extract the ID correctly
+      // Backend returns: { success: true, data: { _id: "..." } }
+      // Axios wraps it in: response.data
+      // So correct path is: response.data.data._id
+      const newCampaignId = response.data?.data?._id || response.data?._id;
+
+      // 4. Handle "Send Now" vs "Schedule"
       if (actionType === "continue" && formData.scheduleType === "now") {
-          await instance.post("/campaigns/send", { campaignId: response.data._id });
-          alert("Campaign sent successfully!");
+          if (newCampaignId) {
+            await instance.post("/campaigns/send", { campaignId: newCampaignId });
+            alert("Campaign sent successfully!");
+          } else {
+            console.error("Could not find Campaign ID in response:", response);
+            alert("Campaign created, but failed to trigger send. Check console.");
+          }
       } 
       else if (actionType === "continue" && formData.scheduleType === "later") {
           alert(`Campaign scheduled for ${new Date(formData.scheduledDate).toLocaleString()}`);
@@ -116,9 +136,9 @@ const CreateCampaign = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen relative">
+    <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen relative pb-10">
       
-      {/* --- HEADER (Kept Exactly Same) --- */}
+      {/* --- HEADER --- */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4 px-1">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Create Campaign</h1>
@@ -241,9 +261,8 @@ const CreateCampaign = () => {
           </div>
         </div>
 
+        {/* --- 2. RECIPIENTS & SCHEDULING --- */}
         <div className="grid md:grid-cols-2 gap-6">
-          
-          {/* Recipients */}
           <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 h-full">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Users size={20} className="text-blue-500"/> Recipients
@@ -267,7 +286,6 @@ const CreateCampaign = () => {
             </div>
           </div>
 
-          {/* Scheduling */}
           <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 h-full">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Clock size={20} className="text-blue-500"/> Scheduling
@@ -283,12 +301,17 @@ const CreateCampaign = () => {
                   <input type="radio" name="scheduleType" value="later" checked={formData.scheduleType === 'later'} onChange={handleChange} className="w-4 h-4 text-blue-600"/>
                   <span className="font-medium text-gray-800">Schedule for Later</span>
                 </div>
-                {/* Date Picker shows only if 'Schedule Later' is picked */}
                 {formData.scheduleType === 'later' && (
                   <div className="ml-7 mt-1 animate-in slide-in-from-top-2">
                     <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-md px-3 py-2">
                       <Calendar size={16} className="text-gray-500"/>
-                      <input type="datetime-local" name="scheduledDate" value={formData.scheduledDate} onChange={handleChange} className="w-full text-sm outline-none text-gray-700"/>
+                      <input 
+                        type="datetime-local" 
+                        name="scheduledDate" 
+                        value={formData.scheduledDate} 
+                        onChange={handleChange} 
+                        className="w-full text-sm outline-none text-gray-700"
+                      />
                     </div>
                   </div>
                 )}
@@ -307,7 +330,7 @@ const CreateCampaign = () => {
 
       </div>
 
-      {/* --- TEST EMAIL MODAL (Kept Exactly Same) --- */}
+      {/* --- TEST EMAIL MODAL --- */}
       {showTestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">

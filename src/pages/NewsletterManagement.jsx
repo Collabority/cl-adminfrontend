@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Pencil, Trash, Eye, Mail, Send, Users } from "lucide-react"; 
+import { Pencil, Trash, Eye, Mail, Send, Users, Clock } from "lucide-react"; 
 import { Link } from "react-router-dom"; 
 import instance from "../lib/axios";
 import { SubscribersDetails } from "../components/SubscribersDetails";
@@ -7,19 +7,9 @@ import AddNewSubscriber from "./AddNewSubscriber";
 import EditSubscriber from "./EditSubscriber"; 
 import { CampaignDetailsModal } from "../components/CampaignDetailsModal";
 
+// Dummy data for initial state if needed
+const initialSubscribers = [];
 
-const initialSubscribers = [
-  {
-    _id: "local-1",
-    email: "john.doe@email.com",
-    name: "John Doe",
-    status: "Active",
-    segment: "Customers",
-    createdAt: "2024-12-10T00:00:00.000Z",
-    color: "blue",
-  },
-];
-  
 export default function NewsletterManagement() {
   // --- TABS STATE ---
   const [activeTab, setActiveTab] = useState("subscribers");
@@ -43,7 +33,7 @@ export default function NewsletterManagement() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true); // Optional: global loading state
+      setIsLoading(true); 
       await Promise.all([
         getAllNewsletterMembers(),
         getAllCampaigns()
@@ -89,7 +79,9 @@ export default function NewsletterManagement() {
   async function getAllCampaigns() {
     try {
       const response = await instance.get("/campaigns/all");
-      setCampaigns(response.data?.data || []);
+      // Sort by Created Date (Newest first) so user sees latest at top
+      const sorted = (response.data?.data || []).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setCampaigns(sorted);
     } catch (err) {
       console.error("Failed to fetch campaigns:", err);
     }
@@ -219,7 +211,6 @@ export default function NewsletterManagement() {
     }
   };
 
-  // NEW: Delete Campaign
   const handleDeleteCampaign = async (id) => {
     if (!window.confirm("Are you sure you want to delete this campaign? This cannot be undone.")) {
       return;
@@ -235,20 +226,16 @@ export default function NewsletterManagement() {
     }
   };
 
-  // NEW: Open Modal
   const handleViewCampaign = (campaign) => {
     setSelectedCampaign(campaign);
     setIsCampaignModalOpen(true);
   };
 
-  const stats = React.useMemo(() => {
-    // 1. Calculate General Stats (Existing Logic)
+const stats = React.useMemo(() => {
     let totalSent = 0;
     let totalOpens = 0;
     let totalClicks = 0;
 
-    // Filter sent campaigns and sort by date (Newest first) 
-    // Assuming campaigns have a 'createdAt' or 'sentAt' field
     const sentCampaigns = campaigns
       .filter(c => c.status === 'Sent')
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -262,23 +249,24 @@ export default function NewsletterManagement() {
     const avgOpenRate = totalSent > 0 ? ((totalOpens / totalSent) * 100) : 0;
     const avgClickRate = totalSent > 0 ? ((totalClicks / totalSent) * 100) : 0;
 
-    // 2. Calculate Subscriber Growth (vs Last 30 Days)
     const now = new Date();
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(now.getDate() - 30);
 
-    const currentSubsCount = subscribers.length;
-    const oldSubsCount = subscribers.filter(s => new Date(s.createdAt) < thirtyDaysAgo).length;
+    // ✅ FIX: Calculate ACTIVE subscribers specifically
+    const activeSubscribers = subscribers.filter(s => s.status === 'Active');
+    const currentActiveCount = activeSubscribers.length;
     
-    // Formula: ((New - Old) / Old) * 100
+    // Calculate growth based on ACTIVE subscribers
+    const oldActiveCount = activeSubscribers.filter(s => new Date(s.createdAt) < thirtyDaysAgo).length;
+    
     let subGrowth = 0;
-    if (oldSubsCount > 0) {
-      subGrowth = ((currentSubsCount - oldSubsCount) / oldSubsCount) * 100;
-    } else if (currentSubsCount > 0) {
-      subGrowth = 100; // 100% growth if we started from 0 this month
+    if (oldActiveCount > 0) {
+      subGrowth = ((currentActiveCount - oldActiveCount) / oldActiveCount) * 100;
+    } else if (currentActiveCount > 0) {
+      subGrowth = 100; 
     }
 
-    // 3. Calculate Campaign Deltas (Latest vs Previous)
     let openRateDelta = 0;
     let clickRateDelta = 0;
 
@@ -286,39 +274,35 @@ export default function NewsletterManagement() {
       const latest = sentCampaigns[0];
       const previous = sentCampaigns[1];
 
-      // Latest Rates
       const latestOpenRate = latest.recipientCount ? (latest.stats.opens / latest.recipientCount) * 100 : 0;
       const latestClickRate = latest.recipientCount ? (latest.stats.clicks / latest.recipientCount) * 100 : 0;
 
-      // Previous Rates
       const prevOpenRate = previous.recipientCount ? (previous.stats.opens / previous.recipientCount) * 100 : 0;
       const prevClickRate = previous.recipientCount ? (previous.stats.clicks / previous.recipientCount) * 100 : 0;
 
       openRateDelta = latestOpenRate - prevOpenRate;
       clickRateDelta = latestClickRate - prevClickRate;
     } else if (sentCampaigns.length === 1) {
-      // If only 1 campaign exists, the delta is just its performance (starting from 0)
       const latest = sentCampaigns[0];
       openRateDelta = latest.recipientCount ? (latest.stats.opens / latest.recipientCount) * 100 : 0;
       clickRateDelta = latest.recipientCount ? (latest.stats.clicks / latest.recipientCount) * 100 : 0;
     }
 
-    // 4. Unsubscribe Rate
-    const unsubscribed = subscribers.filter(s => s.status === 'Unsubscribed').length;
-    const unsubRate = currentSubsCount > 0 ? ((unsubscribed / currentSubsCount) * 100) : 0;
+    // Unsubscribe Rate: Unsubscribed Users / Total Database Size
+    const totalDatabaseSize = subscribers.length;
+    const unsubscribedCount = subscribers.filter(s => s.status === 'Unsubscribed').length;
+    const unsubRate = totalDatabaseSize > 0 ? ((unsubscribedCount / totalDatabaseSize) * 100) : 0;
 
-    // Helper to format delta string
     const formatDelta = (val) => `${val > 0 ? "+" : ""}${val.toFixed(1)}%`;
     const getColor = (val, inverse = false) => {
       if (val === 0) return "text-gray-500";
-      // For unsubs, "Positive" growth is Bad (Red), so we invert color
       if (inverse) return val > 0 ? "text-red-500" : "text-green-500"; 
       return val > 0 ? "text-green-500" : "text-red-500";
     };
 
     return {
       subscribers: {
-        value: currentSubsCount.toLocaleString(),
+        value: currentActiveCount.toLocaleString(), // Shows ONLY Active
         delta: `${formatDelta(subGrowth)} from last month`,
         color: getColor(subGrowth)
       },
@@ -334,13 +318,11 @@ export default function NewsletterManagement() {
       },
       unsubRate: {
         value: `${unsubRate.toFixed(1)}%`,
-        delta: "Stability metric", // Hard to calc without unsub date
+        delta: "Stability metric", 
         color: "text-gray-400"
       }
     };
   }, [campaigns, subscribers]);
-
-  // --- CONDITIONAL VIEWS ---
 
   if (isAdding) {
     return (
@@ -384,52 +366,18 @@ export default function NewsletterManagement() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card 
-          title="Total Subscribers" 
-          value={stats.subscribers.value} 
-          icon="👥" 
-          delta={stats.subscribers.delta} 
-          deltaColor={stats.subscribers.color} 
-        />
-        <Card 
-          title="Avg Open Rate" 
-          value={stats.openRate.value} 
-          icon="📨" 
-          delta={stats.openRate.delta} 
-          deltaColor={stats.openRate.color} 
-        />
-        <Card 
-          title="Avg Click Rate" 
-          value={stats.clickRate.value} 
-          icon="🖱️" 
-          delta={stats.clickRate.delta} 
-          deltaColor={stats.clickRate.color} 
-        />
-        <Card 
-          title="Unsubscribe Rate" 
-          value={stats.unsubRate.value} 
-          icon="👤" 
-          delta={stats.unsubRate.delta} 
-          deltaColor={stats.unsubRate.color} 
-        />
+        <Card title="Total Subscribers" value={stats.subscribers.value} icon="👥" delta={stats.subscribers.delta} deltaColor={stats.subscribers.color} />
+        <Card title="Avg Open Rate" value={stats.openRate.value} icon="📨" delta={stats.openRate.delta} deltaColor={stats.openRate.color} />
+        <Card title="Avg Click Rate" value={stats.clickRate.value} icon="🖱️" delta={stats.clickRate.delta} deltaColor={stats.clickRate.color} />
+        <Card title="Unsubscribe Rate" value={stats.unsubRate.value} icon="👤" delta={stats.unsubRate.delta} deltaColor={stats.unsubRate.color} />
       </div>
       
       {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-6">
-        <button
-          onClick={() => setActiveTab("subscribers")}
-          className={`pb-2 px-4 font-medium transition-colors relative ${
-            activeTab === "subscribers" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
+        <button onClick={() => setActiveTab("subscribers")} className={`pb-2 px-4 font-medium transition-colors relative ${activeTab === "subscribers" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}>
           Subscribers ({subscribers.length})
         </button>
-        <button
-          onClick={() => setActiveTab("campaigns")}
-          className={`pb-2 px-4 font-medium transition-colors relative ${
-            activeTab === "campaigns" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
+        <button onClick={() => setActiveTab("campaigns")} className={`pb-2 px-4 font-medium transition-colors relative ${activeTab === "campaigns" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}>
           Campaigns ({campaigns.length})
         </button>
       </div>
@@ -438,13 +386,7 @@ export default function NewsletterManagement() {
       {activeTab === "subscribers" && (
         <>
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4 items-stretch sm:items-center">
-            <input
-              type="text"
-              placeholder="Search by email or name..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border px-3 py-2 rounded w-full sm:flex-1 text-gray-500"
-            />
+            <input type="text" placeholder="Search by email or name..." value={search} onChange={(e) => setSearch(e.target.value)} className="border px-3 py-2 rounded w-full sm:flex-1 text-gray-500" />
             <select value={status} onChange={(e) => setStatus(e.target.value)} className="border px-3 py-2 rounded w-full sm:w-auto">
               <option>All Status</option>
               <option>Active</option>
@@ -457,13 +399,7 @@ export default function NewsletterManagement() {
               <option>Customers</option>
               <option>Prospects</option>
             </select>
-            
-            <button 
-              onClick={() => setIsAdding(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-blue-700"
-            >
-              + Add Subscriber
-            </button>
+            <button onClick={() => setIsAdding(true)} className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-blue-700">+ Add Subscriber</button>
           </div>
 
           <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
@@ -481,20 +417,9 @@ export default function NewsletterManagement() {
               </thead>
               <tbody>
                 {filteredSubscribers.map((sub, index) => (
-                  <Row
-                    key={sub._id || sub.email || index}
-                    {...sub}
-                    onView={() => handleView(sub)}
-                    onEdit={() => handleEditClick(sub)}
-                    onDelete={() => handleDelete(sub._id)}
-                    onStatusChange={(newStatus) => handleStatusChange(sub._id, newStatus)}
-                  />
+                  <Row key={sub._id || sub.email || index} {...sub} onView={() => handleView(sub)} onEdit={() => handleEditClick(sub)} onDelete={() => handleDelete(sub._id)} onStatusChange={(newStatus) => handleStatusChange(sub._id, newStatus)} />
                 ))}
-                <SubscribersDetails
-                  isOpen={isModalOpen}
-                  onClose={closeModal}
-                  subscriber={selectedSubscriber}
-                />
+                <SubscribersDetails isOpen={isModalOpen} onClose={closeModal} subscriber={selectedSubscriber} />
               </tbody>
             </table>
           </div>
@@ -519,22 +444,22 @@ export default function NewsletterManagement() {
                 {campaigns.map((campaign) => (
                   <div 
                     key={campaign._id} 
-                    // Make card clickable
                     onClick={() => handleViewCampaign(campaign)}
                     className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all p-5 flex flex-col justify-between cursor-pointer hover:border-purple-300"
                   >
                     <div>
                       <div className="flex justify-between items-start mb-3">
                         <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
-                          campaign.status === 'Sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                          campaign.status === 'Sent' ? 'bg-green-100 text-green-700' : 
+                          campaign.status === 'Scheduled' ? 'bg-orange-100 text-orange-700' :
+                          'bg-yellow-100 text-yellow-700'
                         }`}>
                           {campaign.status}
                         </span>
 
-                         {/* Delete Icon */}
                          <button 
                           onClick={(e) => {
-                            e.stopPropagation(); // Stop click from opening modal
+                            e.stopPropagation(); 
                             handleDeleteCampaign(campaign._id);
                           }}
                           className="text-gray-400 hover:text-red-500 transition-colors p-1"
@@ -554,7 +479,6 @@ export default function NewsletterManagement() {
                         <div className="flex items-center gap-1" title="Recipients">
                           <Users size={14} /> {campaign.recipientCount || 0}
                         </div>
-                        {/* Show opens if sent */}
                         {campaign.status === 'Sent' && (
                           <div className="flex items-center gap-1 text-green-600" title="Opens">
                             <Mail size={14} /> {campaign.stats?.opens || 0}
@@ -562,6 +486,7 @@ export default function NewsletterManagement() {
                         )}
                       </div>
 
+                      {/* --- BUTTON LOGIC FIX --- */}
                       {campaign.status === "Draft" ? (
                         <button 
                           onClick={(e) => {
@@ -574,8 +499,17 @@ export default function NewsletterManagement() {
                           }`}
                         >
                           <Send size={14} /> 
-                          {isLoading ? "..." : "Send"} 
+                          {isLoading ? "..." : "Send Now"} 
                         </button>
+                      ) : campaign.status === "Scheduled" ? (
+                        <div className="flex flex-col items-end">
+                           <span className="flex items-center gap-1 text-sm text-orange-600 font-medium">
+                             <Clock size={14} /> Scheduled
+                           </span>
+                           <span className="text-xs text-gray-400">
+                             {campaign.scheduledDate ? new Date(campaign.scheduledDate).toLocaleString() : ""}
+                           </span>
+                        </div>
                       ) : (
                         <span className="flex items-center gap-1 text-sm text-purple-600 font-medium">
                           <Eye size={14} /> View Report
@@ -588,7 +522,6 @@ export default function NewsletterManagement() {
             )}
           </div>
           
-          {/* CAMPAIGN DETAILS MODAL */}
           <CampaignDetailsModal 
             isOpen={isCampaignModalOpen}
             onClose={() => setIsCampaignModalOpen(false)}
@@ -611,7 +544,7 @@ function Card({ title, value, icon, delta, deltaColor }) {
       </div>
       <div className="text-2xl font-semibold">{value}</div>
       <div className={`text-base mt-1 ${deltaColor}`}>
-        {delta} from last campaign
+        {delta} 
       </div>
     </div>
   );
