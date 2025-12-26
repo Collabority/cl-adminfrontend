@@ -115,15 +115,16 @@ const CreateJob = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="text-2xl font-semibold">Create New Job Opening</h1>
         <div className="flex gap-2 w-full sm:w-auto justify-end">
-          <button className="border px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 w-1/2 sm:w-auto">
+          {/* <button className="border px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100 w-1/2 sm:w-auto">
             Save Draft
           </button>
           <button className="bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium w-1/2 sm:w-auto">
             Preview
-          </button>
+          </button> */}
         </div>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      {/* ✅ Added error logger so you can see validation errors in Console (F12) */}
+      <form onSubmit={handleSubmit(onSubmit, (errors) => console.log("Form Errors:", errors))}>
         <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Job Information</h2>
           <div className="mb-4">
@@ -313,18 +314,32 @@ const CreateJob = () => {
               />
               {errors.expiresAt && <p className="mt-1 text-sm text-red-600">{errors.expiresAt.message}</p>}
             </div>
+            {/* ✅ NEW FIXED CODE */}
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1">
-                Hiring Manager
+                Hiring Manager ID *
               </label>
+              
+              {/* 1. We make this visible so you can SEE if it's empty */}
               <input
                 type="text"
-                value={admin && admin.name ? admin.name : ""}
-                readOnly
-                className="w-full border rounded-lg px-4 py-2 text-sm text-gray-500 bg-gray-100"
-                placeholder="Current User"
+                {...register("hiringManager")}
+                defaultValue={admin?._id || ""} // Try to auto-fill, but allow manual typing
+                className={`w-full border rounded-lg px-4 py-2 text-sm text-gray-900 ${errors.hiringManager ? 'border-red-500' : 'border-gray-300'}`}
+                placeholder="Paste Manager ID here (e.g., 64c9...)"
               />
-              <input type="hidden" {...register("hiringManager")} />
+              
+              {/* 2. Show error if it's empty */}
+              {errors.hiringManager && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.hiringManager.message || "Manager ID is required"}
+                </p>
+              )}
+              
+              {/* 3. Helper text so you know what to do */}
+              <p className="text-xs text-gray-500 mt-1">
+                Auto-filled from your login. If empty, please paste your User ID.
+              </p>
             </div>
           </div>
           <div>
