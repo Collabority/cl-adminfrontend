@@ -28,9 +28,11 @@ const ServicesManagement = lazy(() => import("../pages/ServicesManagement"));
 const CreateService = lazy(() => import("../pages/CreateService"));
 const EditService = lazy(() => import("../pages/EditService"));
 
-// Careers
+// Careers (Updated imports)
+const JobsList = lazy(() => import("../pages/Careers/JobsList")); 
 const Applications = lazy(() => import("../pages/Careers/Applications"));
 const CreateJob = lazy(() => import("../pages/Careers/CreateJob"));
+const EditJob = lazy(() => import("../pages/Careers/EditJob"));
 
 // Newsletter
 const NewsletterManagement = lazy(() => import("../pages/NewsletterManagement"));
@@ -57,16 +59,24 @@ const AppRoutes = () => {
             <Route path="edit-blog-post/:id" element={<EditBlogPost />} />
           </Route>
 
-          {/* Career Routes */}
+          {/* Career Routes - */}
           <Route path="/careers">
-            <Route index element={<Applications />} />
+            {/* The main link '/careers' now shows the Jobs List */}
+            <Route index element={<JobsList />} /> 
+            
+            {/* Route to create a new job */}
             <Route path="create" element={<CreateJob />} />
+            
+            {/* Route to edit a job (reusing CreateJob component logic if supported, or make a separate page) */}
+            <Route path="edit/:id" element={<EditJob />} />
+
+            {/* Route to see applicants */}
+            <Route path="applications" element={<Applications />} />
           </Route>
 
-          {/* User Routes - UPDATED HERE */}
+          {/* User Routes */}
           <Route path="/users">
             <Route index element={<UserManagementPage />} />
-            {/* Changed from 'roles' to 'create' to match your Link */}
             <Route path="create" element={<AddNewUser />} /> 
           </Route>
 
